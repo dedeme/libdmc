@@ -8,6 +8,5 @@ lib/lib$(LIB).a : $(OBJECTS)
 
 obj/%.o : src/%.c include/%.h
 	gcc $(CFLAGS) -c $< -o $@ -Iinclude \
-		-L/usr/lib/i386-linux-gnu -lcurl \
 	  -lgc
 

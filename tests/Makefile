@@ -8,7 +8,6 @@ OBJECTS = $(subst src,obj,$(patsubst %.c,%.o,$(wildcard ../src/*.c)))
 
 bin/tests : $(TESTS) ../lib/lib$(LIB).a
 	gcc $(CFLAGS) $(TESTS) -o bin/tests -I../include -L../lib -l$(LIB) \
-		-L/usr/lib/i386-linux-gnu -lcurl \
 		-lgc
 
 ../lib/lib$(LIB).a : $(OBJECTS)
@@ -16,6 +15,5 @@ bin/tests : $(TESTS) ../lib/lib$(LIB).a
 
 ../obj/%.o : ../src/%.c ../include/%.h
 	gcc $(CFLAGS) -c $< -o $@ -I../include \
-		-L/usr/lib/i386-linux-gnu -lcurl \
 	  -lgc
 
