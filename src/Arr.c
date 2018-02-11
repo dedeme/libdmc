@@ -225,12 +225,12 @@ void arr_sort (Arr *this, int (*f)(void *, void *)) {
 }
 
 void arr_sort_str (Arr *this) {
-  FNE (cmp, char, e1, e2) { return e1 && e2 ? strcmp(e1, e2) : e1 - e2; }_FN
+  FNC (cmp, char, e1, e2) { return e1 && e2 ? strcmp(e1, e2) : e1 - e2; }_FN
   arr_sort(this, cmp);
 }
 
 void arr_sort_locale (Arr *this) {
-  FNE (cmp, char, e1, e2) { return e1 && e2 ? strcoll(e1, e2) : e1 - e2; }_FN
+  FNC (cmp, char, e1, e2) { return e1 && e2 ? strcoll(e1, e2) : e1 - e2; }_FN
   arr_sort(this, cmp);
 }
 
