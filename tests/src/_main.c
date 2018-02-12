@@ -24,7 +24,7 @@ int main (int argc, char **argv) {
 
   puts("dmTest. v201801\n");
   sys_init("dmTest");
-/*  buf_test();
+  buf_test();
   str_test();
   arr_test();
   it_test();
@@ -39,7 +39,7 @@ int main (int argc, char **argv) {
   json_test();
   file_test();
   ext_test();
-*/  cgi_test();
+  cgi_test();
 
   return(0);
 }

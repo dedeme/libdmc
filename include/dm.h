@@ -34,6 +34,6 @@
 #include "exc.h"
 #include "Json.h"
 #include "ext.h"
-#include "cgi.h"
+#include "Cgi.h"
 
 #endif
