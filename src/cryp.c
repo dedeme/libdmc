@@ -7,7 +7,7 @@
 static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-char *cryp_genK (int lg) {
+char *cryp_genk (int lg) {
   if (lg <= 0) error_illegal_argument("lg", ERROR_DATA);
 
   uint len = strlen(b64_base);
@@ -121,7 +121,7 @@ char *cryp_decryp (char *k, char *c) {
 
 char *cryp_auto_cryp (int nK, char *s) {
   nK = nK < 1 ? 0 : nK > 64 ? 63 : nK - 1;
-  char *k = cryp_genK(nK + 1);
+  char *k = cryp_genk(nK + 1);
   return str_printf("%c%s%s", b64_base[nK], k, cryp_cryp(k, s));
 }
 

@@ -524,10 +524,14 @@ void jmap_pobject(Map/*Json*/ *this, char *key, Map/*Json*/ *m) {
     map_put(this, key, json_wobject(m));
 }
 
+static char *key_error(char *key) {
+  return str_printf("Key '%s' does not exist", key);
+}
+
 bool jmap_gbool(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_rbool(value);
 }
@@ -535,7 +539,7 @@ bool jmap_gbool(Map/*Json*/ *this, char *key) {
 int jmap_gint(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_rint(value);
 }
@@ -543,7 +547,7 @@ int jmap_gint(Map/*Json*/ *this, char *key) {
 unsigned jmap_guint(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_ruint(value);
 }
@@ -551,7 +555,7 @@ unsigned jmap_guint(Map/*Json*/ *this, char *key) {
 double jmap_gdouble(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_rdouble(value);
 }
@@ -559,7 +563,7 @@ double jmap_gdouble(Map/*Json*/ *this, char *key) {
 char *jmap_gstring(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_rnull(value) ? NULL : json_rstring(value);
 }
@@ -567,7 +571,7 @@ char *jmap_gstring(Map/*Json*/ *this, char *key) {
 Arr/*Json*/ *jmap_garray(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_rnull(value) ? NULL : json_rarray(value);
 }
@@ -575,7 +579,7 @@ Arr/*Json*/ *jmap_garray(Map/*Json*/ *this, char *key) {
 Map/*Json*/ *jmap_gobject(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic("Key does not exists", ERROR_DATA);
+    error_generic(key_error(key), ERROR_DATA);
   }
   return json_rnull(value) ? NULL : json_robject(value);
 }

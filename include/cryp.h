@@ -7,7 +7,7 @@
   #define DM_CRYP_H
 
 /// Generates a b64 random key of a length 'lg'
-char *cryp_genK (int lg);
+char *cryp_genk (int lg);
 
 /// Returns 'k' codified in irreversible way, using 'lg' b64 digits.
 ///   k   : String to codify

@@ -69,7 +69,7 @@ void *arr_get (Arr *this, size_t index) {
   return this->es[index];
 }
 
-void arr_insert (Arr *this, void *element, size_t index) {
+void arr_insert (Arr *this, size_t index, void *element) {
   const size_t size = this->size;
   if (index > size || index < 0) {
     error_range(0, size + 1, index, ERROR_DATA);
@@ -96,7 +96,7 @@ void arr_insert (Arr *this, void *element, size_t index) {
   this->size = sum;
 }
 
-void arr_insert_arr (Arr *this, Arr *another, size_t index) {
+void arr_insert_arr (Arr *this, size_t index, Arr *another) {
   const size_t size = this->size;
   if (index > size || index < 0) {
     error_range(0, size + 1, index, ERROR_DATA);
@@ -181,7 +181,7 @@ void arr_reverse (Arr *this) {
   }_REPEAT
 }
 
-void arr_set (Arr *this, void *element, size_t index) {
+void arr_set (Arr *this, size_t index, void *element) {
   if (index < 0 || index >= this->size) {
     error_range(0, this->size, index, ERROR_DATA);
   }
@@ -251,7 +251,6 @@ void arr_shuffle (Arr *this) {
     tmp = os[k]; os[k] = os[j]; os[j] = tmp;
   }_RANGE
 }
-
 
 /**/typedef struct {
 /**/  void **es;

@@ -68,7 +68,7 @@ void arr_test() {
 
   char *lc = setlocale(LC_ALL, NULL);
   if (str_starts(lc, "es") || str_starts(lc, "ES")) {
-    arr_set(a2, "ááá", 0);
+    arr_set(a2, 0, "ááá");
     arr_reverse(a2);
     arr_sort_locale(a2);
     assert(!strcmp(arr_es(a2)[0], "ááá"));
@@ -76,10 +76,10 @@ void arr_test() {
     assert(!strcmp(arr_es(a2)[2], "ccc"));
     assert(!strcmp(arr_es(a2)[3], "ddd"));
     assert(!strcmp(arr_es(a2)[4], "eee"));
-    arr_set(a2, "aaa", 0);
+    arr_set(a2, 0, "aaa");
   }
 
-  arr_insert(a2, "x", 2);
+  arr_insert(a2, 2, "x");
   assert(arr_size(a2) == 6);
   assert(!strcmp(arr_es(a2)[0], "aaa"));
   assert(!strcmp(arr_es(a2)[1], "bbb"));
@@ -88,7 +88,7 @@ void arr_test() {
   assert(!strcmp(arr_es(a2)[4], "ddd"));
   assert(!strcmp(arr_es(a2)[5], "eee"));
 
-  arr_set(a2, "xxx", 2);
+  arr_set(a2, 2, "xxx");
   assert(!strcmp(arr_es(a2)[0], "aaa"));
   assert(!strcmp(arr_es(a2)[1], "bbb"));
   assert(!strcmp(arr_es(a2)[2], "xxx"));
@@ -96,8 +96,8 @@ void arr_test() {
   assert(!strcmp(arr_es(a2)[4], "ddd"));
   assert(!strcmp(arr_es(a2)[5], "eee"));
 
-  arr_set(a2, "a", 0);
-  arr_set(a2, "e", 5);
+  arr_set(a2, 0, "a");
+  arr_set(a2, 5, "e");
   assert(!strcmp(arr_es(a2)[0], "a"));
   assert(!strcmp(arr_es(a2)[1], "bbb"));
   assert(!strcmp(arr_es(a2)[2], "xxx"));
@@ -117,8 +117,8 @@ void arr_test() {
   assert(!strcmp(arr_es(a2)[1], "ccc"));
   assert(!strcmp(arr_es(a2)[2], "ddd"));
 
-  arr_insert(a2, "aaa", 0);
-  arr_insert(a2, "eee", arr_size(a2));
+  arr_insert(a2, 0, "aaa");
+  arr_insert(a2, arr_size(a2), "eee");
   assert(!strcmp(arr_es(a2)[0], "aaa"));
   assert(!strcmp(arr_es(a2)[1], "bbb"));
   assert(!strcmp(arr_es(a2)[2], "ccc"));
@@ -152,7 +152,7 @@ void arr_test() {
   assert(!strcmp(arr_es(a2)[3], "ccc"));
   assert(!strcmp(arr_es(a2)[4], "ddd"));
 
-  arr_insert_arr(a2, a3, 0);
+  arr_insert_arr(a2, 0, a3);
   assert(arr_size(a2) == 8);
   assert(!strcmp(arr_es(a3)[0], "bbb"));
   assert(!strcmp(arr_es(a3)[1], "ccc"));
@@ -177,7 +177,7 @@ void arr_test() {
   }
   assert(!it_eq(arr_to_it(a1), arr_to_it(a4), str_eq));
   assert(!it_eq_str(arr_to_it(a1), arr_to_it(a4)));
-  arr_insert_arr(a1, a4, 11);
+  arr_insert_arr(a1, 11, a4);
   assert(arr_size(a1) == 117);
   assert(!strcmp(arr_es(a1)[116], "16"));
 

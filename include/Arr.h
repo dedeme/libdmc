@@ -36,10 +36,10 @@ void arr_add_arr (Arr *this, Arr *another);
 void *arr_get (Arr *this, size_t index);
 
 /// Inserts an element at 'index'
-void arr_insert (Arr *this, void *element, size_t index);
+void arr_insert (Arr *this, size_t index, void *element);
 
 /// Inserts an array at 'index'
-void arr_insert_arr (Arr *this, Arr *another, size_t index);
+void arr_insert_arr (Arr *this, size_t index, Arr *another);
 
 /// Removes the elemente at 'index'
 void arr_remove (Arr *this, size_t index);
@@ -51,7 +51,7 @@ void arr_remove_range (Arr *this, size_t begin, size_t end);
 void arr_reverse (Arr *this);
 
 /// Replaces element at 'index' by a new 'element'. Tests limits.
-void arr_set (Arr *this, void *element, size_t index);
+void arr_set (Arr *this, size_t index, void *element);
 
 /// Returns the index of 'e'. When there are several elements in such
 /// situation, returns one of them without a particular order.

@@ -9,7 +9,7 @@ void cryp_test() {
   char *b64;
   char *s;
 
-  b64 = cryp_genK(6);
+  b64 = cryp_genk(6);
   assert(6 == strlen(b64));
 
   b64 = cryp_key("deme", 6);

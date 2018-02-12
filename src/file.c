@@ -10,7 +10,7 @@
 #include <fcntl.h>
 
 char *file_tmp (char *prefix) {
-  char *k0 = cryp_genK(10);
+  char *k0 = cryp_genk(10);
   char *k = str_creplace(k0, '/', '_');
   char *r = str_printf("/tmp/%s%s", prefix, k);
   if (file_exists(r)) {

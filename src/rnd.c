@@ -5,23 +5,17 @@
 #include <limits.h>
 
 void rnd_init () {
-  srand48 (time (0));
-  int ix = 7;
-  unsigned short int param[ix];
-  while (ix--) {
-    param[ix] = drand48() * USHRT_MAX;
-  }
-  lcong48(param);
+  srand(time(0));
 }
 
 inline
 double rnd_d () {
-  return drand48();
+  return (double)rand() / (double)RAND_MAX;
 }
 
 inline
 int rnd_i (int top) {
-  return drand48() * top;
+  return (int)(rnd_d() * top);
 }
 
 /**/typedef struct {
