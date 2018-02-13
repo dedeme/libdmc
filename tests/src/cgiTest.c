@@ -35,18 +35,14 @@ void cgi_test() {
   assert(!strcmp(jmap_gstring(r, "level"), "2"));
 
   char *skey = jmap_gstring(r, "key");
-  char *page_id = jmap_gstring(r, "pageId");
   char *session_id = jmap_gstring(r, "sessionId");
 
   r = decryp(cgi_connect(cgi, session_id));
   char *skey2 = jmap_gstring(r, "key");
-  char *page_id2 = jmap_gstring(r, "pageId");
   assert(!strcmp(skey, skey2));
-  assert(strcmp(page_id2, page_id));
 
-  cgi_get_page_id_key(&page_id, &skey, cgi, session_id);
+  skey = cgi_get_key(cgi, session_id);
   assert(!strcmp(skey, skey2));
-  assert(!strcmp(page_id2, page_id));
 
   r = decryp(cgi_expired(cgi));
   assert(jmap_gbool(r, "expired"));
@@ -54,7 +50,6 @@ void cgi_test() {
   cgi_del_session(cgi, session_id);
   r = decryp(cgi_connect(cgi, session_id));
   assert(!strcmp(jmap_gstring(r, "key"), ""));
-  assert(!strcmp(jmap_gstring(r, "pageId"), ""));
 
   file_del(path_cat(sys_home(), "sessions.db", NULL));
   file_del(path_cat(sys_home(), "users.db", NULL));

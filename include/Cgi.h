@@ -34,11 +34,9 @@ char *cgi_home(Cgi *this);
 /// function is called when connection or authentication.
 void cgi_set_key(Cgi* this, char *k);
 
-/// cgi_get_page_id_key returns page_id and key. If session_id is wrong,
-/// both are "". This function is calle when normal requests.
-void cgi_get_page_id_key(
-  char **page_id, char **key, Cgi *this, char *session_id
-);
+/// cgi_get_key returns key. If session_id is wrong it value is "". This
+/// function is called when normal requests.
+char *cgi_get_key(Cgi *this, char *session_id);
 
 /// cgi_add_usser adds an user to database
 ///   this:

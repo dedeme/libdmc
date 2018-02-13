@@ -188,53 +188,45 @@ static Arr/*char*/ *read_sessions(Cgi *this) {
 
 // If expiration is 0 tNoExpiration is used
 static void add_session(
-  Cgi* this, char *sessionId, char *pageId, char *key, time_t expiration
+  Cgi* this, char *sessionId, char *key, time_t expiration
 ) {
 	time_t lapse = expiration ? expiration : t_no_expiration;
 	Date time = date_now() + lapse;
 
   Arr/*char*/ *ss = read_sessions(this);
   char *row = str_printf(
-    "%s:%s:%s:%ld:%ld", sessionId, pageId, key, time, lapse
+    "%s:%s:%ld:%ld", sessionId, key, time, lapse
   );
   arr_add(ss, row);
   write_sessions(this, ss);
 }
 
 // In session.db:
-// Fields are: sessionId:PageId:key:time:lapse
-// Set 'page_id' to "" for avoiding to change it.
-// If identification fails return rpage_id == "" and key = ""
-static void read_session(
-  char **rpage_id, char **key,
-  Cgi *this, char *session_id, char *page_id
-) {
-  *rpage_id = "";
-  *key = "";
-
+// Fields are: sessionId:key:time:lapse
+// If identification fails returns ""
+static char *read_session(Cgi *this, char *session_id) {
+  char *key = "";
   Date now = date_now();
 
   Arr/*char*/ *ss = read_sessions(this);
   Arr/*char*/ *new_ss = arr_new();
   EACH(ss, char, sdata) {
     Arr/*char*/ *parts = str_csplit(sdata, ':');
-    Date time = atol(arr_get(parts, 3));
+    Date time = atol(arr_get(parts, 2));
     if (time < now) {
       continue;
     }
     if (!strcmp(session_id, arr_get(parts, 0))) {
-      if (*page_id) {
-        arr_set(parts, 1, page_id);
-      }
-      *rpage_id = arr_get(parts, 1);
-      *key = arr_get(parts, 2);
-      arr_set(parts, 3, str_printf("%ld", now + arr_get(parts, 4)));
+      key = arr_get(parts, 1);
+      arr_set(parts, 2, str_printf("%ld", now + arr_get(parts, 3)));
       arr_add(new_ss, str_cjoin(it_from(parts), ':'));
     } else {
       arr_add(new_ss, sdata);
     }
   }_EACH
   write_sessions(this, new_ss);
+
+  return key;
 }
 
 static void del_session(Cgi *this, char *session_id) {
@@ -256,11 +248,8 @@ void cgi_set_key(Cgi* this, char *k) {
 	this->key = k;
 }
 
-inline
-void cgi_get_page_id_key(
-  char **page_id, char **key, Cgi *this, char *session_id
-) {
-  read_session(page_id, key, this, session_id, "");
+char *cgi_get_key(Cgi *this, char *session_id) {
+  return read_session(this, session_id);
 }
 
 CgiRp *cgi_add_user(
@@ -328,19 +317,16 @@ CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
   char *level = check_user(this, user, key);
   if (level) {
     char *session_id = cryp_genk(klen);
-    char *page_id = cryp_genk(klen);
     char *key = cryp_genk(klen);
     add_session(
-      this, session_id, page_id, key, expiration ? this->t_expiration : 0
+      this, session_id, key, expiration ? this->t_expiration : 0
     );
     jmap_pstring(rp, "level", level);
     jmap_pstring(rp, "sessionId", session_id);
-    jmap_pstring(rp, "pageId", page_id);
     jmap_pstring(rp, "key", key);
   } else {
     jmap_pstring(rp, "level", "");
     jmap_pstring(rp, "sessionId", "");
-    jmap_pstring(rp, "pageId", "");
     jmap_pstring(rp, "key", "");
   }
 
@@ -348,12 +334,9 @@ CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
 }
 
 CgiRp *cgi_connect(Cgi *this, char *session_id) {
-  char *page_id;
-  char *key;
-  read_session(&page_id, &key, this, session_id, cryp_genk(klen));
+  char *key = read_session(this, session_id);
 
 	Map/*Json*/ *rp = map_new();
-  jmap_pstring(rp, "pageId", page_id);
   jmap_pstring(rp, "key", key);
   return cgi_ok(this, rp);
 }
