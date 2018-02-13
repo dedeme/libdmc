@@ -62,17 +62,17 @@ static void write_users(Cgi *this, Arr/*char*/ *users) {
   char *path = path_cat(this->home, "users.db", NULL);
   Arr/*Json*/ *tmp = arr_new();
   EACH(users, char, udata) {
-    arr_add(tmp, json_wstring(cryp_cryp(this->fkey, udata)));
+    arr_add(tmp, json_wstring(udata));
   }_EACH
-  file_write(path, json_warray(tmp));
+  file_write(path, cryp_cryp(this->fkey, json_warray(tmp)));
 }
 
 static Arr/*char*/ *read_users(Cgi *this) {
   char *path = path_cat(this->home, "users.db", NULL);
-  Arr/*Json*/ *tmp = json_rarray(file_read(path));
+  Arr/*Json*/ *tmp = json_rarray(cryp_decryp(this->fkey, file_read(path)));
   Arr/*char*/ *r = arr_new();
   EACH(tmp, Json, js) {
-    arr_add(r, cryp_decryp(this->fkey, json_rstring(js)));
+    arr_add(r, json_rstring(js));
   }_EACH
   return r;
 }
@@ -171,17 +171,17 @@ static void write_sessions(Cgi *this, Arr/*char*/ *sessions) {
   char *path = path_cat(this->home, "sessions.db", NULL);
   Arr/*Json*/ *tmp = arr_new();
   EACH(sessions, char, sdata) {
-    arr_add(tmp, json_wstring(cryp_cryp(this->fkey, sdata)));
+    arr_add(tmp, json_wstring(sdata));
   }_EACH
-  file_write(path, json_warray(tmp));
+  file_write(path, cryp_cryp(this->fkey, json_warray(tmp)));
 }
 
 static Arr/*char*/ *read_sessions(Cgi *this) {
   char *path = path_cat(this->home, "sessions.db", NULL);
-  Arr/*Json*/ *tmp = json_rarray(file_read(path));
+  Arr/*Json*/ *tmp = json_rarray(cryp_decryp(this->fkey, file_read(path)));
   Arr/*char*/ *r = arr_new();
   EACH(tmp, Json, js) {
-    arr_add(r, cryp_decryp(this->fkey, json_rstring(js)));
+    arr_add(r, json_rstring(js));
   }_EACH
   return r;
 }
