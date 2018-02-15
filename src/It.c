@@ -402,7 +402,7 @@ int it_last_index_str (It *this, char *s) {
   return it_last_index(this, eq);
 }
 
-void *it_find (It *this, int (*predicate)(void *e)) {
+void *it_find (It *this, bool (*predicate)(void *e)) {
   while(it_has_next(this)) {
     void *next = it_next(this);
     if (predicate(next))

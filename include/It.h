@@ -214,7 +214,7 @@ bool it_contains_str (It *this, char *s);
 int it_last_index_str (It *this, char *s);
 
 /// Returns firs element which satisfies 'predicate' or NULL.
-void *it_find (It *this, int (*predicate)(void *e));
+void *it_find (It *this, bool (*predicate)(void *e));
 
 /// Serializes this
 char *it_serialize (It *this, char *(*serialize)(void *));
