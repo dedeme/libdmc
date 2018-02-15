@@ -3,15 +3,6 @@
 
 #include "dm.h"
 
-// Frees 'a' and does not return.
-static void throw_first_line(Arr/*char*/ *a, char *header) {
-    char *msg = "Unknown error";
-    if (arr_size(a) > 1) {
-      msg = arr_get(a, 0);
-    }
-    THROW "%s\n%s", header, msg _THROW
-}
-
 inline
 Arr/*char*/ *ext_wget(char *url) {
   return sys_cmd(str_printf(
@@ -64,6 +55,9 @@ void ext_pdf(char *tx_source, char *file_target, char *options) {
 
 void ext_zip(char *source, char *target) {
   char *cd = file_cwd();
+  if (*target != '/') {
+    target = path_cat(cd, target, NULL);
+  }
   char *parent = path_parent(source);
   char *name = path_name(source);
   file_cd(parent);
@@ -74,10 +68,12 @@ void ext_zip(char *source, char *target) {
   }
 
   Arr/*char*/ *a = sys_cmd(cmd);
-  int exists = file_exists(target);
-  file_cd(cd);
-  if (!exists) {
-    throw_first_line(a, "Zip error:");
+  if (!file_exists(target)) {
+    char *msg = "Unknown error";
+    if (arr_size(a) > 1) {
+      msg = arr_get(a, 0);
+    }
+    THROW "%s\n%s", cmd, msg _THROW
   }
 }
 
@@ -90,6 +86,6 @@ void ext_unzip(char *source, char *target) {
 
   Arr/*char*/ *a = sys_cmd(cmd);
   if (arr_size(a)) {
-    throw_first_line(a, "Unzip error:");
+    THROW "%s\n%s", cmd, arr_get(a, 0) _THROW
   }
 }

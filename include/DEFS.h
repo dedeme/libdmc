@@ -130,6 +130,7 @@
 ///   } CATCH (e) {
 ///     puts(e);
 ///   }_TRY
+/// NOTE: <i>CATCH block must return 'void'</i>
 #define TRY {void _TRY_try() {
 
 /// See <a href="#hp:TRY">TRY</a>
