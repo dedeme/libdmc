@@ -68,6 +68,9 @@ void ext_zip(char *source, char *target) {
   }
 
   Arr/*char*/ *a = sys_cmd(cmd);
+
+  file_cd(cd);
+
   if (!file_exists(target)) {
     char *msg = "Unknown error";
     if (arr_size(a) > 1) {
