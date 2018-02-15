@@ -44,7 +44,7 @@
 ///
 #define _FN }
 ///
-#define ERROR_DATA __FILE__, __func__, __LINE__
+#define ERROR_DATA __FILE__, (char *)__func__, __LINE__
 
 /// Uses 'i' as iterator from 'begin' to 'end'
 ///   i    : [int] Iterator variable
