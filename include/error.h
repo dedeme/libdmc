@@ -17,7 +17,7 @@ void error_crash (int value, char *format, ...);
 ///   file   : Error file
 ///   func   : Error function
 ///   line   : Error line number
-void error_generic(char *message, char *file, const char *func, int line);
+void error_generic(char *message, char *file, char *func, int line);
 
 /// Index out of range.
 ///   begin: Lower limit inclusive
@@ -31,7 +31,7 @@ void error_range(
   int end,
   int index,
   char *file,
-  const char *func,
+  char *func,
   int line
 );
 
@@ -43,7 +43,7 @@ void error_range(
 void error_null_pointer(
   char *argument_name,
   char *file,
-  const char *func,
+  char *func,
   int line
 );
 
@@ -55,7 +55,7 @@ void error_null_pointer(
 void error_not_null_pointer(
   char *argument_name,
   char *file,
-  const char *func,
+  char *func,
   int line
 );
 
@@ -67,7 +67,7 @@ void error_not_null_pointer(
 void error_illegal_argument(
   char *argument_name,
   char *file,
-  const char *func,
+  char *func,
   int line
 );
 
@@ -76,7 +76,14 @@ void error_illegal_argument(
 ///   file : Error file
 ///   func : Error function
 ///   line : Error line number
-void error_illegal_state(char *cause, char *file, const char *func, int line);
+void error_illegal_state(char *cause, char *file, char *func, int line);
+
+/// Input - Output error.
+///   cause: Description of problem
+///   file : Error file
+///   func : Error function
+///   line : Error line number
+void error_io(char *cause, char *file, char *func, int line);
 
 #endif
 

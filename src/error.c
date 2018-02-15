@@ -31,7 +31,7 @@ void error_crash (int value, char *format, ...) {
 }
 
 inline
-void error_generic(char *message, char *file, const char *func, int line) {
+void error_generic(char *message, char *file, char *func, int line) {
   error_crash(1, "--- Generic error in %s:%d:[%s]\n%s",
     path_name(file), line, func, message);
 }
@@ -42,7 +42,7 @@ void error_range(
   int end,
   int index,
   char *file,
-  const char *func,
+  char *func,
   int line
 ) {
   error_crash(1, "--- Index out of range in %s:%d:[%s]\n%d ouf of [%d - %d>",
@@ -53,7 +53,7 @@ inline
 void error_null_pointer(
   char *argument_name,
   char *file,
-  const char *func,
+  char *func,
   int line
 ) {
   error_crash(1, "--- NULL pointer in %s:%d:[%s]\nVariable name: '%s'",
@@ -64,7 +64,7 @@ inline
 void error_not_null_pointer(
   char *argument_name,
   char *file,
-  const char *func,
+  char *func,
   int line
 ) {
   error_crash(1, "--- Not NULL pointer in %s:%d:[%s]\nVariable name: '%s'",
@@ -75,7 +75,7 @@ inline
 void error_illegal_argument(
   char *argument_name,
   char *file,
-  const char *func,
+  char *func,
   int line
 ) {
   error_crash(1, "--- Illegal argument in %s:%d:[%s]\nVariable name: '%s'",
@@ -83,12 +83,13 @@ void error_illegal_argument(
 }
 
 inline
-void error_illegal_state(
-  char *cause,
-  char *file,
-  const char *func,
-  int line
-) {
+void error_illegal_state(char *cause, char *file, char *func, int line) {
   error_crash(1, "--- Illegal state in %s:%d:[%s]\n%s",
+    path_name(file), line, func, cause);
+}
+
+inline
+void error_io(char *cause, char *file, char *func, int line) {
+  error_crash(1, "--- Io error in %s:%d:[%s]\n%s",
     path_name(file), line, func, cause);
 }
