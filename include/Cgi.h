@@ -34,8 +34,8 @@ char *cgi_home(Cgi *this);
 /// function is called when connection or authentication.
 void cgi_set_key(Cgi* this, char *k);
 
-/// cgi_get_key returns key. If session_id is wrong it value is "". This
-/// function is called when normal requests.
+/// cgi_get_key returns 'key' and 'connectionId'. If session_id is wrong its
+/// values are "". This function is called when normal requests.
 void cgi_get_session_data(
   char **key, char **connectionId, Cgi *this, char *session_id
 );

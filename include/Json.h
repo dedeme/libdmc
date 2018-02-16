@@ -6,10 +6,11 @@
 /// to (json_wXXX) Json.<br>
 /// Functions which start with 'jmap_' are shortcuts to save data in Maps.
 /// 'jmap_p' saves a value and 'jmap_g' returns it.<br>
-/// Functions which start with 'jarr_' are shortcuts to serialization of
-/// objects. 'jit_' are shortcuts to restore objects serialized with 'jarr_'.<p>
-/// Functions 'jmap_', 'jarr_' and 'jit_' do not allow null values. These must
-/// be implemented with generic 'json_' functions.
+/// Functions which start with 'jarr_' are shortcuts to save data in Arr's.
+/// 'jarr_a' adds a new value, 'jarr_p' saves a value in a position and
+/// 'jmap_g' returns it.<br>
+/// Functions 'jmap_p' and 'jarr_p' and 'jit_' do not return null values.
+/// These must be checked with 'jmap_gnull' or 'jarr_gnull'.
 
 #ifndef DM_COM_JSON_H
 # define DM_COM_JSON_H
@@ -53,6 +54,8 @@ Json *json_warray(Arr *a);
 Json *json_wobject(Map *m);
 
 ///
+void jmap_pnull(Map/*Json*/ *this, char *key);
+///
 void jmap_pbool(Map/*Json*/ *this, char *key, bool value);
 ///
 void jmap_pint(Map/*Json*/ *this, char *key, int n);
@@ -66,6 +69,8 @@ void jmap_pstring(Map/*Json*/ *this, char *key, char *s);
 void jmap_parray(Map/*Json*/ *this, char *key, Arr/*Json*/ *a);
 /// Admits null values of 'm'
 void jmap_pobject(Map/*Json*/ *this, char *key, Map/*Json*/ *m);
+/// Returns true if key is null. Errors o not existent key make "crashes".
+bool jmap_gnull(Map/*Json*/ *this, char *key);
 /// Errors o not existent key make "crashes".
 bool jmap_gbool(Map/*Json*/ *this, char *key);
 /// Errors or not existent key make "crashes".
@@ -82,33 +87,55 @@ Arr/*Json*/ *jmap_garray(Map/*Json*/ *this, char *key);
 Map/*Json*/ *jmap_gobject(Map/*Json*/ *this, char *key);
 
 ///
-void jarr_bool(Arr/*Json*/ *this, bool value);
+void jarr_anull(Arr/*Json*/ *this);
 ///
-void jarr_int(Arr/*Json*/ *this, int n);
+void jarr_abool(Arr/*Json*/ *this, bool value);
 ///
-void jarr_uint(Arr/*Json*/ *this, unsigned n);
+void jarr_aint(Arr/*Json*/ *this, int n);
 ///
-void jarr_double(Arr/*Json*/ *this, double n, int scale);
+void jarr_auint(Arr/*Json*/ *this, unsigned n);
+///
+void jarr_adouble(Arr/*Json*/ *this, double n, int scale);
 /// Admits null values of 's'
-void jarr_string(Arr/*Json*/ *this, char *s);
+void jarr_astring(Arr/*Json*/ *this, char *s);
 /// Admits null values of 'a'
-void jarr_array(Arr/*Json*/ *this, Arr/*Json*/ *a);
+void jarr_aarray(Arr/*Json*/ *this, Arr/*Json*/ *a);
 /// Admits null values of 'm'
-void jarr_object(Arr/*Json*/ *this, Map/*Json*/ *m);
+void jarr_aobject(Arr/*Json*/ *this, Map/*Json*/ *m);
+/// Returns true if the value 'ix' is null. Errors o not existent key make
+/// "crashes".
+bool jarr_gnull(Arr/*Json*/ *this, size_t ix);
 /// Errors o not existent key make "crashes".
-bool jit_bool(It/*Json*/ *this);
+bool jarr_gbool(Arr/*Json*/ *this, size_t ix);
 /// Errors or not existent key make "crashes".
-int jit_int(It/*Json*/ *this);
+int jarr_gint(Arr/*Json*/ *this, size_t ix);
 /// Errors or not existent key make "crashes".
-unsigned jit_uint(It/*Json*/ *this);
+unsigned jarr_guint(Arr/*Json*/ *this, size_t ix);
 /// Errors or not existent key make "crashes".
-double jit_double(It/*Json*/ *this);
+double jarr_gdouble(Arr/*Json*/ *this, size_t ix);
 /// Errors or not existent key make "crashes".
-char *jit_string(It/*Json*/ *this);
+char *jarr_gstring(Arr/*Json*/ *this, size_t ix);
 /// Errors or not existent key make "crashes".
-Arr/*Json*/ *jit_array(It/*Json*/ *this);
+Arr/*Json*/ *jarr_garray(Arr/*Json*/ *this, size_t ix);
 /// Errors or not existent key make "crashes".
-Map/*Json*/ *jit_object(It/*Json*/ *this);
+Map/*Json*/ *jarr_gobject(Arr/*Json*/ *this, size_t ix);
+
+///
+void jarr_snull(Arr/*Json*/ *this, size_t ix);
+///
+void jarr_sbool(Arr/*Json*/ *this, size_t ix, bool value);
+///
+void jarr_sint(Arr/*Json*/ *this, size_t ix, int n);
+///
+void jarr_suint(Arr/*Json*/ *this, size_t ix, unsigned n);
+///
+void jarr_sdouble(Arr/*Json*/ *this, size_t ix, double n, int scale);
+///
+void jarr_sstring(Arr/*Json*/ *this, size_t ix, char *s);
+///
+void jarr_sarray(Arr/*Json*/ *this, size_t ix, Arr/*Json*/ *a);
+///
+void jarr_sobject(Arr/*Json*/ *this, size_t ix, Map/*Json*/ *m);
 
 #endif
 

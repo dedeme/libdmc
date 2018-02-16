@@ -196,12 +196,12 @@ static void add_session(
 	Date time = date_now() + lapse;
 
   Arr/*Json*/ *row = arr_new();
-  jarr_string(row, session_id);  //0
-  jarr_string(row, user);       //1
-  jarr_string(row, key);        //2
-  jarr_string(row, "");         //3
-  jarr_uint(row, time);         //4
-  jarr_uint(row, lapse);        //5
+  jarr_astring(row, session_id);  //0
+  jarr_astring(row, user);       //1
+  jarr_astring(row, key);        //2
+  jarr_astring(row, "");         //3
+  jarr_auint(row, time);         //4
+  jarr_auint(row, lapse);        //5
 
   /**/FNP(filter, Arr/*Json*/, row) {
   /**/  return strcmp(user, json_rstring(arr_get(row, 1)));

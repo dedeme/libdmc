@@ -490,7 +490,12 @@ Json *json_wobject(Map/*Json*/ *m) {
 }
 
 inline
-void jmap_pbool(Map *this, char *key, bool value) {
+void jmap_pnull(Map/*Json*/ *this, char *key) {
+  map_put(this, key, json_wnull());
+}
+
+inline
+void jmap_pbool(Map/*Json*/ *this, char *key, bool value) {
   map_put(this, key, json_wbool(value));
 }
 
@@ -526,6 +531,14 @@ void jmap_pobject(Map/*Json*/ *this, char *key, Map/*Json*/ *m) {
 
 static char *key_error(char *key) {
   return str_printf("Key '%s' does not exist", key);
+}
+
+bool jmap_gnull(Map/*Json*/ *this, char *key) {
+  Json *value = map_get(this, key);
+  if (!value) {
+    error_generic(key_error(key), ERROR_DATA);
+  }
+  return json_rnull(value);
 }
 
 bool jmap_gbool(Map/*Json*/ *this, char *key) {
@@ -585,72 +598,121 @@ Map/*Json*/ *jmap_gobject(Map/*Json*/ *this, char *key) {
 }
 
 inline
-void jarr_bool(Arr/*Json*/ *this, bool value) {
+void jarr_anull(Arr/*Json*/ *this) {
+  arr_add(this, json_wnull());
+}
+
+inline
+void jarr_abool(Arr/*Json*/ *this, bool value) {
   arr_add(this, json_wbool(value));
 }
 
 inline
-void jarr_int(Arr/*Json*/ *this, int n) {
+void jarr_aint(Arr/*Json*/ *this, int n) {
   arr_add(this, json_wint(n));
 }
 
 inline
-void jarr_uint(Arr/*Json*/ *this, unsigned n) {
+void jarr_auint(Arr/*Json*/ *this, unsigned n) {
   arr_add(this, json_wuint(n));
 }
 
 inline
-void jarr_double(Arr/*Json*/ *this, double n, int scale) {
+void jarr_adouble(Arr/*Json*/ *this, double n, int scale) {
   arr_add(this, json_wdouble(n, scale));
 }
 
 inline
-void jarr_string(Arr/*Json*/ *this, char *s) {
+void jarr_astring(Arr/*Json*/ *this, char *s) {
   arr_add(this, json_wstring(s));
 }
 
 inline
-void jarr_array(Arr/*Json*/ *this, Arr/*Json*/ *a) {
+void jarr_aarray(Arr/*Json*/ *this, Arr/*Json*/ *a) {
   arr_add(this, json_warray(a));
 }
 
 inline
-void jarr_object(Arr/*Json*/ *this, Map/*Json*/ *m) {
+void jarr_aobject(Arr/*Json*/ *this, Map/*Json*/ *m) {
   arr_add(this, json_wobject(m));
 }
 
 inline
-bool jit_bool(It/*Json*/ *this) {
-  return json_rbool(it_next(this));
+bool jarr_gnull(Arr/*Json*/ *this, size_t ix) {
+  return json_rnull(arr_get(this, ix));
 }
 
 inline
-int jit_int(It/*Json*/ *this) {
-  return json_rint(it_next(this));
+bool jarr_gbool(Arr/*Json*/ *this, size_t ix) {
+  return json_rbool(arr_get(this, ix));
 }
 
 inline
-unsigned jit_uint(It/*Json*/ *this) {
-  return json_ruint(it_next(this));
+int jarr_gint(Arr/*Json*/ *this, size_t ix) {
+  return json_rint(arr_get(this, ix));
 }
 
 inline
-double jit_double(It/*Json*/ *this) {
-  return json_rdouble(it_next(this));
+unsigned jarr_guint(Arr/*Json*/ *this, size_t ix) {
+  return json_ruint(arr_get(this, ix));
 }
 
 inline
-char *jit_string(It/*Json*/ *this) {
-  return json_rstring(it_next(this));
+double jarr_gdouble(Arr/*Json*/ *this, size_t ix) {
+  return json_rdouble(arr_get(this, ix));
 }
 
 inline
-Arr/*Json*/ *jit_array(It/*Json*/ *this) {
-  return json_rarray(it_next(this));
+char *jarr_gstring(Arr/*Json*/ *this, size_t ix) {
+  return json_rstring(arr_get(this, ix));
 }
 
 inline
-Map/*Json*/ *jit_object(It/*Json*/ *this) {
-  return json_robject(it_next(this));
+Arr/*Json*/ *jarr_garray(Arr/*Json*/ *this, size_t ix) {
+  return json_rarray(arr_get(this, ix));
 }
 
+inline
+Map/*Json*/ *jarr_gobject(Arr/*Json*/ *this, size_t ix) {
+  return json_robject(arr_get(this, ix));
+}
+
+inline
+void jarr_snull(Arr/*Json*/ *this, size_t ix) {
+  arr_set(this, ix, json_wnull());
+}
+
+inline
+void jarr_sbool(Arr/*Json*/ *this, size_t ix, bool value) {
+  arr_set(this, ix, json_wbool(value));
+}
+
+inline
+void jarr_sint(Arr/*Json*/ *this, size_t ix, int n) {
+  arr_set(this, ix, json_wint(n));
+}
+
+inline
+void jarr_suint(Arr/*Json*/ *this, size_t ix, unsigned n) {
+  arr_set(this, ix, json_wuint(n));
+}
+
+inline
+void jarr_sdouble(Arr/*Json*/ *this, size_t ix, double n, int scale) {
+  arr_set(this, ix, json_wdouble(n, scale));
+}
+
+inline
+void jarr_sstring(Arr/*Json*/ *this, size_t ix, char *s) {
+  arr_set(this, ix, json_wstring(s));
+}
+
+inline
+void jarr_sarray(Arr/*Json*/ *this, size_t ix, Arr/*Json*/ *a) {
+  arr_set(this, ix, json_warray(a));
+}
+
+inline
+void jarr_sobject(Arr/*Json*/ *this, size_t ix, Map/*Json*/ *m) {
+  arr_set(this, ix, json_wobject(m));
+}
