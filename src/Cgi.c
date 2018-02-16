@@ -29,6 +29,8 @@ static void put_user(Cgi *this, char *user, char *key, char *level);
 static void write_sessions(Cgi *this, Arr/*char*/ *sessions);
 
 Cgi *cgi_new(char *home, time_t t_expiration) {
+  rnd_init();
+
   Cgi *this = MALLOC(Cgi);
 
 	this->fkey = cryp_key(deme_key, strlen(deme_key));
@@ -167,78 +169,100 @@ static bool change_pass(Cgi *this, char *user, char *old_pass, char *new_pass) {
 
 // Session -------------------------------------------------
 
-static void write_sessions(Cgi *this, Arr/*char*/ *sessions) {
+static void write_sessions(Cgi *this, Arr/*Arr[Json]*/ *sessions) {
   char *path = path_cat(this->home, "sessions.db", NULL);
   Arr/*Json*/ *tmp = arr_new();
-  EACH(sessions, char, sdata) {
-    arr_add(tmp, json_wstring(sdata));
+  EACH(sessions, Arr/*Json*/, sdata) {
+    arr_add(tmp, json_warray(sdata));
   }_EACH
   file_write(path, cryp_cryp(this->fkey, json_warray(tmp)));
 }
 
-static Arr/*char*/ *read_sessions(Cgi *this) {
+static Arr/*Arr[Json]*/ *read_sessions(Cgi *this) {
   char *path = path_cat(this->home, "sessions.db", NULL);
   Arr/*Json*/ *tmp = json_rarray(cryp_decryp(this->fkey, file_read(path)));
   Arr/*char*/ *r = arr_new();
   EACH(tmp, Json, js) {
-    arr_add(r, json_rstring(js));
+    arr_add(r, json_rarray(js));
   }_EACH
   return r;
 }
 
 // If expiration is 0 tNoExpiration is used
 static void add_session(
-  Cgi* this, char *sessionId, char *key, time_t expiration
+  Cgi* this, char *session_id, char *user, char *key, time_t expiration
 ) {
 	time_t lapse = expiration ? expiration : t_no_expiration;
 	Date time = date_now() + lapse;
 
-  Arr/*char*/ *ss = read_sessions(this);
-  char *row = str_printf(
-    "%s:%s:%ld:%ld", sessionId, key, time, lapse
+  Arr/*Json*/ *row = arr_new();
+  jarr_string(row, session_id);  //0
+  jarr_string(row, user);       //1
+  jarr_string(row, key);        //2
+  jarr_string(row, "");         //3
+  jarr_uint(row, time);         //4
+  jarr_uint(row, lapse);        //5
+
+  /**/FNP(filter, Arr/*Json*/, row) {
+  /**/  return strcmp(user, json_rstring(arr_get(row, 1)));
+  /**/}_FN
+  write_sessions(
+    this,
+    it_to(it_cat(
+      it_unary(row),
+      it_filter(it_from(read_sessions(this)), filter)
+    ))
   );
-  arr_add(ss, row);
-  write_sessions(this, ss);
 }
 
 // In session.db:
 // Fields are: sessionId:key:time:lapse
 // If identification fails returns ""
-static char *read_session(Cgi *this, char *session_id) {
-  char *key = "";
+static void read_session(
+  char **key, char** conId, Cgi *this, char *session_id
+) {
+  *key = "";
+  *conId = "";
   Date now = date_now();
 
-  Arr/*char*/ *ss = read_sessions(this);
-  Arr/*char*/ *new_ss = arr_new();
-  EACH(ss, char, sdata) {
-    Arr/*char*/ *parts = str_csplit(sdata, ':');
-    Date time = atol(arr_get(parts, 2));
-    if (time < now) {
-      continue;
-    }
-    if (!strcmp(session_id, arr_get(parts, 0))) {
-      key = arr_get(parts, 1);
-      arr_set(parts, 2, str_printf("%ld", now + arr_get(parts, 3)));
-      arr_add(new_ss, str_cjoin(it_from(parts), ':'));
-    } else {
-      arr_add(new_ss, sdata);
-    }
-  }_EACH
-  write_sessions(this, new_ss);
-
-  return key;
+  /**/FNP(filter, Arr/*Json*/, row) {
+  /**/  return json_ruint(arr_get(row, 4)) >= now;
+  /**/}_FN
+  /**/FNM(map, Arr/*Json*/, row) {
+  /**/  if (!strcmp(json_rstring(arr_get(row, 0)), session_id)){
+  /**/    *key = json_rstring(arr_get(row, 2));
+  /**/    *conId = json_rstring(arr_get(row, 3));
+  /**/  }
+  /**/  arr_set(row, 4, json_wuint(now + json_ruint(arr_get(row, 5))));
+  /**/  return row;
+  /**/}_FN
+  write_sessions(
+    this,
+    it_to(it_map(it_filter(it_from(read_sessions(this)), filter), map))
+  );
 }
 
 static void del_session(Cgi *this, char *session_id) {
-  Arr/*char*/ *ss = read_sessions(this);
-  Arr/*char*/ *new_ss = arr_new();
-  EACH(ss, char, sdata) {
-    Arr/*char*/ *parts = str_csplit(sdata, ':');
-    if (strcmp(session_id, arr_get(parts, 0))) {
-      arr_add(new_ss, sdata);
-    }
-  }_EACH
-  write_sessions(this, new_ss);
+  /**/FNP(filter, Arr/*Json*/, row) {
+  /**/  return strcmp(session_id, json_rstring(arr_get(row, 0)));
+  /**/}_FN
+  write_sessions(
+    this,
+    it_to(it_filter(it_from(read_sessions(this)), filter))
+  );
+}
+
+static void set_connection_id(Cgi *this, char *session_id, char *con_id) {
+  /**/FNM(map, Arr/*Json*/, row) {
+  /**/  if (!strcmp(json_rstring(arr_get(row, 0)), session_id)){
+  /**/    arr_set(row, 3, json_wstring(con_id));
+  /**/  }
+  /**/  return row;
+  /**/}_FN
+  write_sessions(
+    this,
+    it_to(it_map(it_from(read_sessions(this)), map))
+  );
 }
 
 // Public interface ----------------------------------------
@@ -248,8 +272,10 @@ void cgi_set_key(Cgi* this, char *k) {
 	this->key = k;
 }
 
-char *cgi_get_key(Cgi *this, char *session_id) {
-  return read_session(this, session_id);
+void cgi_get_session_data(
+  char **key, char **connectionId, Cgi *this, char *session_id
+) {
+  read_session(key, connectionId, this, session_id);
 }
 
 CgiRp *cgi_add_user(
@@ -319,7 +345,7 @@ CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
     char *session_id = cryp_genk(klen);
     char *key = cryp_genk(klen);
     add_session(
-      this, session_id, key, expiration ? this->t_expiration : 0
+      this, session_id, user, key, expiration ? this->t_expiration : 0
     );
     jmap_pstring(rp, "level", level);
     jmap_pstring(rp, "sessionId", session_id);
@@ -334,10 +360,15 @@ CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
 }
 
 CgiRp *cgi_connect(Cgi *this, char *session_id) {
-  char *key = read_session(this, session_id);
+  set_connection_id(this, session_id, cryp_genk(klen));
+
+  char *key;
+  char *connectionId;
+  read_session(&key, &connectionId, this, session_id);
 
 	Map/*Json*/ *rp = map_new();
   jmap_pstring(rp, "key", key);
+  jmap_pstring(rp, "connectionId", connectionId);
   return cgi_ok(this, rp);
 }
 

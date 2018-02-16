@@ -41,7 +41,8 @@ void cgi_test() {
   char *skey2 = jmap_gstring(r, "key");
   assert(!strcmp(skey, skey2));
 
-  skey = cgi_get_key(cgi, session_id);
+  char *conId;
+  cgi_get_session_data(&skey, &conId, cgi, session_id);
   assert(!strcmp(skey, skey2));
 
   r = decryp(cgi_expired(cgi));

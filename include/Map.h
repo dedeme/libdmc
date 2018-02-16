@@ -30,7 +30,7 @@ void *map_get(Map *this, char *key);
 /// Removes value with key 'key' or does nothing if 'key' does not exists
 void map_remove(Map *this, char *key);
 
-/// Returns distint to '0' if 'this' contains key 'key' or '0' otherwise.
+/// Returns 'true' if 'this' contains key 'key'.
 bool map_has_key(Map *this, char *key);
 
 /// Returns an iterator of Kv's

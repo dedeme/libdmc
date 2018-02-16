@@ -36,7 +36,9 @@ void cgi_set_key(Cgi* this, char *k);
 
 /// cgi_get_key returns key. If session_id is wrong it value is "". This
 /// function is called when normal requests.
-char *cgi_get_key(Cgi *this, char *session_id);
+void cgi_get_session_data(
+  char **key, char **connectionId, Cgi *this, char *session_id
+);
 
 /// cgi_add_usser adds an user to database
 ///   this:
