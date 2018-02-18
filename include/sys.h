@@ -21,11 +21,6 @@
 /// Creates the user directory in "~/.dmCApp/" + 'path'
 void sys_init (char *path);
 
-/// Initializates a cgi program.<br>
-/// After call this function 'sys_home' and 'sys_user' are available.<p>
-/// Creates the user directory in 'path'
-void sys_cgi (char *path);
-
 ///
 char *sys_home ();
 

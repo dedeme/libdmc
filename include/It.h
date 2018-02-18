@@ -96,7 +96,8 @@
 ///
 typedef struct it_It It;
 
-/// Iterator that allows seeing its next element without advancing
+/// Iterator that allows seeing with 'it_peek' its next element without
+/// advancing
 typedef It ItPeek;
 
 ///
@@ -213,7 +214,7 @@ bool it_contains_str (It *this, char *s);
 ///
 int it_last_index_str (It *this, char *s);
 
-/// Returns firs element which satisfies 'predicate' or NULL.
+/// Returns the first element which satisfies 'predicate' or NULL.
 void *it_find (It *this, bool (*predicate)(void *e));
 
 /// Serializes this

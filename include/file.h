@@ -26,29 +26,29 @@ void file_cd (char *path);
 /// Makes a directory with 0755 permissions.<br>
 /// If parent directory does not exist it creates it.<br>
 /// If 'path' already exists it does nothing.<br>
-/// If everything go well it returns 1, elsewere it returns '0'. Error can be
-/// accessed by 'errno'.
-int file_mkdir (char *path);
+/// Throws exception
+void file_mkdir (char *path);
 
 /// Returns an Arr[char *] with paths of files and directories existing in
 /// 'path'<br>
 /// Values '.' and '..' are not in the return.<br>
-/// If 'path' can not be read, it returns NULL.
-
+/// Throws exception
 Arr *file_dir (char *path);
 
 /// Deletes file or directory named 'path' although it is a directory not empty.
-///   If 'path' does not exists it does nothing.
+///   If 'path' does not exists it does nothing.<br>
+/// Throws exception
 void file_del (char *path);
 
 /// Reanmes 'oldname' to 'newname'<br>Throw exception.
 void file_rename (char *oldname, char *newname);
 
 /// Returns 1 if 'path' exists in the file system, -1 if an error happened
-/// and 0 otherwise.
+/// and 0 otherwise.<br>
+/// Throws exception
 bool file_exists (char *path);
 
-/// Returns 1 if file is a directory
+/// Returns 1 if file is a directory<br>Throws exception
 bool file_is_directory (char *path);
 
 /// Returns information of 'path'. If path does no exist or other error
@@ -61,22 +61,26 @@ bool file_is_directory (char *path);
 ///   off_t <b>st_size</b>: File size
 ///   time_t <b>st_atime</b>: Last access to file in seconds.
 ///   time_t <b>st_mtime</b>: Last file modification in seconds.
+/// Throws exception
 struct stat *file_info (char *path);
 
 /// Reads data from 'path', including ends of line.<br>
-/// If there is some fail it restuns NULL<br>
-/// This function opens, reads and closes file.
+/// This function opens, reads and closes file.<br>
+/// Throws exception
 char *file_read (char *path);
 
 /// Writes 'data' on 'path'.<br>
-/// This function opens, writes and closes file.
+/// This function opens, writes and closes file.<br>
+/// Throws exception
 void file_write (char *path, char *text);
 
 /// Appens 'data' on 'path'.<br>
-/// This function opens, writes and closes file.
+/// This function opens, writes and closes file.<br>
+/// Throws exception
 void file_append (char *path, char *text);
 
-/// Binary copy source to target
+/// Binary copy source to target.<br>
+/// Throws exception
 void file_copy (char *source_path, char *target_path);
 
 /// Open a file to read with file_read_line or file_read_bin.<br>
@@ -121,7 +125,8 @@ void file_write_bin (LckFile *lck, Bytes *bs);
 /// Closes a file open with file_ropen, file_wopen or file_aopen
 void file_close (LckFile *lck);
 
-/// Open a file to use with file_to_it or file_to_it_bin.
+/// Open a file to use with file_to_it or file_to_it_bin..<br>
+/// Throws exception.
 LckFile *file_open_it (char *path);
 
 /// Closes a file open with file_open_it
@@ -130,22 +135,20 @@ void file_close_it (LckFile *file);
 /// Reads a text file.<br>
 /// Iterator opens, reads and closes file.<br>
 /// It does not delete ends of line.
-/// If there is a error, returns NULL.
-It *file_to_it (LckFile *file);
+It/*char*/ *file_to_it (LckFile *file);
 
 /// Writes a text file from a It[char *].<br>
 /// It does not add ends of line.<br>
-void file_from_it (char *path, It *it);
+/// Throws exception.
+void file_from_it (char *path, It/*char*/ *it);
 
 /// Reads a binary file.<br>
 /// Iterator opens, reads and closes file.<br>
-/// It does not delete ends of line.
-/// If there is a error, returns NULL.
-It *file_to_it_bin (LckFile *file);
+It/*Bytes*/ *file_to_it_bin (LckFile *file);
 
 /// Writes a binary file from a It[char *].<br>
 /// It does not add ends of line.<br>
-/// If an error returns 1.
-int file_from_it_bin (char *path, It *it);
+/// Throws exception.
+void file_from_it_bin (char *path, It/*Bytes*/ *it);
 
 #endif

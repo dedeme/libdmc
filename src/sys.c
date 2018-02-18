@@ -12,31 +12,15 @@ static struct {
   char *uname;
 } sys;
 
-static void make_home () {
-  if (!file_mkdir(sys.home)) {
-    error_crash (
-      1, "It is not posible make home directory (error %d)", errno
-    );
-  }
-}
-
 void sys_init (char *path) {
+  exc_init();
+  rnd_init();
+
   uid_t uid = getuid();
   struct passwd *udata = getpwuid(uid);
   sys.home = path_cat(udata->pw_dir, ".dmCApp", path, NULL);
   sys.uname = str_copy(udata->pw_name);
-  make_home();
-
-  exc_init();
-  rnd_init();
-}
-
-void sys_cgi (char *path) {
-  sys.home = str_copy(path);
-  uid_t uid = getuid();
-  struct passwd *udata = getpwuid(uid);
-  sys.uname = str_copy(udata->pw_name);
-  make_home();
+  file_mkdir(sys.home);
 }
 
 inline

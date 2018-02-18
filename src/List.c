@@ -4,7 +4,8 @@
 #include "List.h"
 #include <gc.h>
 #include "DEFS.h"
-#include "error.h"
+#include "str.h"
+#include "exc.h"
 
 struct list_List {
   List *next;
@@ -22,7 +23,7 @@ List *list_tail(List *this) {
   if (this->next) {
     return this->next;
   }
-  error_illegal_state ("List is empty", ERROR_DATA);
+  THROW exc_illegal_argument ("this", "not empty", "empty") _THROW
   return NULL;
 }
 
@@ -31,7 +32,7 @@ void *list_head (List *this) {
   if (this->next) {
     return this->value;
   }
-  error_illegal_state ("List is empty", ERROR_DATA);
+  THROW exc_illegal_argument ("this", "not empty", "empty") _THROW
   return NULL;
 }
 

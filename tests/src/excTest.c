@@ -10,7 +10,7 @@ static bool contains(char *msg, char *tx) {
 
 static char *f1(int v) {
   if (v) {
-    exc_throw("From f1", ERROR_DATA);
+    THROW "From f1" _THROW;
     assert(0);
   }
   return "ok";
@@ -25,7 +25,7 @@ static char *f0(int v) {
     }
   } CATCH(e) {
     assert(contains(e, "From f1"));
-    exc_throw(e, ERROR_DATA);
+    THROW e _THROW;
     assert(0);
   }_TRY
   return r;

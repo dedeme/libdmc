@@ -8,7 +8,10 @@ static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 char *cryp_genk (int lg) {
-  if (lg <= 0) error_illegal_argument("lg", ERROR_DATA);
+  if (lg <= 0)
+    THROW
+      exc_illegal_argument("lg", "> 0", str_printf("%d", lg))
+    _THROW
 
   uint len = strlen(b64_base);
   char *r = ATOMIC(lg + 1);
@@ -21,8 +24,11 @@ char *cryp_genk (int lg) {
 }
 
 char *cryp_key (char *key, int lg) {
-  if (!key) error_null_pointer("key", ERROR_DATA);
-  if (!*key) error_illegal_argument("key", ERROR_DATA);
+  if (!key) THROW exc_null_pointer("key") _THROW
+  if (!*key)
+    THROW
+      exc_illegal_argument("key", "not blank string", "blank string")
+    _THROW
 
   char *k0 = str_printf(
     "%scodified in irreversibleDeme is good, very good!\n\r8@@", key);
@@ -75,9 +81,12 @@ char *cryp_key (char *key, int lg) {
 }
 
 char *cryp_cryp (char *k, char *s) {
-  if (!k) error_null_pointer("k", ERROR_DATA);
-  if (!s) error_null_pointer("s", ERROR_DATA);
-  if (!*k) error_illegal_argument("k", ERROR_DATA);
+  if (!k) THROW exc_null_pointer("k") _THROW
+  if (!s) THROW exc_null_pointer("s") _THROW
+  if (!*k)
+    THROW
+      exc_illegal_argument("k", "not blank string", "blank string")
+    _THROW
 
   char *b64 =b64_encode(s);
 
@@ -97,9 +106,12 @@ char *cryp_cryp (char *k, char *s) {
 }
 
 char *cryp_decryp (char *k, char *c) {
-  if (!k) error_null_pointer("k", ERROR_DATA);
-  if (!c) error_null_pointer("c", ERROR_DATA);
-  if (!*k) error_illegal_argument("k", ERROR_DATA);
+  if (!k) THROW exc_null_pointer("k") _THROW
+  if (!c) THROW exc_null_pointer("c") _THROW
+  if (!*k)
+    THROW
+      exc_illegal_argument("k", "not blank string", "blank string")
+    _THROW
 
   Bytes *bs = b64_decode_bytes(c);
 

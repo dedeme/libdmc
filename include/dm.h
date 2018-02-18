@@ -18,7 +18,6 @@
 #include "Buf.h"
 #include "str.h"
 #include "path.h"
-#include "error.h"
 #include "Bytes.h"
 #include "b64.h"
 #include "cryp.h"

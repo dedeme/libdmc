@@ -9,8 +9,7 @@ Map *map_new() {
 }
 
 void map_put(Map *this, char *key, void *value) {
-  if (!key)
-    error_null_pointer("key", ERROR_DATA);
+  if (!key) THROW exc_null_pointer("key") _THROW
 
   EACH(this, Kv, kv) {
     if (!strcmp(kv->key, key)) {

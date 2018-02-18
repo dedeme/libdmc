@@ -65,7 +65,7 @@ static Bytes *base64_decode(
   size_t *output_length
 ) {
   if (input_length % 4 != 0) {
-    error_illegal_state("Wrong input length", ERROR_DATA);
+    THROW exc_illegal_state("Wrong input length") _THROW
   }
 
   *output_length = input_length / 4 * 3;
@@ -117,7 +117,7 @@ char *b64_decode(char *b64) {
 }
 
 Bytes *b64_decode_bytes(char *b64) {
-  if (!b64) error_null_pointer("b64", ERROR_DATA);
+  if (!b64) THROW exc_null_pointer("b64") _THROW
 
   if (*b64) {
     size_t len;
@@ -128,14 +128,14 @@ Bytes *b64_decode_bytes(char *b64) {
 }
 
 char *b64_encode(char *s) {
-  if (!s) error_null_pointer("s", ERROR_DATA);
+  if (!s) THROW exc_null_pointer("s") _THROW
 
   size_t len;
   return base64_encode((unsigned char *)s, strlen(s), &len);
 }
 
 char *b64_encode_bytes(Bytes *bs) {
-  if (!bs) error_null_pointer("bs", ERROR_DATA);
+  if (!bs) THROW exc_null_pointer("bs") _THROW
 
   size_t len;
   return base64_encode(bytes_bs(bs), bytes_length(bs), &len);

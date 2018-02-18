@@ -416,7 +416,7 @@ Json *json_wdouble(double n, int scale) {
 }
 
 Json *json_wstring(char *s) {
-  if (!s) error_null_pointer("s", ERROR_DATA);
+  if (!s) THROW exc_null_pointer("s") _THROW;
 
   Buf *bf = buf_new();
 
@@ -455,7 +455,7 @@ Json *json_wstring(char *s) {
 }
 
 Json *json_warray(Arr/*Json*/ *a) {
-  if (!a) error_null_pointer("a", ERROR_DATA);
+  if (!a) THROW exc_null_pointer("a") _THROW;
 
   int size = arr_size(a);
   Buf *bf = buf_new();
@@ -473,7 +473,7 @@ Json *json_warray(Arr/*Json*/ *a) {
 }
 
 Json *json_wobject(Map/*Json*/ *m) {
-  if (!m) error_null_pointer("m", ERROR_DATA);
+  if (!m) THROW exc_null_pointer("m") _THROW;
 
   Buf *bf = buf_new();
   buf_cadd(bf, '{');
@@ -536,7 +536,7 @@ static char *key_error(char *key) {
 bool jmap_gnull(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rnull(value);
 }
@@ -544,7 +544,7 @@ bool jmap_gnull(Map/*Json*/ *this, char *key) {
 bool jmap_gbool(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rbool(value);
 }
@@ -552,7 +552,7 @@ bool jmap_gbool(Map/*Json*/ *this, char *key) {
 int jmap_gint(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rint(value);
 }
@@ -560,7 +560,7 @@ int jmap_gint(Map/*Json*/ *this, char *key) {
 unsigned jmap_guint(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_ruint(value);
 }
@@ -568,7 +568,7 @@ unsigned jmap_guint(Map/*Json*/ *this, char *key) {
 double jmap_gdouble(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rdouble(value);
 }
@@ -576,7 +576,7 @@ double jmap_gdouble(Map/*Json*/ *this, char *key) {
 char *jmap_gstring(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rnull(value) ? NULL : json_rstring(value);
 }
@@ -584,7 +584,7 @@ char *jmap_gstring(Map/*Json*/ *this, char *key) {
 Arr/*Json*/ *jmap_garray(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rnull(value) ? NULL : json_rarray(value);
 }
@@ -592,7 +592,7 @@ Arr/*Json*/ *jmap_garray(Map/*Json*/ *this, char *key) {
 Map/*Json*/ *jmap_gobject(Map/*Json*/ *this, char *key) {
   Json *value = map_get(this, key);
   if (!value) {
-    error_generic(key_error(key), ERROR_DATA);
+    THROW key_error(key) _THROW
   }
   return json_rnull(value) ? NULL : json_robject(value);
 }

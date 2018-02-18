@@ -64,7 +64,7 @@ void arr_add_arr (Arr *this, Arr *another) {
 
 void *arr_get (Arr *this, size_t index) {
   if (index < 0 || index >= this->size) {
-    error_range(0, this->size, index, ERROR_DATA);
+    THROW exc_range(0, this->size, index) _THROW
   }
   return this->es[index];
 }
@@ -72,7 +72,7 @@ void *arr_get (Arr *this, size_t index) {
 void arr_insert (Arr *this, size_t index, void *element) {
   const size_t size = this->size;
   if (index > size || index < 0) {
-    error_range(0, size + 1, index, ERROR_DATA);
+    THROW exc_range(0, size + 1, index) _THROW
   }
   if (index == size) {
     arr_add(this, element);
@@ -99,7 +99,7 @@ void arr_insert (Arr *this, size_t index, void *element) {
 void arr_insert_arr (Arr *this, size_t index, Arr *another) {
   const size_t size = this->size;
   if (index > size || index < 0) {
-    error_range(0, size + 1, index, ERROR_DATA);
+    THROW exc_range(0, size + 1, index) _THROW
   }
 
   if (index == size) {
@@ -131,7 +131,7 @@ void arr_insert_arr (Arr *this, size_t index, Arr *another) {
 
 void arr_remove (Arr *this, size_t index) {
   if (index < 0 || index >= this->size) {
-    error_range(0, this->size, index, ERROR_DATA);
+    THROW exc_range(0, this->size, index) _THROW
   }
 
   void **target = this->es + index;
@@ -150,10 +150,10 @@ void arr_remove (Arr *this, size_t index) {
 
 void arr_remove_range (Arr *this, size_t begin, size_t end) {
   if (begin < 0 || begin >= this->size) {
-    error_range(0, this->size, begin, ERROR_DATA);
+    THROW exc_range(0, this->size, begin) _THROW
   }
   if (end < 0 || end > this->size) {
-    error_range(0, this->size, end, ERROR_DATA);
+    THROW exc_range(0, this->size, end) _THROW
   }
 
   void **source = this->es + end;
@@ -183,7 +183,7 @@ void arr_reverse (Arr *this) {
 
 void arr_set (Arr *this, size_t index, void *element) {
   if (index < 0 || index >= this->size) {
-    error_range(0, this->size, index, ERROR_DATA);
+    THROW exc_range(0, this->size, index) _THROW
   }
 
   this->es[index] = element;
