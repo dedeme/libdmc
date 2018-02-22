@@ -14,8 +14,8 @@ double rnd_d () {
 }
 
 inline
-int rnd_i (int top) {
-  return (int)(rnd_d() * top);
+size_t rnd_i (size_t top) {
+  return (size_t)(rnd_d() * top);
 }
 
 /**/typedef struct {

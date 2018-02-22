@@ -19,7 +19,7 @@
 
 void rnd_test() {
   printf("rnd test\n");
-  rnd_init();
+
   assert(rnd_d() < 1);
   assert(rnd_d() >= 0);
   assert(rnd_i(3) < 3);

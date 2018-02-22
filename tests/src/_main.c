@@ -8,6 +8,7 @@
 #include "arrTest.h"
 #include "itTest.h"
 #include "sysTest.h"
+#include "rndTest.h"
 #include "mapTest.h"
 #include "excTest.h"
 #include "bytesTest.h"
@@ -29,6 +30,7 @@ int main (int argc, char **argv) {
   arr_test();
   it_test();
   sys_test();
+  rnd_test();
   map_test();
   exc_test();
   bytes_test();

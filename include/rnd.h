@@ -16,7 +16,7 @@ void rnd_init (void);
 double rnd_d (void);
 
 /// Generates a new int between 0 (inclusive) and 'top' (exclusive)
-int rnd_i (int top);
+size_t rnd_i (size_t top);
 
 /// Returns an 'It' that iterates over 'a' elements randomly. When it finishes
 /// with all the elements of 'a', restarts again.

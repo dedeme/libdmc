@@ -235,21 +235,16 @@ void arr_sort_locale (Arr *this) {
 }
 
 void arr_shuffle (Arr *this) {
-  int size = this->size;
-  void **os = this->es;
-  int j, k;
-  void *tmp;
-  RANGE0(i, size) {
-    j = rnd_i(size);
-    tmp = os[i]; os[i] = os[j]; os[j] = tmp;
-    j = rnd_i(size);
-    tmp = os[i]; os[i] = os[j]; os[j] = tmp;
-    k = size - 1 - i;
-    j = rnd_i(size);
-    tmp = os[k]; os[k] = os[j]; os[j] = tmp;
-    j = rnd_i(size);
-    tmp = os[k]; os[k] = os[j]; os[j] = tmp;
-  }_RANGE
+  size_t size = this->size;
+  void **es = this->es;
+  void **p = es + size - 1;
+  void **pix, *tmp;
+  while (size > 1) {
+    pix = es + rnd_i(size--);
+    tmp = *p;
+    *p-- = *(pix);
+    *(pix) = tmp;
+  }
 }
 
 /**/typedef struct {
