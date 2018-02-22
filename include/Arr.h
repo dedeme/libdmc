@@ -57,12 +57,13 @@ void arr_set (Arr *this, size_t index, void *element);
 /// situation, returns one of them without a particular order.
 /// If the element does not exists function returns '-1'.<br>
 /// This function make a binary search and requires that 'this' is ordered
-/// with function 'f'
-int arr_sindex (Arr *this, void *e, int(*f)(void *, void*));
+/// with function 'f'. This function is similar as strcmp().
+int arr_sindex (Arr *this, void *e, int (*f)(void *, void *));
 
 /// Sorts elements of 'this' according 'f'
-///   f: Function which returns 0 (equals), > 0 (greater) or < 0 (less)
-void arr_sort (Arr *this, int (*f)(void *, void *));
+///   f: Function which returns 'true' if the order is ascendent and e1 > e2,
+///      or the order is descendent and e2 > e1
+void arr_sort (Arr *this, bool (*f)(void *e1, void *e2));
 
 /// Ascending natural sort of a string array ('this' can include null elements)
 void arr_sort_str (Arr *this);

@@ -137,7 +137,6 @@ struct stat *file_info (char *path) {
 
 char *file_read (char *path) {
   FILE *fl;
-  char *line;
   size_t len = 0;
   struct flock lck = {
     .l_whence = SEEK_SET,
@@ -154,14 +153,15 @@ char *file_read (char *path) {
   fcntl (fileno(fl), F_SETLKW, &lck);
 
   Buf *bf = buf_new();
+  char *line = NULL;
   while (getline(&line, &len, fl) != -1) {
     buf_add(bf, line);
   }
+  free(line);
 
   lck.l_type = F_UNLCK;
   fcntl (fileno(fl), F_SETLK, &lck);
   fclose(fl);
-  free(line);
 
   return buf_to_str(bf);
 }
@@ -299,9 +299,9 @@ LckFile *file_aopen (char *path) {
 }
 
 char *file_read_line (LckFile *lck) {
-  char *line= NULL;
   size_t len = 0;
   errno = 0;
+  char *line= NULL;
   if (getline(&line, &len, lck->e1) != -1) {
     char *r = str_copy(line);
     free(line);
@@ -384,8 +384,8 @@ void file_close_it (LckFile *file) {
 /**/static FNP (to_it_has_next, to_it_O, o) { return (bool)o->next; }_FN
 /**/static FNM (to_it_next, to_it_O, o) {
 /**/  void *r = o->next;
-/**/  char *line = NULL;
 /**/  size_t len = 0;
+/**/  char *line = NULL;
 /**/  if (getline(&line, &len, o->file) != -1)
 /**/    o->next = str_copy(line);
 /**/  else {

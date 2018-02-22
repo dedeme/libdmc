@@ -34,7 +34,7 @@ void arr_test() {
     char *s = str_printf("%d", 16 - i);
     assert(!strcmp(s, arr_es(a1)[i]));
   }
-  FNC(cb, char, o1, o2) { return atoi(o1) - atoi(o2); }_FN
+  FNE(cb, char, o1, o2) { return atoi(o1) > atoi(o2); }_FN
   arr_sort(a1, cb);
 
   for(i = 0; i < 17; ++i) {
@@ -206,17 +206,20 @@ void arr_test() {
   for(i = 0; i < arr_size(a4); ++i) {
 //    printf("%s\n", (char *)arr_es(a4)[i]);
   }
-  FNC (sort4, char, e1, e2) { return atoi(e1) - atoi(e2); }_FN
+  FNE (sort4, char, e1, e2) { return atoi(e1) > atoi(e2); }_FN
   arr_sort(a4, sort4);
   for(i = 0; i < arr_size(a4); ++i) {
     assert(i == atoi(arr_es(a4)[i]));
   }
 
-  assert(arr_sindex(a4, "0", sort4) == 0);
-  assert(arr_sindex(a4, "24", sort4) == 24);
-  assert(arr_sindex(a4, "80", sort4) == 80);
-  assert(arr_sindex(a4, "99", sort4) == 99);
-  assert(arr_sindex(a4, "100", sort4) == -1);
+  int sort5 (void *e1, void *e2) {
+    return atoi((char *)e1) - atoi((char *)e2);
+  }
+  assert(arr_sindex(a4, "0", sort5) == 0);
+  assert(arr_sindex(a4, "24", sort5) == 24);
+  assert(arr_sindex(a4, "80", sort5) == 80);
+  assert(arr_sindex(a4, "99", sort5) == 99);
+  assert(arr_sindex(a4, "100", sort5) == -1);
 
   i = 0;
   EACH(a1, char, o) {

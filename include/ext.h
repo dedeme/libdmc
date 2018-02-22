@@ -36,6 +36,8 @@ void ext_pdf(char *tx_source, char *file_target, char *options);
 
 /// ext_zip compress source in target. It calls:
 ///   zip -q <i>target</i> <i>source</i> 2>&1
+/// if 'target' already exists, source will be added to it. If you require a
+/// fresh target file, you have to delete it previously.<br>
 /// Parameters:
 ///   source: can be a file or directory,
 ///   target: Zip file. If it is a relative path, it hangs on source parent.

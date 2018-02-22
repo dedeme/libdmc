@@ -252,7 +252,7 @@ It *it_reverse (It *this) {
   return it_from(a);
 }
 
-It *it_sort (It *this, int (*comparator)(void *, void *)) {
+It *it_sort (It *this, bool (*comparator)(void *, void *)) {
   Arr *a = it_to(this);
   arr_sort(a, comparator);
   return it_from(a);

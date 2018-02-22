@@ -189,7 +189,7 @@ void arr_set (Arr *this, size_t index, void *element) {
   this->es[index] = element;
 }
 
-int arr_sindex (Arr *this, void *e, int(*f)(void *, void*)) {
+int arr_sindex (Arr *this, void *e, int (*f)(void *, void*)) {
   size_t start = 0;
   size_t end = this->size;
   size_t ix;
@@ -205,7 +205,7 @@ int arr_sindex (Arr *this, void *e, int(*f)(void *, void*)) {
   }
 }
 
-void arr_sort (Arr *this, int (*f)(void *, void *)) {
+void arr_sort (Arr *this, bool (*f)(void *, void *)) {
   size_t cx = this->size;
   void **x = this->es;
   void **y;
@@ -213,7 +213,7 @@ void arr_sort (Arr *this, int (*f)(void *, void *)) {
   while (cx--) {
     y = x + 1;
     REPEAT(cx) {
-      if (f(*x, *y) > 0) {
+      if (f(*x, *y)) {
         tmp = *x;
         *x = *y;
         *y = tmp;
@@ -225,12 +225,12 @@ void arr_sort (Arr *this, int (*f)(void *, void *)) {
 }
 
 void arr_sort_str (Arr *this) {
-  FNC (cmp, char, e1, e2) { return e1 && e2 ? strcmp(e1, e2) : e1 - e2; }_FN
+  FNE (cmp, char, e1, e2) { return strcmp(e1, e2) > 0; }_FN
   arr_sort(this, cmp);
 }
 
 void arr_sort_locale (Arr *this) {
-  FNC (cmp, char, e1, e2) { return e1 && e2 ? strcoll(e1, e2) : e1 - e2; }_FN
+  FNE (cmp, char, e1, e2) { return strcoll(e1, e2) > 0; }_FN
   arr_sort(this, cmp);
 }
 

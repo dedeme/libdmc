@@ -167,7 +167,7 @@ It *it_zip3 (It *it1, It *it2, It *it3);
 It *it_reverse (It *this);
 
 ///
-It *it_sort (It *this, int (*comparator)(void *e1, void *e2));
+It *it_sort (It *this, bool (*comparator)(void *e1, void *e2));
 
 ///
 It *it_sort_str (It *this);

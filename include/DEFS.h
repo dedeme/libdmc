@@ -34,13 +34,6 @@
     type *o1 = (type *)__o1; \
     type *o2 = (type *)__o2;
 
-/// Scheme:
-///   int name(void *o1, void *o2)
-#define FNC(name, type, o1, o2) \
-  int name(void *__o1, void *__o2) { \
-    type *o1 = (type *)__o1; \
-    type *o2 = (type *)__o2;
-
 ///
 #define _FN }
 
@@ -114,7 +107,7 @@
 /// Finalizes an EACHL, EACH or a EACHR
 #define _EACH }}
 
-/// Repeat its body 'n' times
+/// Repeat its body 'n' times. 'n' must be greater than 0.
 #define REPEAT(n) { \
   int __i = (n) + 1; \
   while (--__i) {
