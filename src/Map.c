@@ -57,11 +57,11 @@ It/*Kv*/ *map_to_it (Map *this) {
 }
 
 It/*Kv*/ *map_to_it_sort (Map *this) {
-  FNC (cmp, Kv, e1, e2) { return strcmp(e1->key, e2->key); }_FN
+  FNE (cmp, Kv, e1, e2) { return strcmp(e1->key, e2->key) > 0; }_FN
   return it_sort(arr_to_it(this), cmp);
 }
 
 It/*Kv*/ *map_to_it_sort_locale (Map *this) {
-  FNC (cmp, Kv, e1, e2) { return strcoll(e1->key, e2->key); }_FN
+  FNE (cmp, Kv, e1, e2) { return strcoll(e1->key, e2->key) > 0; }_FN
   return it_sort(arr_to_it(this), cmp);
 }
