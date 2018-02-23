@@ -82,11 +82,12 @@
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
 #define EACH(a, type, element) { \
-  size_t __size = arr_size(a); \
+  Arr *__arr = a; \
+  size_t __size = arr_size(__arr); \
   size_t _i; \
   type *element; \
   for (_i = 0; _i < __size; ++_i) { \
-    element = arr_es(a)[_i];
+    element = arr_es(__arr)[_i];
 
 /// Iterates over an 'Arr' in reverse order. You can access to the 'element'
 /// index with _i.
@@ -99,10 +100,11 @@
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
 #define EACHR(a, type, element) { \
-  size_t _i = arr_size(a); \
+  Arr *__arr = a; \
+  size_t _i = arr_size(__arr); \
   type *element; \
   while (_i) { \
-    element = arr_es(a)[--_i];
+    element = arr_es(__arr)[--_i];
 
 /// Finalizes an EACHL, EACH or a EACHR
 #define _EACH }}

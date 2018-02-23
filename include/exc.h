@@ -29,7 +29,7 @@ Arr/*char*/ *exc_stack();
 
 /// Sends an exception.<p>
 /// If no TRY block has been defined it stops the program.///
-//    message: Message to show
+///   message: Message to show
 ///   file   : Error file
 ///   func   : Error function
 ///   line   : Error line number
