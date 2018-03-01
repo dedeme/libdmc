@@ -2,7 +2,7 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include <string.h>
-#include "dm.h"
+#include "dm/dm.h"
 #include <stdint.h>
 #include <stdlib.h>
 

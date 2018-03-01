@@ -1,7 +1,7 @@
 // Copyright 22-Dec-2017 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dm.h"
+#include "dm/dm.h"
 
 void cryp_test() {
   printf("cryp test\n");

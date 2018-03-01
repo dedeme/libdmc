@@ -1,12 +1,12 @@
 LIB = dmc
 
 CFLAGS = -Wall -rdynamic
-OBJECTS = $(subst src,obj,$(patsubst %.c,%.o,$(wildcard src/*.c)))
+OBJECTS = $(subst src/dm,obj,$(patsubst %.c,%.o,$(wildcard src/dm/*.c)))
 
 lib/lib$(LIB).a : $(OBJECTS)
 	ar rcs lib/lib$(LIB).a $(OBJECTS)
 
-obj/%.o : src/%.c include/%.h
+obj/%.o : src/dm/%.c include/dm/%.h
 	gcc $(CFLAGS) -c $< -o $@ -Iinclude \
 	  -lgc
 
