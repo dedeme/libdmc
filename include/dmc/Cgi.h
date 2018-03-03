@@ -7,7 +7,7 @@
   #define DM_CGI_H
 
 #include <time.h>
-#include <dm/Json.h>
+#include <dmc/Json.h>
 
 /// cgi_klen returns the standard length of keys.
 int cgi_klen();

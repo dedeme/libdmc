@@ -15,7 +15,7 @@
  * along with 'dm'.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dm/dm.h"
+#include "dmc/all.h"
 
 void map_test() {
   printf("Map test\n");

@@ -1,11 +1,11 @@
 // Copyright 05-Feb-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dm/List.h"
+#include "dmc/List.h"
 #include <gc.h>
-#include "dm/DEFS.h"
-#include "dm/str.h"
-#include "dm/exc.h"
+#include "dmc/DEFS.h"
+#include "dmc/str.h"
+#include "dmc/exc.h"
 
 struct list_List {
   List *next;

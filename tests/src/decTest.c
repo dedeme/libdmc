@@ -1,7 +1,7 @@
 // Copyright 22-Dec-2017 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dm/dm.h"
+#include "dmc/all.h"
 #include "limits.h"
 #include "float.h"
 #include <locale.h>
