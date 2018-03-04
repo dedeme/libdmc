@@ -89,9 +89,10 @@ void file_del (char *path) {
     if (rmdir(path) && errno != ENOENT) {
       THROW exc_io("Fail deleting %s: %s"), path, strerror(errno) _THROW
     }
-  }
-  if (unlink(path) && errno != ENOENT) {
-      THROW exc_io("Fail deleting %s: %s"), path, strerror(errno) _THROW
+  } else {
+    if (unlink(path) && errno != ENOENT) {
+        THROW exc_io("Fail deleting %s: %s"), path, strerror(errno) _THROW
+    }
   }
 }
 
