@@ -32,13 +32,13 @@ Cgi *cgi_new(char *home, time_t t_expiration) {
 
   Cgi *this = MALLOC(Cgi);
 
-	this->fkey = cryp_key(deme_key, strlen(deme_key));
+  this->fkey = cryp_key(deme_key, strlen(deme_key));
   this->key = NULL;
   this->home = home;
   this->t_expiration = t_expiration;
 
-	if (!file_exists(home)) {
-		file_mkdir(home);
+  if (!file_exists(home)) {
+    file_mkdir(home);
   }
 
   char *fusers = path_cat(home, "users.db", NULL);
@@ -90,14 +90,14 @@ static Arr/*char*/ *remove_user(Arr/*char*/ *users, char *user) {
 }
 
 static void del_user(Cgi *this, char *user) {
-	write_users(this, remove_user(read_users(this), user));
+  write_users(this, remove_user(read_users(this), user));
 }
 
 static void put_user(Cgi *this, char *user, char *key, char *level) {
-	Arr/*char*/ *users = remove_user(read_users(this), user);
+  Arr/*char*/ *users = remove_user(read_users(this), user);
   char *kkey = cryp_key(key, klen);
   arr_add(users, str_printf("%s:%s:%s", user, kkey, level));
-	write_users(this, users);
+  write_users(this, users);
 }
 
 // If fails r is NULL
@@ -191,8 +191,8 @@ static Arr/*Arr[Json]*/ *read_sessions(Cgi *this) {
 static void add_session(
   Cgi* this, char *session_id, char *user, char *key, time_t expiration
 ) {
-	time_t lapse = expiration ? expiration : t_no_expiration;
-	Date time = date_now() + lapse;
+  time_t lapse = expiration ? expiration : t_no_expiration;
+  Date time = date_now() + lapse;
 
   Arr/*Json*/ *row = arr_new();
   jarr_astring(row, session_id);  //0
@@ -268,7 +268,7 @@ static void set_connection_id(Cgi *this, char *session_id, char *con_id) {
 
 inline
 void cgi_set_key(Cgi* this, char *k) {
-	this->key = k;
+  this->key = k;
 }
 
 void cgi_get_session_data(
@@ -337,7 +337,7 @@ CgiRp *cgi_del_session(Cgi *this, char *session_id) {
 }
 
 CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
-	Map/*Json*/ *rp = map_new();
+  Map/*Json*/ *rp = map_new();
 
   char *level = check_user(this, user, key);
   if (level) {
@@ -365,7 +365,7 @@ CgiRp *cgi_connect(Cgi *this, char *session_id) {
   char *connectionId;
   read_session(&key, &connectionId, this, session_id);
 
-	Map/*Json*/ *rp = map_new();
+  Map/*Json*/ *rp = map_new();
   jmap_pstring(rp, "key", key);
   jmap_pstring(rp, "connectionId", connectionId);
   return cgi_ok(this, rp);

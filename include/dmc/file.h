@@ -40,8 +40,11 @@ Arr *file_dir (char *path);
 /// Throws exception
 void file_del (char *path);
 
-/// Reanmes 'oldname' to 'newname'<br>Throw exception.
+/// Renames 'oldname' to 'newname'<br>Throw exception.
 void file_rename (char *oldname, char *newname);
+
+/// Makes a symbol link from 'newpath' to 'oldpath'.<br>Throw exception.
+void file_link (char *oldpath, char *newpath);
 
 /// Returns 1 if 'path' exists in the file system, -1 if an error happened
 /// and 0 otherwise.<br>

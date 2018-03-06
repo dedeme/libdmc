@@ -104,6 +104,14 @@ void file_rename (char *oldname, char *newname) {
   }
 }
 
+void file_link (char *oldpath, char *newpath) {
+  if (symlink(oldpath, newpath) == -1) {
+    THROW
+      exc_io("Fail linking '%s' to '%s: %s"), newpath, oldpath, strerror(errno)
+    _THROW
+  }
+}
+
 bool file_exists (char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
