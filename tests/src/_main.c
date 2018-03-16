@@ -6,6 +6,7 @@
 #include "bufTest.h"
 #include "strTest.h"
 #include "arrTest.h"
+#include "listTest.h"
 #include "itTest.h"
 #include "sysTest.h"
 #include "rndTest.h"
@@ -28,6 +29,7 @@ int main (int argc, char **argv) {
   buf_test();
   str_test();
   arr_test();
+  list_test();
   it_test();
   sys_test();
   rnd_test();

@@ -68,16 +68,17 @@ List *list_reverse(List *this) {
   return r;
 }
 
+
+/**/typedef struct {
+/**/    List *l;
+/**/} PList;
+/**/static FNP (has_next, PList, l) { return (bool)(l->l->next); }_FN
+/**/static FNM (next, PList, l) {
+/**/  void *r = l->l->value;
+/**/  l->l = l->l->next;
+/**/  return r;
+/**/}_FN
 It *list_to_it (List *this) {
-  typedef struct {
-      List *l;
-  } PList;
-  FNP (has_next, PList, l) { return (int)(l->l->next); }_FN
-  FNM (next, PList, l) {
-    void *r = l->l->value;
-    l->l = l->l->next;
-    return r;
-  }_FN
   PList *pl = MALLOC(PList);
   pl->l = this;
   return it_new(pl, has_next, next);
