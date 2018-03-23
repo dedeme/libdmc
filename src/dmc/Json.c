@@ -518,14 +518,20 @@ void jmap_pstring(Map/*Json*/ *this, char *key, char *s) {
   map_put(this, key, json_wstring(s));
 }
 
-inline
-void jmap_parray(Map/*Json*/ *this, char *key, Arr/*Json*/ *a) {
-  map_put(this, key, json_warray(a));
+void jmap_parray(Map/*Json*/ *this, char *key, Arr *a, Json *(*to)(void *)) {
+  Arr/*Json*/ *ajs = arr_new();
+  EACH(a, void, e) {
+    arr_add(ajs, to(e));
+  }_EACH
+  map_put(this, key, json_warray(ajs));
 }
 
-inline
-void jmap_pobject(Map/*Json*/ *this, char *key, Map/*Json*/ *m) {
-    map_put(this, key, json_wobject(m));
+void jmap_pobject(Map/*Json*/ *this, char *key, Map *m, Json *(*to)(void *)) {
+  Map /*Json*/ *mjs = map_new();
+  EACH(m, Kv, kv) {
+    arr_add(mjs, kv_new(kv->key, to(kv->value)));
+  }_EACH
+  map_put(this, key, json_wobject(mjs));
 }
 
 static char *key_error(char *key) {
@@ -580,20 +586,35 @@ char *jmap_gstring(Map/*Json*/ *this, char *key) {
   return json_rnull(value) ? NULL : json_rstring(value);
 }
 
-Arr/*Json*/ *jmap_garray(Map/*Json*/ *this, char *key) {
+Arr *jmap_garray(Map/*Json*/ *this, char *key, void *(*from)(Json *)) {
   Json *value = map_get(this, key);
   if (!value) {
     THROW key_error(key) _THROW
   }
-  return json_rnull(value) ? NULL : json_rarray(value);
+  if (json_rnull(value)) {
+    return NULL;
+  }
+  Arr *r = arr_new();
+  EACH(json_rarray(value), Json, js) {
+    arr_add(r, from(js));
+  }_EACH
+
+  return r;
 }
 
-Map/*Json*/ *jmap_gobject(Map/*Json*/ *this, char *key) {
+Map *jmap_gobject(Map/*Json*/ *this, char *key, void *(*from)(Json *)) {
   Json *value = map_get(this, key);
   if (!value) {
     THROW key_error(key) _THROW
   }
-  return json_rnull(value) ? NULL : json_robject(value);
+  if (json_rnull(value)) {
+    return NULL;
+  }
+  Map *m = map_new();
+  EACH(json_robject(value), Kv, kv) {
+    arr_add(m, kv_new(kv->key, from(kv->value)));
+  }_EACH
+  return m;
 }
 
 inline
@@ -626,14 +647,20 @@ void jarr_astring(Arr/*Json*/ *this, char *s) {
   arr_add(this, json_wstring(s));
 }
 
-inline
-void jarr_aarray(Arr/*Json*/ *this, Arr/*Json*/ *a) {
-  arr_add(this, json_warray(a));
+void jarr_aarray(Arr/*Json*/ *this, Arr *a, Json *(*to)(void *)) {
+  Arr/*Json*/ *ajs = arr_new();
+  EACH(a, void, e) {
+    arr_add(ajs, to(e));
+  }_EACH
+  arr_add(this, json_warray(ajs));
 }
 
-inline
-void jarr_aobject(Arr/*Json*/ *this, Map/*Json*/ *m) {
-  arr_add(this, json_wobject(m));
+void jarr_aobject(Arr/*Json*/ *this, Map *m, Json *(*to)(void *)) {
+  Map /*Json*/ *mjs = map_new();
+  EACH(m, Kv, kv) {
+    arr_add(mjs, kv_new(kv->key, to(kv->value)));
+  }_EACH
+  arr_add(this, json_wobject(mjs));
 }
 
 inline
@@ -663,17 +690,36 @@ double jarr_gdouble(Arr/*Json*/ *this, size_t ix) {
 
 inline
 char *jarr_gstring(Arr/*Json*/ *this, size_t ix) {
-  return json_rstring(arr_get(this, ix));
+  Json *value = arr_get(this, ix);
+  if (json_rnull(value)) {
+    return NULL;
+  }
+  return json_rstring(value);
+}
+
+Arr *jarr_garray(Arr/*Json*/ *this, size_t ix, void *(*from)(Json *)) {
+  Json *value = arr_get(this, ix);
+  if (json_rnull(value)) {
+    return NULL;
+  }
+  Arr *r = arr_new();
+  EACH(json_rarray(value), Json, js) {
+    arr_add(r, from(js));
+  }_EACH
+  return r;
 }
 
 inline
-Arr/*Json*/ *jarr_garray(Arr/*Json*/ *this, size_t ix) {
-  return json_rarray(arr_get(this, ix));
-}
-
-inline
-Map/*Json*/ *jarr_gobject(Arr/*Json*/ *this, size_t ix) {
-  return json_robject(arr_get(this, ix));
+Map *jarr_gobject(Arr/*Json*/ *this, size_t ix, void *(*from)(Json *)) {
+  Json *value = arr_get(this, ix);
+  if (json_rnull(value)) {
+    return NULL;
+  }
+  Map *m = map_new();
+  EACH(json_robject(value), Kv, kv) {
+    arr_add(m, kv_new(kv->key, from(kv->value)));
+  }_EACH
+  return m;
 }
 
 inline
@@ -706,12 +752,19 @@ void jarr_sstring(Arr/*Json*/ *this, size_t ix, char *s) {
   arr_set(this, ix, json_wstring(s));
 }
 
-inline
-void jarr_sarray(Arr/*Json*/ *this, size_t ix, Arr/*Json*/ *a) {
-  arr_set(this, ix, json_warray(a));
+void jarr_sarray(Arr/*Json*/ *this, size_t ix, Arr *a, Json *(*to)(void *)) {
+  Arr/*Json*/ *ajs = arr_new();
+  EACH(a, void, e) {
+    arr_add(ajs, to(e));
+  }_EACH
+  arr_set(this, ix, json_warray(ajs));
 }
 
 inline
-void jarr_sobject(Arr/*Json*/ *this, size_t ix, Map/*Json*/ *m) {
-  arr_set(this, ix, json_wobject(m));
+void jarr_sobject(Arr/*Json*/ *this, size_t ix, Map *m, Json *(*to)(void *)) {
+  Map /*Json*/ *mjs = map_new();
+  EACH(m, Kv, kv) {
+    arr_add(mjs, kv_new(kv->key, to(kv->value)));
+  }_EACH
+  arr_set(this, ix, json_wobject(mjs));
 }

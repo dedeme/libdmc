@@ -21,11 +21,14 @@ Map *map_new(void);
 ///   value : New value
 void map_put(Map *this, char *key, void *value);
 
-/// Returns a reference to value whose key is 'key' or NULL if 'this'
-/// does not contain 'key'.<br>
-/// It can return NULL if the key value es NULL too. In this case is necessary to
-/// call the 'map_has_key' to distinguish each case.
+/// Returns a reference to value whose key is 'key' or throw an exception if
+/// 'this' does not contain 'key' or 'key' value is NULL.<br>
 void *map_get(Map *this, char *key);
+
+/// Returns a reference to value whose key is 'key' or throw an exception if
+/// 'this' does not contain 'key'.<br>
+/// It can return NULL if the key value es NULL.
+void *map_nget(Map *this, char *key);
 
 /// Removes value with key 'key' or does nothing if 'key' does not exists
 void map_remove(Map *this, char *key);

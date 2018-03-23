@@ -31,7 +31,7 @@ void map_test() {
   map_put(m, "uno", "1");
   assert(!strcmp("1", map_get(m, "uno")));
   assert(arr_size(m) == 2);
-  assert(!map_get(m, "tres"));
+  assert(!map_has_key(m, "tres"));
   map_put(m, "tres", "3");
 
   map_remove(m, "dos");
@@ -41,13 +41,13 @@ void map_test() {
   assert(arr_size(m) == 2);
   assert(!strcmp("3", map_get(m, "tres")));
   assert(!strcmp("1", map_get(m, "uno")));
-  assert(!map_get(m, "dos"));
+  assert(!map_has_key(m, "dos"));
 
   map_remove(m, "cero");
   assert(arr_size(m) == 2);
   assert(!strcmp("3", map_get(m, "tres")));
   assert(!strcmp("1", map_get(m, "uno")));
-  assert(!map_get(m, "dos"));
+  assert(!map_has_key(m, "dos"));
 
   Buf *bf = buf_new();
   FNX (tostr, Kv, kv) { buf_add(bf, kv->key); buf_cadd(bf,'-'); }_FN

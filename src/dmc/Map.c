@@ -23,9 +23,23 @@ void map_put(Map *this, char *key, void *value) {
 void *map_get(Map *this, char *key) {
   EACH(this, Kv, kv) {
     if (!strcmp(kv->key, key)) {
+      if (kv->value) {
+        return kv->value;
+      }
+      THROW exc_null_pointer("kv->value") _THROW
+    }
+  }_EACH
+  THROW "key '%s' does not exist", key _THROW
+  return NULL;
+}
+
+void *map_nget(Map *this, char *key) {
+  EACH(this, Kv, kv) {
+    if (!strcmp(kv->key, key)) {
       return kv->value;
     }
   }_EACH
+  THROW "key '%s' does not exist", key _THROW
   return NULL;
 }
 

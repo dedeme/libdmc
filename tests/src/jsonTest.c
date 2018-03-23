@@ -144,7 +144,7 @@ void json_test() {
       "Bad hexadecimal unicode in string in\n' \" \\u30 \" "));
   }_TRY
 
-  Arr *a, *a2;
+  Arr/*Json*/ *a, *a2;
   a = json_rarray("[]");
   assert(arr_size(a) == 0);
   a = json_rarray("[123]");
@@ -300,6 +300,97 @@ void json_test() {
     it_eq_str(map_values(m),
     map_values(json_robject(json_wobject(m))))
   );
+
+  Arr/*char*/ *astr1 = arr_new();
+  arr_add(astr1, "one");
+  arr_add(astr1, "two");
+  Arr/*char*/ *astr2 = arr_new();
+  arr_add(astr2, "three");
+  Arr/*char*/ *astr3 = arr_new();
+
+  a = arr_new();
+  jarr_aarray(a, astr1, (Json*(*)(void*))json_wstring);
+  jarr_aarray(a, astr2, (Json*(*)(void*))json_wstring);
+  jarr_aarray(a, astr3, (Json*(*)(void*))json_wstring);
+
+  Arr/*char*/ *astrb = jarr_garray(a, 0, (void*(*)(Json*))json_rstring);
+  assert(!strcmp(arr_get(astrb, 0), "one"));
+  assert(!strcmp(arr_get(astrb, 1), "two"));
+
+  astrb = jarr_garray(a, 1, (void*(*)(Json*))json_rstring);
+  assert(!strcmp(arr_get(astrb, 0), "three"));
+
+  astrb = jarr_garray(a, 2, (void*(*)(Json*))json_rstring);
+  assert(arr_size(astrb) == 0);
+
+  jarr_sarray(a, 2, astr1, (Json*(*)(void*))json_wstring);
+  astrb = jarr_garray(a, 2, (void*(*)(Json*))json_rstring);
+  assert(!strcmp(arr_get(astrb, 0), "one"));
+  assert(!strcmp(arr_get(astrb, 1), "two"));
+
+  m = map_new();
+  jmap_parray(m, "a", astr1, (Json*(*)(void*))json_wstring);
+  jmap_parray(m, "b", astr2, (Json*(*)(void*))json_wstring);
+  jmap_parray(m, "c", astr3, (Json*(*)(void*))json_wstring);
+
+  astrb = jmap_garray(m, "a", (void*(*)(Json*))json_rstring);
+  assert(!strcmp(arr_get(astrb, 0), "one"));
+  assert(!strcmp(arr_get(astrb, 1), "two"));
+
+  astrb = jmap_garray(m, "b", (void*(*)(Json*))json_rstring);
+  assert(!strcmp(arr_get(astrb, 0), "three"));
+
+  astrb = jmap_garray(m, "c", (void*(*)(Json*))json_rstring);
+  assert(arr_size(astrb) == 0);
+
+  jmap_parray(m, "c", astr1, (Json*(*)(void*))json_wstring);
+  astrb = jmap_garray(m, "c", (void*(*)(Json*))json_rstring);
+  assert(!strcmp(arr_get(astrb, 0), "one"));
+  assert(!strcmp(arr_get(astrb, 1), "two"));
+
+  Map/*char*/ *mstr1 = map_new();
+  map_put(mstr1, "one", "1");
+  map_put(mstr1, "two", "2");
+
+  Map/*char*/ *mstr2 = map_new();
+  map_put(mstr2, "three", "3");
+
+  Map/*char*/ *mstr3 = map_new();
+
+  a = map_new();
+  jarr_aobject(a, mstr1, (Json*(*)(void*))json_wstring);
+  jarr_aobject(a, mstr2, (Json*(*)(void*))json_wstring);
+  jarr_aobject(a, mstr3, (Json*(*)(void*))json_wstring);
+
+  Map/*char*/ *mstrb = jarr_gobject(a, 0, (void*(*)(Json*))json_rstring);
+  assert(!strcmp(map_get(mstrb, "one"), "1"));
+  assert(!strcmp(map_get(mstrb, "two"), "2"));
+
+  mstrb = jarr_gobject(a, 1, (void*(*)(Json*))json_rstring);
+  assert(!strcmp(map_get(mstrb, "three"), "3"));
+
+  mstrb = jarr_gobject(a, 2, (void*(*)(Json*))json_rstring);
+  assert(arr_size(mstrb) == 0);
+
+  m = map_new();
+  jmap_pobject(m, "a", mstr1, (Json*(*)(void*))json_wstring);
+  jmap_pobject(m, "b", mstr2, (Json*(*)(void*))json_wstring);
+  jmap_pobject(m, "c", mstr3, (Json*(*)(void*))json_wstring);
+
+  mstrb = jmap_gobject(m, "a", (void*(*)(Json*))json_rstring);
+  assert(!strcmp(map_get(mstrb, "one"), "1"));
+  assert(!strcmp(map_get(mstrb, "two"), "2"));
+
+  mstrb = jmap_gobject(m, "b", (void*(*)(Json*))json_rstring);
+  assert(!strcmp(map_get(mstrb, "three"), "3"));
+
+  mstrb = jmap_gobject(m, "c", (void*(*)(Json*))json_rstring);
+  assert(arr_size(mstrb) == 0);
+
+  jmap_pobject(m, "c", mstr1, (Json*(*)(void*))json_wstring);
+  mstrb = jmap_gobject(m, "c", (void*(*)(Json*))json_rstring);
+  assert(!strcmp(map_get(mstrb, "one"), "1"));
+  assert(!strcmp(map_get(mstrb, "two"), "2"));
 
   printf("    Finshed\n");
 }

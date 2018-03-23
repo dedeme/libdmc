@@ -66,6 +66,18 @@ void *arr_get (Arr *this, size_t index) {
   if (index < 0 || index >= this->size) {
     THROW exc_range(0, this->size, index) _THROW
   }
+  void *e = this->es[index];
+  if (e) {
+    return e;
+  }
+  THROW exc_null_pointer("arr[index]") _THROW
+  return NULL;
+}
+
+void *arr_nget (Arr *this, size_t index) {
+  if (index < 0 || index >= this->size) {
+    THROW exc_range(0, this->size, index) _THROW
+  }
   return this->es[index];
 }
 

@@ -32,8 +32,13 @@ void arr_add (Arr *this, void *element);
 /// Adds an array
 void arr_add_arr (Arr *this, Arr *another);
 
-/// returns element at position 'index'. Tests limits.
+/// returns element at position 'index'. Tests limits.<br>
+/// If the element is NULL throws a exception.
 void *arr_get (Arr *this, size_t index);
+
+/// returns element at position 'index'. Tests limits.<br>
+/// The element can be NULL.
+void *arr_nget (Arr *this, size_t index);
 
 /// Inserts an element at 'index'
 void arr_insert (Arr *this, size_t index, void *element);
