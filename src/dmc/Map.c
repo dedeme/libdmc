@@ -35,12 +35,19 @@ void *map_get(Map *this, char *key) {
 
 void *map_nget(Map *this, char *key) {
   EACH(this, Kv, kv) {
-    if (!strcmp(kv->key, key)) {
+    if (!strcmp(kv->key, key))
       return kv->value;
-    }
   }_EACH
   THROW "key '%s' does not exist", key _THROW
   return NULL;
+}
+
+void *map_oget(Map *this, char *key, void *option) {
+  EACH(this, Kv, kv) {
+    if (!strcmp(kv->key, key))
+      return kv->value;
+  }_EACH
+  return option;
 }
 
 void map_remove(Map *this, char *key) {

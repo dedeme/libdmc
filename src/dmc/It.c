@@ -405,8 +405,29 @@ int it_last_index_str (It *this, char *s) {
 void *it_find (It *this, bool (*predicate)(void *e)) {
   while(it_has_next(this)) {
     void *next = it_next(this);
+    if (predicate(next)) {
+      if (next)
+        return next;
+      THROW exc_null_pointer("next") _THROW
+    }
+  }
+  return NULL;
+}
+
+void *it_nfind (It *this, bool (*predicate)(void *e)) {
+  while(it_has_next(this)) {
+    void *next = it_next(this);
     if (predicate(next))
       return next;
+  }
+  return NULL;
+}
+
+void *it_ofind (It *this, void *option, bool (*predicate)(void *e)) {
+  while(it_has_next(this)) {
+    void *next = it_next(this);
+    if (predicate(next))
+      return next ? next : option;
   }
   return NULL;
 }

@@ -27,8 +27,13 @@ void *map_get(Map *this, char *key);
 
 /// Returns a reference to value whose key is 'key' or throw an exception if
 /// 'this' does not contain 'key'.<br>
-/// It can return NULL if the key value es NULL.
+/// It can return NULL if 'key' value es NULL.
 void *map_nget(Map *this, char *key);
+
+/// Returns a reference to value whose key is 'key' or 'option' if
+/// 'this' does not contain 'key'.<br>
+/// It can return NULL if 'key' value es NULL.
+void *map_oget(Map *this, char *key, void *option);
 
 /// Removes value with key 'key' or does nothing if 'key' does not exists
 void map_remove(Map *this, char *key);

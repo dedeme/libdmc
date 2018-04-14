@@ -66,13 +66,15 @@
 /// <a href="#hp:it_each">it_each</a><br>
 /// <a href="#hp:it_each_ix">it_each_ix</a><br>
 /// <a href="#hp:it_eq">it_eq</a><br>
-/// </td><td valign="top">
 /// <a href="#hp:it_eq_str">it_eq_str</a><br>
+/// </td><td valign="top">
 /// <a href="#hp:it_index">it_index</a><br>
 /// <a href="#hp:it_index">it_index_str</a><br>
-/// </td><td valign="top">
 /// <a href="#hp:it_last_index">it_last_index</a><br>
 /// <a href="#hp:it_last_index">it_last_index_str</a><br>
+/// </td><td valign="top">
+/// <a href="#hp:it_nfind">it_nfind</a><br>
+/// <a href="#hp:it_ofind">it_ofind</a><br>
 /// <a href="#hp:it_to">it_to</a><br>
 /// </td>
 /// </tr>
@@ -214,8 +216,17 @@ bool it_contains_str (It *this, char *s);
 ///
 int it_last_index_str (It *this, char *s);
 
-/// Returns the first element which satisfies 'predicate' or NULL.
+/// Returns the first element which satisfies 'predicate' or NULL. If 'this'
+/// has null elemenents throw a null_pointer exeception.
 void *it_find (It *this, bool (*predicate)(void *e));
+
+/// Returns the first element which satisfies 'predicate' or NULL. It can
+/// return NULL if it has a NULL value.
+void *it_nfind (It *this, bool (*predicate)(void *e));
+
+/// Returns the first element which satisfies 'predicate' or 'option'. It can
+/// return NULL if it has a NULL value.
+void *it_ofind (It *this, void *option, bool (*predicate)(void *e));
 
 /// Serializes this
 char *it_serialize (It *this, char *(*serialize)(void *));

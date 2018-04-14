@@ -107,7 +107,7 @@ LckFile *file_aopen (char *path);
 /// Throws exception.
 char *file_read_line (LckFile *lck);
 
-/// Writes a text file opened with file_wopen.<br>
+/// Writes a text file opened with file_wopen or file_aopen.<br>
 /// Throws exception.
 void file_write_text (LckFile *lck, char *text);
 
