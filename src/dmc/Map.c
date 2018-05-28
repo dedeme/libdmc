@@ -67,10 +67,27 @@ void map_remove(Map *this, char *key) {
 bool map_has_key(Map *this, char *key) {
   EACH(this, Kv, kv) {
     if (!strcmp(kv->key, key))
-      return 1;
+      return true;
   }_EACH
-  return 0;
+  return false;
 }
+
+Arr/*char*/ *map_keys(Map *this) {
+  Arr/*char*/ *r = arr_new();
+  EACH(this, Kv, kv) {
+    arr_add(r, kv->key);
+  }_EACH
+  return r;
+}
+
+Arr/*void*/ *map_values(Map *this) {
+  Arr/*void*/ *r = arr_new();
+  EACH(this, Kv, kv) {
+    arr_add(r, kv->value);
+  }_EACH
+  return r;
+}
+
 
 inline
 It/*Kv*/ *map_to_it (Map *this) {

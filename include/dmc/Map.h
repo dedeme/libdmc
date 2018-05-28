@@ -41,6 +41,12 @@ void map_remove(Map *this, char *key);
 /// Returns 'true' if 'this' contains key 'key'.
 bool map_has_key(Map *this, char *key);
 
+/// Returns keys of this
+Arr/*char*/ *map_keys(Map *this);
+
+/// Returns values of this
+Arr/*void*/ *map_values(Map *this);
+
 /// Returns an iterator of Kv's
 It/*Kv*/ *map_to_it (Map *this);
 

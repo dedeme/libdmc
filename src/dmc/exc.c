@@ -100,7 +100,7 @@ char *exc_not_null_pointer(char *argument_name) {
 inline
 char *exc_illegal_argument(char *argument_name, char *expected, char *actual) {
   return str_printf(
-    "--- Illegal argument:Variable '%s'\nExpected: %s\nActual: %s",
+    "--- Illegal argument: Variable '%s'\nExpected: %s\nActual: %s",
     argument_name, expected, actual
   );
 }
