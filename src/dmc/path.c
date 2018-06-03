@@ -1,16 +1,35 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
+#include <string.h>
+#include <stdarg.h>
+#include "dmc/path.h"
+#include "dmc/str.h"
+#include "dmc/Buf.h"
+#include "dmc/exc.h"
+#include "dmc/DEFS.h"
 
 char *path_name (char *path) {
+  XNULL(path)
+
   int ix = str_last_cindex(path, '/');
   if (ix == -1)
     return str_copy(path);
   return str_sub(path, ix + 1, strlen(path));
 }
 
+char *path_parent (char *path) {
+  XNULL(path)
+
+  int ix = str_last_cindex(path, '/');
+  if (ix == -1)
+    return "";
+  return str_sub(path, 0, ix);
+}
+
 char *path_extension (char *path) {
+  XNULL(path)
+
   char *name = path_name(path);
 
   int ix = str_last_cindex(name, '.');
@@ -20,19 +39,14 @@ char *path_extension (char *path) {
 }
 
 char *path_only_name (char *path) {
+  XNULL(path)
+
   char *name = path_name(path);
 
   int ix = str_last_cindex(name, '.');
   if (ix == -1)
     return str_copy(name);
   return str_sub(name, 0, ix);
-}
-
-char *path_parent (char *path) {
-  int ix = str_last_cindex(path, '/');
-  if (ix == -1)
-    return "";
-  return str_sub(path, 0, ix);
 }
 
 char *path_cat (char *s, ...) {

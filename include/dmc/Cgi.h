@@ -1,4 +1,4 @@
-// Copyright 12-Feb-2018 ºDeme
+// Copyright 02-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Utilities for HTML conections between client - server
@@ -7,7 +7,9 @@
   #define DM_CGI_H
 
 #include <time.h>
-#include <dmc/Json.h>
+#include <stdbool.h>
+typedef struct json_Json Json;
+typedef struct mjson_Mjson Mjson;
 
 /// cgi_klen returns the standard length of keys.
 int cgi_klen();
@@ -16,7 +18,7 @@ int cgi_klen();
 /// 'cryp_cryp()' using the key of 'cgi_set_key()'.<br>
 /// The Map[Json] has ever a field called 'error' set to "" in ok responses
 /// and to a message if there is some error.
-typedef char CgiRp;
+typedef struct cgiRp_CgiRp CgiRp;
 
 ///
 typedef struct cgi_Cgi Cgi;
@@ -102,7 +104,7 @@ CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration);
 CgiRp *cgi_connect(Cgi *this, char  *session_id);
 
 /// cgi_ok creates a new CgiRp, setting {error:""}.
-CgiRp *cgi_ok(Cgi *this, Map/*Json*/ *data);
+CgiRp *cgi_ok(Cgi *this, Mjson *data);
 
 /// cgi_ok creates a new CgiRp, setting {error:msg}.
 CgiRp *cgi_error(Cgi *this, char *msg);

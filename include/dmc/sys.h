@@ -1,4 +1,4 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Utilities for managing globals values.<br>
@@ -10,11 +10,9 @@
 /// <tt>sys_new("app_name")</tt> by <tt>sys_new_cgi("app_name")</tt>
 
 #ifndef DM_SYS_H
-# define DM_SYS_H
+  #define DM_SYS_H
 
-#include <stddef.h>
-#include "Arr.h"
-
+typedef struct achar_Achar Achar;
 
 /// Initializates a normal program and call 'exc.init()' and 'rnd_init()'.<br>
 /// After call this function 'sys_home' and 'sys_user' are available.<p>
@@ -22,10 +20,10 @@
 void sys_init (char *path);
 
 ///
-char *sys_home ();
+char *sys_home (void);
 
 ///
-char *sys_uname ();
+char *sys_uname (void);
 
 /// Sets LC_ALL, for example: <tt>sys_locale("es_ES.utf8")</tt>
 void sys_locale (char *language);
@@ -33,6 +31,6 @@ void sys_locale (char *language);
 /// Executes 'command', redirecting stderr to stdout, and returns its standard
 /// out (excluding the trailing '\n' of each line). If command fails, function
 /// returns NULL.
-Arr/*char*/ *sys_cmd(char *command);
+Achar *sys_cmd(char *command);
 
 #endif

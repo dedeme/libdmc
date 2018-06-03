@@ -1,27 +1,61 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <wctype.h>
+#include <gc.h>
+#include "dmc/str.h"
+#include "dmc/Buf.h"
+#include "dmc/ct/Achar.h"
+#include "dmc/ct/Ichar.h"
+#include "dmc/Opt.h"
+#include "dmc/exc.h"
+#include "dmc/DEFS.h"
 
-inline
-bool str_eq (void *str1, void  *str2) {
-  return str1 && str2 ? !strcmp(str1, str2) : str1 == str2;
+size_t str_len(char *s) {
+  XNULL(s);
+  return strlen(s);
+}
+
+int str_cmp(char *s1, char *s2) {
+  XNULL(s1)
+  XNULL(s2)
+  return strcmp(s1, s2);
+}
+
+int str_cmp_locale(char *s1, char *s2) {
+  XNULL(s1)
+  XNULL(s2)
+  return strcoll(s1, s2);
+}
+
+bool str_eq (char *str1, char *str2) {
+  XNULL(str1)
+  XNULL(str2)
+  return !strcmp(str1, str2);
 }
 
 bool str_starts (char *str, char  *substr) {
+  XNULL(str)
+  XNULL(substr)
   int sublen = strlen(substr);
   return strlen(str) >= sublen && !memcmp(str, substr, sublen);
 }
 
 bool str_ends (char *str, char  *substr) {
+  XNULL(str)
+  XNULL(substr)
   int slen = strlen(str);
   int sublen = strlen(substr);
   return slen >= sublen && !memcmp(str + slen - sublen, substr, sublen);
 }
 
 int str_cindex (char *str, char ch) {
+  XNULL(str)
   int c = 0;
   char *p  = str;
   while (*p) {
@@ -34,6 +68,9 @@ int str_cindex (char *str, char ch) {
 }
 
 int str_index (char *str, char *substr) {
+  XNULL(str)
+  XNULL(substr)
+
   if (!*substr) {
     return 0;
   }
@@ -53,6 +90,8 @@ int str_index (char *str, char *substr) {
 }
 
 int str_last_cindex (char *str, char ch) {
+  XNULL(str)
+
   int r = -1;
   int c = 0;
   char *p  = str;
@@ -66,6 +105,9 @@ int str_last_cindex (char *str, char ch) {
 }
 
 int str_last_index (char *str, char *substr) {
+  XNULL(str)
+  XNULL(substr)
+
   int r = -1;
   if (!*substr) {
     return 0;
@@ -86,7 +128,7 @@ int str_last_index (char *str, char *substr) {
 }
 
 char *str_copy (char *s) {
-  if (!s) return NULL;
+  XNULL(s)
 
   char *r = ATOMIC(strlen(s) + 1);
   strcpy(r, s);
@@ -94,6 +136,8 @@ char *str_copy (char *s) {
 }
 
 char *str_cat (char *s, ...) {
+  XNULL(s)
+
   va_list args;
   char *tmp;
 
@@ -111,6 +155,8 @@ char *str_cat (char *s, ...) {
 }
 
 char *str_sub (char *str, int begin, int end) {
+  XNULL(str)
+
   int l = strlen(str);
   int df = -1;
   if (begin < 0) {
@@ -136,18 +182,21 @@ char *str_sub (char *str, int begin, int end) {
   return r;
 }
 
-inline
 char *str_sub_end (char *str, int begin) {
+  XNULL(str)
+
   return str_sub(str, begin, strlen(str));
 }
 
 char *str_ltrim (char *str) {
+  XNULL(str)
   while (isspace(*str)) ++str;
-
   return str_copy(str);
 }
 
 char *str_rtrim (char *str) {
+  XNULL(str)
+
   int ix = strlen(str) - 1;
   while (ix >= 0 && isspace(*(str + ix))) {
     --ix;
@@ -155,68 +204,80 @@ char *str_rtrim (char *str) {
   return str_sub(str, 0, ix + 1);
 }
 
-inline
 char *str_trim (char *str) {
+  XNULL(str)
   return str_ltrim(str_rtrim(str));
 }
 
-Arr/*char*/ *str_csplit (char *s, char sep) {
-  Arr/*char*/ *r = arr_new();
+Achar *str_csplit (char *s, char sep) {
+  XNULL(s)
+
+  Achar *r = achar_new();
   int i;
   while (*s) {
     i = str_cindex(s, sep);
     if (i == -1) break;
-    arr_add(r, str_sub(s, 0, i));
+    achar_add(r, str_sub(s, 0, i));
     s = s + i + 1;
   }
-  if (*s) arr_add(r, s);
+  if (*s) achar_add(r, s);
   return r;
 }
 
-Arr/*char*/ *str_csplit_trim (char *str, char sep) {
-  Arr/*char*/ *r = str_csplit(str, sep);
-  RANGE0(i, arr_size(r)) {
-    arr_es(r)[i] = str_trim(arr_es(r)[i]);
+Achar *str_csplit_trim (char *str, char sep) {
+  XNULL(str)
+
+  Achar *r = str_csplit(str, sep);
+  RANGE0(i, achar_size(r)) {
+    achar_set(r, i, str_trim(achar_get(r, i)));
   }_RANGE
   return r;
 }
 
-Arr/*char*/ *str_split (char *s, char *sep) {
-  Arr/*char*/ *r = arr_new();
+Achar *str_split (char *s, char *sep) {
+  XNULL(s)
+  XNULL(sep)
+
+  Achar *r = achar_new();
   int len = strlen(sep);
   if (!len) {
-    arr_add(r, s);
+    achar_add(r, s);
     return r;
   }
   int i;
   while (*s) {
     i = str_index(s, sep);
     if (i == -1) break;
-    arr_add(r, str_sub(s, 0, i));
+    achar_add(r, str_sub(s, 0, i));
     s = s + i + len;
   }
-  if (*s) arr_add(r, s);
+  if (*s) achar_add(r, s);
   return r;
 }
 
-Arr/*char*/ *str_split_trim (char *str, char *sep) {
-  Arr/*char*/ *r = str_split(str, sep);
-  RANGE0(i, arr_size(r)) {
-    arr_es(r)[i] = str_trim(arr_es(r)[i]);
+Achar *str_split_trim (char *str, char *sep) {
+  XNULL(str)
+  XNULL(sep)
+
+  Achar *r = str_split(str, sep);
+  RANGE0(i, achar_size(r)) {
+    achar_set(r, i, str_trim(achar_get(r,i)));
   }_RANGE
   return r;
 }
 
-char *str_cjoin (It/*char*/ *it, char sep) {
+char *str_cjoin (Ichar *it, char sep) {
+  XNULL(it)
+
   Buf *bf = buf_new();
-  if (it_has_next(it)) {
-    char *e1 = it_next(it);
-    if (it_has_next(it)) {
+  if (ichar_has_next(it)) {
+    char *e1 = ichar_next(it);
+    if (ichar_has_next(it)) {
       buf_add(bf, e1);
       do {
         buf_cadd(bf, sep);
-        buf_add(bf, it_next(it));
-      } while (it_has_next(it));
+        buf_add(bf, ichar_next(it));
+      } while (ichar_has_next(it));
       return buf_to_str(bf);
     }
     return e1;
@@ -224,16 +285,19 @@ char *str_cjoin (It/*char*/ *it, char sep) {
   return "";
 }
 
-char *str_join (It/*char*/ *it, char *sep) {
+char *str_join (Ichar *it, char *sep) {
+  XNULL(it)
+  XNULL(sep)
+
   Buf *bf = buf_new();
-  if (it_has_next(it)) {
-    char *e1 = it_next(it);
-    if (it_has_next(it)) {
+  if (ichar_has_next(it)) {
+    char *e1 = ichar_next(it);
+    if (ichar_has_next(it)) {
       buf_add(bf, e1);
       do {
         buf_add(bf, sep);
-        buf_add(bf, it_next(it));
-      } while (it_has_next(it));
+        buf_add(bf, ichar_next(it));
+      } while (ichar_has_next(it));
       return buf_to_str(bf);
     }
     return e1;
@@ -242,6 +306,8 @@ char *str_join (It/*char*/ *it, char *sep) {
 }
 
 char *str_creplace(char *s, char old, char new) {
+  XNULL(s)
+
   char *r = str_copy(s);
   char *p = r;
   while (*p) {
@@ -253,6 +319,10 @@ char *str_creplace(char *s, char old, char new) {
 }
 
 char *str_replace(char *s, char *old, char *new) {
+  XNULL(s)
+  XNULL(old)
+  XNULL(new)
+
   if (!*old) return str_copy(s);
 
   Buf *bf = buf_new();
@@ -270,15 +340,9 @@ char *str_replace(char *s, char *old, char *new) {
   return buf_to_str(bf);
 }
 
-char *str_printf(char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  char *r = str_vprintf(format, args);
-  va_end(args);
-  return r;
-}
+static char *str_vprintf(char *format, va_list args) {
+  XNULL(format)
 
-char *str_vprintf(char *format, va_list args) {
   int length = 0;
   char *rs = (char *)malloc(length);
   va_list args2;
@@ -290,13 +354,26 @@ char *str_vprintf(char *format, va_list args) {
     rs = (char *)malloc(length);
     vsnprintf(rs, length, format, args2);
   }
-  char *r = str_copy(rs);
+  char *r = ATOMIC(strlen(rs) + 1);
+  strcpy(r, rs);
   va_end(args2);
   free(rs);
   return r;
 }
 
+char *str_printf(char *format, ...) {
+  XNULL(format)
+
+  va_list args;
+  va_start(args, format);
+  char *r = str_vprintf(format, args);
+  va_end(args);
+  return r;
+}
+
 int str_runes (char *s) {
+  XNULL(s)
+
   unsigned char b1, b2, b3, b4;
   int r = 0;
   while (*s) {
@@ -328,6 +405,8 @@ int str_runes (char *s) {
 }
 
 char *str_next_rune (char *s) {
+  XNULL(s)
+
   unsigned char b1, b2, b3, b4;
   b1 = *s++;
   if (b1) {
@@ -375,7 +454,9 @@ char *str_next_rune (char *s) {
   return "";
 }
 
-unsigned *str_to_unicode (char *s0) {
+Opt/*unsigned*/ *str_to_unicode (char *s0) {
+  XNULL(s0)
+
   unsigned char *s = (unsigned char *)s0;
   unsigned b1, b2, b3, b4;
   int lg = str_runes(s0) + 1;
@@ -384,37 +465,39 @@ unsigned *str_to_unicode (char *s0) {
   while (*s) {
     b1 = *s++;
     if (b1 < 0x80) *pr++ = b1;
-    else if (b1 < 0xC2) return NULL;
+    else if (b1 < 0xC2) return opt_null();
     else if (b1 < 0xE0) {
       b2 = *s++;
-      if ((b2 & 0xC0) != 0x80) return NULL;
+      if ((b2 & 0xC0) != 0x80) return opt_null();
       *pr++ = (b1 << 6) + b2 - 0x3080;
     } else if (b1 < 0xF0) {
       b2 = *s++;
-      if ((b2 & 0xC0) != 0x80) return NULL;
-      if (b1 == 0xE0 && b2 < 0xA0) return NULL;
+      if ((b2 & 0xC0) != 0x80) return opt_null();
+      if (b1 == 0xE0 && b2 < 0xA0) return opt_null();
       b3 = *s++;
-      if ((b3 & 0xC0) != 0x80) return NULL;
+      if ((b3 & 0xC0) != 0x80) return opt_null();
       *pr++ = (b1 << 12) + (b2 << 6) + b3 - 0xE2080;
     } else if (b1 < 0xF5) {
       b2 = *s++;
-      if ((b2 & 0xC0) != 0x80) return NULL;
-      if (b1 == 0xF0 && b2 < 0x90) return NULL;
-      if (b1 == 0xF4 && b2 >= 0x90) return NULL;
+      if ((b2 & 0xC0) != 0x80) return opt_null();
+      if (b1 == 0xF0 && b2 < 0x90) return opt_null();
+      if (b1 == 0xF4 && b2 >= 0x90) return opt_null();
       b3 = *s++;
-      if ((b3 & 0xC0) != 0x80) return NULL;
+      if ((b3 & 0xC0) != 0x80) return opt_null();
       b4 = *s++;
-      if ((b4 & 0xC0) != 0x80) return NULL;
+      if ((b4 & 0xC0) != 0x80) return opt_null();
       *pr++ = (b1 << 18) + (b2 << 12) + (b3 << 6) + b4 - 0x3C82080;
     } else {
-      return NULL;
+      return opt_null();
     }
   }
   *pr = 0;
-  return r;
+  return opt_new(r);
 }
 
-char *str_from_unicode (unsigned *u) {
+Opt/*char*/ *str_from_unicode (unsigned *u) {
+  XNULL(u)
+
   Buf *bf = buf_new();
 
   while (*u) {
@@ -434,14 +517,16 @@ char *str_from_unicode (unsigned *u) {
       buf_cadd(bf, (unsigned char)((code_point >> 6) & 0x3F) + 0x80);
       buf_cadd(bf, (unsigned char)(code_point & 0x3F) + 0x80);
     } else {
-      return NULL;
+      return opt_null();
     }
   }
 
-  return buf_to_str(bf);
+  return opt_new(buf_to_str(bf));
 }
 
 char *str_from_iso (char *s) {
+  XNULL(s)
+
   Buf *bf = buf_new();
   unsigned char ch = *s++;
   while (ch) {
@@ -457,26 +542,44 @@ char *str_from_iso (char *s) {
 }
 
 char *str_to_upper (char *s) {
-  unsigned *ws = str_to_unicode(s);
+  XNULL(s)
+
+  Opt/*unsigned*/ *ows = str_to_unicode(s);
+  ONULL(ows)
+  unsigned *ws = opt_value(ows);
+
   unsigned *p = ws;
   while (*p) {
     *p = (unsigned)towupper(*p);
     ++p;
   }
-  return str_from_unicode(ws);
+
+  Opt/*char*/ *r = str_from_unicode(ws);
+  ONULL(r)
+  return opt_value(r);
 }
 
 char *str_to_lower (char *s) {
-  unsigned *ws = str_to_unicode(s);
+  XNULL(s)
+
+  Opt/*unsigned*/ *ows = str_to_unicode(s);
+  ONULL(ows)
+  unsigned *ws = opt_value(ows);
+
   unsigned *p = ws;
   while (*p) {
     *p = (unsigned)towlower(*p);
     ++p;
   }
-  return str_from_unicode(ws);
+
+  Opt/*char*/ *r = str_from_unicode(ws);
+  ONULL(r)
+  return opt_value(r);
 }
 
 char *str_to_escape (char *s) {
+  XNULL(s)
+
   Buf *bf = buf_new();
   while (*s) {
     char ch = *s++;
@@ -489,6 +592,8 @@ char *str_to_escape (char *s) {
 }
 
 char *str_from_escape (char *s) {
+  XNULL(s)
+
   int len = strlen(s);
   if (len < 2) {
     return s;

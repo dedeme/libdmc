@@ -1,4 +1,4 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Definitions.
@@ -61,13 +61,13 @@
 /// Iterates over a 'List'.
 ///   list   : An List *
 ///   type   : Element type without pointer sign (*)
-///   element: An element of type 'a'
+///   element: An element of type 'type'
 /// For example:
 ///   EACHL(list, char, s) {
 ///     printf("%s\n", s);
 ///   } _EACH
 #define EACHL(list, type, element) { \
-  List *_EACHL_list = (list); \
+  List *_EACHL_list = (List *)list; \
   type *element; \
   while (!list_empty(_EACHL_list)) { \
     element = list_head(_EACHL_list); \
@@ -76,23 +76,23 @@
 /// Iterates over a 'Arr'. You can access to the 'element' index with _i.
 ///   a      : An Arr *
 ///   type   : Element type without pointer sign (*)
-///   element: An element of type 'a'
+///   element: An element of type 'type'
 /// For example:
 ///   EACH(a, char, s) {
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
 #define EACH(a, type, element) { \
-  Arr *__arr = a; \
+  Arr *__arr = (Arr *)a; \
   size_t __size = arr_size(__arr); \
   size_t _i; \
   type *element; \
   for (_i = 0; _i < __size; ++_i) { \
-    element = arr_es(__arr)[_i];
+    element = arr_get(__arr, _i);
 
 /// Iterates over an 'Arr' in reverse order. You can access to the 'element'
 /// index with _i.
-/// Iterates over a 'Arr'. You can access to the 'element' index with _i.
 ///   a      : An Arr *
+///   fn
 ///   type   : Element type without pointer sign (*)
 ///   element: An element of type 'a'
 /// For example:
@@ -100,11 +100,11 @@
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
 #define EACHR(a, type, element) { \
-  Arr *__arr = a; \
+  Arr *__arr = (Arr *)a; \
   size_t _i = arr_size(__arr); \
   type *element; \
   while (_i) { \
-    element = arr_es(__arr)[--_i];
+    element = arr_get(__arr, --_i);
 
 /// Finalizes an EACHL, EACH or a EACHR
 #define _EACH }}
@@ -127,7 +127,7 @@
 #define TRY {void _TRY_try() {
 
 /// See <a href="#hp:TRY">TRY</a>
-#define CATCH(e) ;exc_remove();} void _TRY_catch(char *e) {exc_remove(); \
+#define CATCH(e) ;exc_remove();} void _TRY_catch(char *e) {exc_remove();
 
 /// See <a href="#hp:TRY">TRY</a>
 #define _TRY } jmp_buf *_TRY_buf = MALLOC(jmp_buf); \
@@ -137,10 +137,26 @@
 
 /// Example
 ///   THROW "Working directory can no be find: %s", strerror(errno) _THROW
-#define THROW exc_throw(str_printf(
+#define THROW(type) exc_throw(type, str_printf(
 
 ///
 #define _THROW ), __FILE__, (char *)__func__, __LINE__);
+
+/// XNULL(var) throws a null_pointer exception when variable 'var' is null.
+#define XNULL(var) if (!var) \
+  exc_throw(exc_null_pointer_t, exc_null_pointer(#var) \
+  , __FILE__, (char *)__func__, __LINE__);
+
+/// ONULL(var) throws a null_pointer exception when opt_is_null(var).
+#define ONULL(var) if (opt_is_null((Opt *)var)) \
+  exc_throw(exc_illegal_state_t, exc_illegal_state("Opt " #var " is null") \
+  , __FILE__, (char *)__func__, __LINE__);
+
+/// FROM_JSON is the Json restorer function type
+#define FROM_JSON void *(*)(Json *)
+
+/// TO_JSON is the Json serializer function type
+#define TO_JSON Json *(*)(void *)
 
 #endif
 

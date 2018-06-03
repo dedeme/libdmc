@@ -1,44 +1,59 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 1-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities to manage exceptions.<p>
-/// Only functions 'init'  and 'throw' is intended to be use directly. The
-/// rest must be used through the macros TRY-CATCH-FINALLY-_TRY. (see
-/// <a href="?libdm@dm/defs#hp:TRY">defs</a>)
+/// List structure
 #ifndef DM_LIST_H
   #define DM_LIST_H
 
-#include "It.h"
-
+#include <stdbool.h>
 
 ///
 typedef struct list_List List;
+typedef struct it_It It;
+typedef struct arr_Arr Arr;
+typedef struct json_Json Json;
+typedef struct ajson_Ajson Ajson;
 
 ///
 List *list_new(void);
 
-/// If "this" is not empty, throws an error
+/// list_head returns every element of 'this' less the first one. If "this" is
+/// empty, throws an exception
 List *list_tail(List *this);
 
-/// If "this" is not empty, throws an error
+/// list_head returns the first element of 'this'. If "this" is empty,
+/// throws an exception.
 void *list_head (List *this);
 
 ///
 bool list_empty(List *this);
 
-/// Adds 'o' at head.
+/// list_cons adds 'o' at head. 'o' must be not NULL.
 List *list_cons(List *this, void *o);
 
-/// Returns this + l
+/// list_cat returns this + l
 List *list_cat(List *this, List *l);
 
-/// Returns this in reverse order
+/// list_reverse returns this in reverse order
 List *list_reverse(List *this);
 
-/// Returs an iterator from top to bottom
+/// list_to_it returns an iterator from top to bottom
 It *list_to_it (List *this);
 
-/// 'it' goes from bottom to top (reverse)
+/// list_from_it return a List with elements of 'it' in reverse order
 List *list_from_it (It *it);
+
+///
+Arr *list_to_arr (List *this);
+
+///
+List *list_from_arr (Arr *a);
+
+/// list_to_json returns a serialization of 'this' using 'to' to
+/// convert elements.
+Ajson *list_to_json(List *this, Json *(*to)(void *));
+
+/// list_from_json restores a serialized List using 'from' to convert elements.
+List *list_from_json(Ajson *js, void *(*from)(Json *));
 
 #endif

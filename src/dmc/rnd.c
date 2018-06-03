@@ -1,8 +1,13 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
-#include <limits.h>
+#include <stdlib.h>
+#include <time.h>
+#include <gc.h>
+#include "dmc/rnd.h"
+#include "dmc/Arr.h"
+#include "dmc/It.h"
+#include "dmc/DEFS.h"
 
 void rnd_init () {
   srand(time(0));
@@ -22,7 +27,6 @@ size_t rnd_i (size_t top) {
 /**/  Arr *a;
 /**/  int i;
 /**/} box_Box;
-/**/static bool box_has_next(void *o) { return true; }
 /**/static FNM (box_next, box_Box, box) {
 /**/  if (box->i >= arr_size(box->a)) {
 /**/    box->i = 0;
@@ -34,11 +38,12 @@ size_t rnd_i (size_t top) {
 /**/}_FN
 It *rnd_box (Arr *a) {
   if (arr_size(a)) {
+    arr_shuffle(a);
     box_Box *box = MALLOC(box_Box);
     box->a = a;
     box->i = 0;
 
-    return it_new(box, box_has_next, box_next);
+    return it_new(box, box_next);
   }
   return it_empty();
 }

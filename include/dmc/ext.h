@@ -1,4 +1,4 @@
-// Copyright 07-Feb-2018 ºDeme
+// Copyright 02-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Functions using external programs
@@ -6,10 +6,12 @@
 #ifndef DM_EXT_H
   #define DM_EXT_H
 
+typedef struct achar_Achar Achar;
+
 /// ext_wget calls "wget -q -O - <i>url</i>" and returns the text read in an
 /// Arr[char].<br>
 /// If the reading fails 'r' is an empty Arr.
-Arr/*char*/ *ext_wget(char *url);
+Achar *ext_wget(char *url);
 
 /// ext_zenity_entry reads a text using GUI. It calls:
 ///   zenity --entry --title=<i>title</i> --text=<i>prompt</i>

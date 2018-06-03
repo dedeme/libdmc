@@ -1,11 +1,20 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
 #include <unistd.h>
 #include <pwd.h>
 #include <errno.h>
 #include <locale.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "dmc/sys.h"
+#include "dmc/ct/Achar.h"
+#include "dmc/exc.h"
+#include "dmc/rnd.h"
+#include "dmc/path.h"
+#include "dmc/str.h"
+#include "dmc/file.h"
+#include "dmc/DEFS.h"
 
 static struct {
   char *home;
@@ -13,6 +22,8 @@ static struct {
 } sys;
 
 void sys_init (char *path) {
+  XNULL(path)
+
   exc_init();
   rnd_init();
 
@@ -24,27 +35,24 @@ void sys_init (char *path) {
 }
 
 inline
-char *sys_home () {
+char *sys_home (void) {
   return sys.home;
 }
 
 inline
-char *sys_uname () {
+char *sys_uname (void) {
   return sys.uname;
 }
 
-inline
 void sys_locale (char *language) {
+  XNULL(language)
   setlocale (LC_ALL, language);
 }
 
-inline
-void sys_random () {
-  rnd_init();
-}
+Achar *sys_cmd(char *command) {
+  XNULL(command)
 
-Arr/*char*/ *sys_cmd(char *command) {
-  Arr *r = arr_new();
+  Achar *r = achar_new();
   FILE *fp;
   char *line = NULL;
   size_t len = 0;
@@ -53,7 +61,7 @@ Arr/*char*/ *sys_cmd(char *command) {
     return NULL;
 
   while (getline(&line, &len, fp) != -1) {
-    arr_add(r, str_copy(line));
+    achar_add(r, str_copy(line));
     free(line);
     line = NULL;
   }

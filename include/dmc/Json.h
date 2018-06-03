@@ -15,10 +15,17 @@
 #ifndef DM_COM_JSON_H
 # define DM_COM_JSON_H
 
-#include "Map.h"
+#include <stdbool.h>
+
+typedef struct arr_Arr Arr;
+typedef struct map_Map Map;
+typedef struct ajson_Ajson Ajson;
+typedef struct mjson_Mjson Mjson;
 
 ///
-typedef char Json;
+#define json_err_t "json error"
+/// 'Json' is an alias of 'char'
+typedef struct json_Json Json;
 
 /// Returns true if json is "null" or false in another case.
 bool json_rnull (Json *json);
@@ -33,9 +40,9 @@ double json_rdouble (Json *json);
 /// .
 char *json_rstring (Json *json);
 ///
-Arr/*Json*/ *json_rarray (Json *json);
+Ajson *json_rarray (Json *json);
 ///
-Map/*Json*/ *json_robject (Json *json);
+Mjson *json_robject (Json *json);
 ///
 Json *json_wnull(void);
 ///
@@ -49,93 +56,93 @@ Json *json_wdouble(double n, int scale);
 ///
 Json *json_wstring(char *s);
 ///
-Json *json_warray(Arr/*Json*/ *a);
+Json *json_warray(Ajson *a);
 ///
-Json *json_wobject(Map/*Json*/ *m);
+Json *json_wobject(Mjson *m);
 
 ///
-void jmap_pnull(Map/*Json*/ *this, char *key);
+void jmap_pnull(Mjson *this, char *key);
 ///
-void jmap_pbool(Map/*Json*/ *this, char *key, bool value);
+void jmap_pbool(Mjson *this, char *key, bool value);
 ///
-void jmap_pint(Map/*Json*/ *this, char *key, int n);
+void jmap_pint(Mjson *this, char *key, int n);
 ///
-void jmap_puint(Map/*Json*/ *this, char *key, unsigned n);
+void jmap_puint(Mjson *this, char *key, unsigned n);
 ///
-void jmap_pdouble(Map/*Json*/ *this, char *key, double n, int scale);
+void jmap_pdouble(Mjson *this, char *key, double n, int scale);
 /// Admits null values of 's'
-void jmap_pstring(Map/*Json*/ *this, char *key, char *s);
+void jmap_pstring(Mjson *this, char *key, char *s);
 /// Admits null values of 'a'
-void jmap_parray(Map/*Json*/ *this, char *key, Arr *a, Json *(*to)(void *));
+void jmap_parray(Mjson *this, char *key, Arr *a, Json *(*to)(void *));
 /// Admits null values of 'm'
-void jmap_pobject(Map/*Json*/ *this, char *key, Map *m, Json *(*to)(void *));
+void jmap_pobject(Mjson *this, char *key, Map *m, Json *(*to)(void *));
 /// Returns true if key is null. Errors o not existent key make "crashes".
-bool jmap_gnull(Map/*Json*/ *this, char *key);
+bool jmap_gnull(Mjson *this, char *key);
 /// Errors o not existent key make "crashes".
-bool jmap_gbool(Map/*Json*/ *this, char *key);
+bool jmap_gbool(Mjson *this, char *key);
 /// Errors or not existent key make "crashes".
-int jmap_gint(Map/*Json*/ *this, char *key);
+int jmap_gint(Mjson *this, char *key);
 /// Errors or not existent key make "crashes".
-unsigned jmap_guint(Map/*Json*/ *this, char *key);
+unsigned jmap_guint(Mjson *this, char *key);
 /// Errors or not existent key make "crashes".
-double jmap_gdouble(Map/*Json*/ *this, char *key);
+double jmap_gdouble(Mjson *this, char *key);
 /// Errors or not existent key make "crashes".
-char *jmap_gstring(Map/*Json*/ *this, char *key);
+char *jmap_gstring(Mjson *this, char *key);
 /// Errors or not existent key make "crashes".
-Arr *jmap_garray(Map/*Json*/ *this, char *key, void *(*from)(Json *));
+Arr *jmap_garray(Mjson *this, char *key, void *(*from)(Json *));
 /// Errors or not existent key make "crashes".
-Map *jmap_gobject(Map/*Json*/ *this, char *key, void *(*from)(Json *));
+Map *jmap_gobject(Mjson *this, char *key, void *(*from)(Json *));
 
 ///
-void jarr_anull(Arr/*Json*/ *this);
+void jarr_anull(Ajson *this);
 ///
-void jarr_abool(Arr/*Json*/ *this, bool value);
+void jarr_abool(Ajson *this, bool value);
 ///
-void jarr_aint(Arr/*Json*/ *this, int n);
+void jarr_aint(Ajson *this, int n);
 ///
-void jarr_auint(Arr/*Json*/ *this, unsigned n);
+void jarr_auint(Ajson *this, unsigned n);
 ///
-void jarr_adouble(Arr/*Json*/ *this, double n, int scale);
+void jarr_adouble(Ajson *this, double n, int scale);
 /// Admits null values of 's'
-void jarr_astring(Arr/*Json*/ *this, char *s);
+void jarr_astring(Ajson *this, char *s);
 /// Admits null values of 'a'
-void jarr_aarray(Arr/*Json*/ *this, Arr *a, Json *(*to)(void *));
+void jarr_aarray(Ajson *this, Arr *a, Json *(*to)(void *));
 /// Admits null values of 'm'
-void jarr_aobject(Arr/*Json*/ *this, Map *m, Json *(*to)(void *));
+void jarr_aobject(Ajson *this, Map *m, Json *(*to)(void *));
 /// Returns true if the value 'ix' is null. Errors o not existent key make
 /// "crashes".
-bool jarr_gnull(Arr/*Json*/ *this, size_t ix);
+bool jarr_gnull(Ajson *this, size_t ix);
 /// Errors o not existent key make "crashes".
-bool jarr_gbool(Arr/*Json*/ *this, size_t ix);
+bool jarr_gbool(Ajson *this, size_t ix);
 /// Errors or not existent key make "crashes".
-int jarr_gint(Arr/*Json*/ *this, size_t ix);
+int jarr_gint(Ajson *this, size_t ix);
 /// Errors or not existent key make "crashes".
-unsigned jarr_guint(Arr/*Json*/ *this, size_t ix);
+unsigned jarr_guint(Ajson *this, size_t ix);
 /// Errors or not existent key make "crashes".
-double jarr_gdouble(Arr/*Json*/ *this, size_t ix);
+double jarr_gdouble(Ajson *this, size_t ix);
 /// Errors or not existent key make "crashes".
-char *jarr_gstring(Arr/*Json*/ *this, size_t ix);
+char *jarr_gstring(Ajson *this, size_t ix);
 /// Errors or not existent key make "crashes".
-Arr *jarr_garray(Arr/*Json*/ *this, size_t ix, void *(*from)(Json *));
+Arr *jarr_garray(Ajson *this, size_t ix, void *(*from)(Json *));
 /// Errors or not existent key make "crashes".
-Map *jarr_gobject(Arr/*Json*/ *this, size_t ix, void *(*from)(Json *));
+Map *jarr_gobject(Ajson *this, size_t ix, void *(*from)(Json *));
 
 ///
-void jarr_snull(Arr/*Json*/ *this, size_t ix);
+void jarr_snull(Ajson *this, size_t ix);
 ///
-void jarr_sbool(Arr/*Json*/ *this, size_t ix, bool value);
+void jarr_sbool(Ajson *this, size_t ix, bool value);
 ///
-void jarr_sint(Arr/*Json*/ *this, size_t ix, int n);
+void jarr_sint(Ajson *this, size_t ix, int n);
 ///
-void jarr_suint(Arr/*Json*/ *this, size_t ix, unsigned n);
+void jarr_suint(Ajson *this, size_t ix, unsigned n);
 ///
-void jarr_sdouble(Arr/*Json*/ *this, size_t ix, double n, int scale);
+void jarr_sdouble(Ajson *this, size_t ix, double n, int scale);
 ///
-void jarr_sstring(Arr/*Json*/ *this, size_t ix, char *s);
+void jarr_sstring(Ajson *this, size_t ix, char *s);
 ///
-void jarr_sarray(Arr/*Json*/ *this, size_t ix, Arr *a, Json *(*to)(void *));
+void jarr_sarray(Ajson *this, size_t ix, Arr *a, Json *(*to)(void *));
 ///
-void jarr_sobject(Arr/*Json*/ *this, size_t ix, Map *m, Json *(*to)(void *));
+void jarr_sobject(Ajson *this, size_t ix, Map *m, Json *(*to)(void *));
 
 #endif
 

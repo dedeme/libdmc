@@ -1,7 +1,13 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 2-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
+#include <gc.h>
+#include <string.h>
+#include "dmc/Bytes.h"
+#include "dmc/exc.h"
+#include "dmc/Json.h"
+#include "dmc/ct/Ajson.h"
+#include "dmc/DEFS.h"
 
 struct bytes_Bytes {
   unsigned char *bs; // R
@@ -21,6 +27,8 @@ Bytes *bytes_new_len(size_t length) {
 }
 
 Bytes *bytes_from_bytes (unsigned char *bs, size_t length) {
+  XNULL(bs)
+
   Bytes *this = MALLOC(Bytes);
   this->bs = ATOMIC(length);
   memcpy(this->bs, bs, length);
@@ -28,35 +36,61 @@ Bytes *bytes_from_bytes (unsigned char *bs, size_t length) {
   return this;
 }
 
-inline
 Bytes *bytes_from_str (char *s) {
+  XNULL(s)
   return bytes_from_bytes((unsigned char *)s, strlen(s));
 }
 
-inline
 unsigned char *bytes_bs(Bytes *this) {
+  XNULL(this)
   return this->bs;
 }
 
-inline
 size_t bytes_length(Bytes *this) {
+  XNULL(this)
   return this->length;
 }
 
 void bytes_add_bytes (Bytes *this, unsigned char *bs, size_t length) {
+  XNULL(this)
+  XNULL(bs)
+
   size_t sum = this->length + length;
   this->bs = GC_REALLOC(this->bs, sum);
   memcpy(this->bs + this->length, bs, length);
   this->length = sum;
 }
 
-inline
 void bytes_add (Bytes *this, Bytes *another) {
+  XNULL(this)
+  XNULL(another)
   bytes_add_bytes(this, another->bs, another->length);
 }
 
-inline
 void bytes_add_str (Bytes *this, char *s) {
+  XNULL(this)
+  XNULL(s)
   bytes_add_bytes(this, (unsigned char *)s, strlen(s));
 }
 
+Ajson *bytes_to_json(Bytes *this) {
+  XNULL(this)
+
+  Ajson *r = ajson_new();
+  unsigned char *p = this->bs;
+  REPEAT(this->length) {
+    ajson_add(r, json_wuint((unsigned)*p++));
+  }_REPEAT
+  return r;
+}
+
+Bytes *bytes_from_json(Ajson *js) {
+  XNULL(js)
+
+  Bytes *r = bytes_new_len(ajson_size(js));
+  unsigned char *p = r->bs;
+  EACH(js, Json, j) {
+    *p++ = (unsigned char)json_ruint(j);
+  }_EACH
+  return r;
+}

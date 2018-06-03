@@ -1,4 +1,4 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Array structure
@@ -6,78 +6,64 @@
 #ifndef DM_ARR_H
   # define DM_ARR_H
 
+#include <stdbool.h>
 #include <stddef.h>
-#include "It.h"
+
 
 ///
 typedef struct arr_Arr Arr;
+typedef struct it_It It;
 
-/// Initializates an array
+/// arr_new initializes an array
 Arr *arr_new (void);
 
-/// Initializates an array with an intial size buffer.
-///   this   : Arr object to create
-///   buffer : Initial size buffer. Its default is 15.
+/// arr_new initializes an array with an intial buffer.
+///   this   : object created
+///   buffer : Initial buffer size. Its default is 15.
 Arr *arr_new_buf (size_t size_buf);
 
-/// Returns 'this' size
+/// arr_size returns 'this' size
 size_t arr_size (Arr *this);
 
-/// Returns elements of 'this'
-void **arr_es (Arr *this);
-
-/// Adds an element
+/// arr_add adds an element. 'element' can not be NULL.<p>
+/// Throws exception.
 void arr_add (Arr *this, void *element);
 
-/// Adds an array
+/// arr_add_arr dds an array
 void arr_add_arr (Arr *this, Arr *another);
 
-/// returns element at position 'index'. Tests limits.<br>
-/// If the element is NULL throws a exception.
+/// arr_get returns element at position 'index'. Tests limits.<p>
 void *arr_get (Arr *this, size_t index);
 
-/// returns element at position 'index'. Tests limits.<br>
-/// The element can be NULL.
-void *arr_nget (Arr *this, size_t index);
-
-/// Inserts an element at 'index'
-void arr_insert (Arr *this, size_t index, void *element);
-
-/// Inserts an array at 'index'
-void arr_insert_arr (Arr *this, size_t index, Arr *another);
-
-/// Removes the elemente at 'index'
-void arr_remove (Arr *this, size_t index);
-
-/// Removes elements between 'begin' (inclusive) and 'end' (exclusive).
-void arr_remove_range (Arr *this, size_t begin, size_t end);
-
-/// Reverses elements of 'this'
-void arr_reverse (Arr *this);
-
-/// Replaces element at 'index' by a new 'element'. Tests limits.
+/// arr_set replaces element at 'index' by a new 'element'. Tests limits
+/// and 'element'
+/// can not be NULL.<p>
 void arr_set (Arr *this, size_t index, void *element);
 
-/// Returns the index of 'e'. When there are several elements in such
-/// situation, returns one of them without a particular order.
-/// If the element does not exists function returns '-1'.<br>
-/// This function make a binary search and requires that 'this' is ordered
-/// with function 'f'. This function is similar as strcmp().
-int arr_sindex (Arr *this, void *e, int (*f)(void *, void *));
+/// arr_insert inserts an element at 'index'. Tests limits and 'element' can
+/// no be NULL.<p>
+void arr_insert (Arr *this, size_t index, void *element);
 
-/// Sorts elements of 'this' according 'f'
+/// arr_insert_arr inserts an array at 'index'. Tests limits.<p>
+void arr_insert_arr (Arr *this, size_t index, Arr *another);
+
+/// arr_remove removes the elemente at 'index'. Tests limits.<p>
+void arr_remove (Arr *this, size_t index);
+
+/// arr_remove_range removes elements between 'begin' (inclusive) and 'end'
+/// (exclusive). Tests limits.<p>
+void arr_remove_range (Arr *this, size_t begin, size_t end);
+
+/// arr_reverse reverses elements of 'this'
+void arr_reverse (Arr *this);
+
+/// arr_sort sorts elements of 'this' according 'f'
 ///   f: Function which returns 'true' if the order is ascendent and e1 > e2,
 ///      or the order is descendent and e2 > e1
 void arr_sort (Arr *this, bool (*f)(void *e1, void *e2));
 
-/// Ascending natural sort of a string array ('this' can include null elements)
-void arr_sort_str (Arr *this);
-
-/// Ascending locale sort of a string array ('this' can include null elements)
-void arr_sort_locale (Arr *this);
-
-/// Should be used after calling <tt>cryp_random_init()</tt> or
-/// <tt>sys_init()</tt>
+/// arr_shuflle remix 'this' elements. It should be used after calling
+/// <tt>rnd_init()</tt> or <tt>sys_init()</tt>
 void arr_shuffle (Arr *this);
 
 ///

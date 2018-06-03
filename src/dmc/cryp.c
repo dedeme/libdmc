@@ -1,19 +1,27 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 02-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
 #include <time.h>
+#include <stdlib.h>
+#include <gc.h>
+#include "dmc/cryp.h"
+#include "dmc/b64.h"
+#include "dmc/Bytes.h"
+#include "dmc/exc.h"
+#include "dmc/str.h"
+#include "dmc/rnd.h"
+#include "dmc/DEFS.h"
 
 static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 char *cryp_genk (int lg) {
   if (lg <= 0)
-    THROW
+    THROW(exc_illegal_argument_t)
       exc_illegal_argument("lg", "> 0", str_printf("%d", lg))
     _THROW
 
-  uint len = strlen(b64_base);
+  uint len = str_len(b64_base);
   char *r = ATOMIC(lg + 1);
   char *p = r + lg;
   *p-- = 0;
@@ -24,9 +32,9 @@ char *cryp_genk (int lg) {
 }
 
 char *cryp_key (char *key, int lg) {
-  if (!key) THROW exc_null_pointer("key") _THROW
+  XNULL(key)
   if (!*key)
-    THROW
+    THROW(exc_illegal_argument_t)
       exc_illegal_argument("key", "not blank string", "blank string")
     _THROW
 
@@ -81,16 +89,16 @@ char *cryp_key (char *key, int lg) {
 }
 
 char *cryp_cryp (char *k, char *s) {
-  if (!k) THROW exc_null_pointer("k") _THROW
-  if (!s) THROW exc_null_pointer("s") _THROW
+  XNULL(k)
+  XNULL(s)
   if (!*k)
-    THROW
+    THROW (exc_illegal_argument_t)
       exc_illegal_argument("k", "not blank string", "blank string")
     _THROW
 
   char *b64 =b64_encode(s);
 
-  size_t lg = strlen(b64);
+  size_t lg = str_len(b64);
   char *k2 = cryp_key(k, lg);
 
   Bytes *rbs = bytes_new_len(lg);
@@ -106,10 +114,10 @@ char *cryp_cryp (char *k, char *s) {
 }
 
 char *cryp_decryp (char *k, char *c) {
-  if (!k) THROW exc_null_pointer("k") _THROW
-  if (!c) THROW exc_null_pointer("c") _THROW
+  XNULL(k)
+  XNULL(c)
   if (!*k)
-    THROW
+    THROW(exc_illegal_argument_t)
       exc_illegal_argument("k", "not blank string", "blank string")
     _THROW
 
@@ -132,24 +140,30 @@ char *cryp_decryp (char *k, char *c) {
 }
 
 char *cryp_auto_cryp (int nK, char *s) {
+  XNULL(s)
+
   nK = nK < 1 ? 0 : nK > 64 ? 63 : nK - 1;
   char *k = cryp_genk(nK + 1);
   return str_printf("%c%s%s", b64_base[nK], k, cryp_cryp(k, s));
 }
 
 char *cryp_auto_decryp (char *b64) {
+  XNULL(b64)
+
   int nK = str_cindex(b64_base, *b64) + 1;
   char *key = str_sub(b64, 1, nK + 1);
   return cryp_decryp(key, str_sub_end(b64, nK + 1));
 }
 
-inline
 char *cryp_encode (char *k, int nK, char *s) {
+  XNULL(k)
+  XNULL(s)
   return cryp_cryp(k, cryp_auto_cryp(nK, s));
 }
 
-inline
 char *cryp_decode (char *k, char *b41) {
+  XNULL(k)
+  XNULL(b41)
   return cryp_auto_decryp(cryp_decryp(k, b41));
 }
 

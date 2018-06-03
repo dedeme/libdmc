@@ -1,21 +1,31 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <execinfo.h>
+#include <setjmp.h>
+#include <gc.h>
+#include "dmc/exc.h"
+#include "dmc/str.h"
+#include "dmc/ct/Achar.h"
+#include "dmc/List.h"
+#include "dmc/path.h"
+#include "dmc/DEFS.h"
 
 static List *buf = NULL;
+static char *type = NULL;
 static char *msg = NULL;
-static Arr/*char*/ *stack = NULL;
+static Achar *stack = NULL;
 
 static void exc_exit(char *message) {
   puts(message);
 
-  Arr/*char*/ *st = exc_stack();
-  printf("\nObtained %zd stack frames.\n", arr_size(st));
+  Achar *st = exc_stack();
+  printf("\nObtained %zd stack frames.\n", achar_size(st));
 
-  for (int i = 0; i < arr_size(st); ++i) {
-    puts(arr_get(st, i));
+  for (int i = 0; i < achar_size(st); ++i) {
+    puts(achar_get(st, i));
   }
   exit(1);
 }
@@ -46,28 +56,40 @@ void exc_remove() {
   buf = list_tail(buf);
 }
 
-inline
+char *exc_type() {
+  if (!type) {
+    printf("exc_typw: 'type' is NULL");
+    exit(1);
+  }
+  return type;
+}
+
 char *exc_msg() {
-  return msg ? msg : "";
+  if (!msg) {
+    printf("exc_msg: 'msg' is NULL");
+    exit(1);
+  }
+  return msg;
 }
 
 inline
-Arr/*char*/ *exc_stack() {
-  return stack ? stack : arr_new();
+Achar *exc_stack() {
+  return stack ? stack : achar_new();
 }
 
-void exc_throw(char *e, char *file, char *func, int line) {
+void exc_throw(char *t, char *e, char *file, char *func, int line) {
   void *array[25];
   size_t size;
   char **strings;
   size = backtrace(array, 25);
   strings = backtrace_symbols(array, size);
-  stack = arr_new();
+  stack = achar_new();
   RANGE0(i, size) {
-    arr_add(stack, str_copy(strings[i]));
+    achar_add(stack, str_copy(strings[i]));
   }_RANGE
   free(strings);
 
+  type = str_copy(t);
   msg = str_printf(
     "%s:%d:[%s]:\n%s", path_name(file), line, func, e
   );
@@ -90,11 +112,6 @@ char *exc_range(int begin, int end, int index) {
 inline
 char *exc_null_pointer(char *argument_name) {
   return str_printf("--- NULL pointer: Variable '%s'", argument_name);
-}
-
-inline
-char *exc_not_null_pointer(char *argument_name) {
-  return str_printf("--- Not NULL pointer: Variable '%s'", argument_name);
 }
 
 inline

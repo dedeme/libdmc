@@ -1,4 +1,4 @@
-// Copyright 07-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Several kind of tuples
@@ -7,31 +7,41 @@
   #define DM_TUPLES_H
 
 ///
-typedef struct {
-  void *e1; // R&W
-  void *e2; // R&W
-} Tp;
+typedef struct tp_Tp Tp;
 
 ///
 Tp *tp_new(void *e1, void *e2);
 
 ///
-typedef struct {
-  void *e1; // R&W
-  void *e2; // R&W
-  void *e3; // R&W
-} Tp3;
+void *tp_e1(Tp *this);
 
 ///
-Tp3 *tp3_new(void *o1, void *o2, void *o3);
+void *tp_e2(Tp *this);
 
 ///
-typedef struct {
-  char *key;   // R&W
-  void *value; // R&W
-} Kv;
+typedef struct tp3_Tp3 Tp3;
+///
+Tp3 *tp3_new(void *e1, void *e2, void *e3);
+
+///
+void *tp3_e1(Tp3 *this);
+
+///
+void *tp3_e2(Tp3 *this);
+
+///
+void *tp3_e3(Tp3 *this);
+
+///
+typedef struct kv_Kv Kv;
 
 ///
 Kv *kv_new(char *key, void *value);
+
+///
+char *kv_key(Kv *this);
+
+///
+void *kv_value(Kv *this);
 
 #endif

@@ -1,4 +1,4 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 02-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Utilities for managing dates
@@ -6,34 +6,40 @@
 #ifndef DM_DATE_H
   #define DM_DATE_H
 
-#include "time.h"
+#include <time.h>
+#include <stdbool.h>
 
 ///
 #define Date time_t
 
-/// Parameters are:
+/// date_new makes a new Date.
 ///   this  : New Date
 ///   year  : Year with all digits
 ///   month : Month in base 1 (1 to 12)
 ///   day   : Day in base 1 (1 to 31)
 Date date_new (int day, int month, int year);
 
-/// Current date
+/// date_now returns the current date
 Date date_now (void);
 
-/// 'date' is in format yyyymmdd (month and day in base 1)
+/// date_from_str makes a date from a string is in format yyyymmdd
+/// (month and day in base 1)
 Date date_from_str (char *date);
 
-/// 'date' is in format dd/mm/yyyy (month and day in base 1)
+/// date_from_iso makes a date from a string in format dd/mm/yyyy
+/// (month and day in base 1)
 Date date_from_iso (char *date);
 
-/// 'date' is in format  mm/dd/yyyy (month and day in base 1)
+/// date_from_us makes a date from a string in format  mm/dd/yyyy
+/// (month and day in base 1)
 Date date_from_us (char *date);
 
-/// 'date' is in format [x]x/[x]x/[xxx]x. If 'data' is not valid, returns '0'
+/// date_from_iso_sep makes a date from a string is in format
+/// [x]x/[x]x/[xxx]x. If 'data' is not valid, returns '0'
 Date date_from_iso_sep (char *date, char sep);
 
-/// 'date' is in format [x]x/[x]x/[xxx]x. If 'data' is not valid, returns '0'
+/// date_from_us_sep makes a date from a string in format
+/// [x]x/[x]x/[xxx]x. If 'data' is not valid, returns '0'
 Date date_from_us_sep (char *date, char sep);
 
 ///
@@ -42,7 +48,7 @@ bool date_eq (Date this, Date another);
 ///
 int date_cmp (Date this, Date another);
 
-/// Difference in days this - another.
+/// date_df returns the difference in days this - another.
 int date_df (Date this, Date another);
 
 ///
@@ -57,7 +63,7 @@ int date_month (Date this);
 ///
 int date_year (Date this);
 
-/// Format can be:
+/// date_format formats a Date. Format can be:
 ///   %a     The abbreviated name of the day of the week according to the
 ///          current locale.
 ///   %A     The full name of the day of the week according to the current
@@ -138,13 +144,13 @@ int date_year (Date this);
 ///   %%     A literal '%' character.
 char *date_format (Date this, char *template);
 
-/// Format yyyymmdd
+/// date_to_str returns a string in format yyyymmdd
 char *date_to_str (Date this);
 
-/// Format dd/mm/yyyy
+/// date_to_iso returns a string in format dd/mm/yyyy
 char *date_to_iso (Date this);
 
-/// Format mm/dd/yyyy
+/// date_to_us returns a string in format mm/dd/yyyy
 char *date_to_us (Date this);
 
 #endif

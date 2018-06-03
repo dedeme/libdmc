@@ -1,10 +1,15 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 01-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include <string.h>
-#include "dmc/all.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <gc.h>
+#include "dmc/b64.h"
+#include "dmc/Bytes.h"
+#include "dmc/exc.h"
+#include "dmc/str.h"
+#include "dmc/DEFS.h"
 
 static char encoding_table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -65,7 +70,7 @@ static Bytes *base64_decode(
   size_t *output_length
 ) {
   if (input_length % 4 != 0) {
-    THROW exc_illegal_state("Wrong input length") _THROW
+    THROW(exc_illegal_state_t) exc_illegal_state("Wrong input length") _THROW
   }
 
   *output_length = input_length / 4 * 3;
@@ -108,6 +113,8 @@ static Bytes *base64_decode(
 }
 
 char *b64_decode(char *b64) {
+  XNULL(b64)
+
   Bytes *bs = b64_decode_bytes(b64);
   size_t len = bytes_length(bs);
   char *s = ATOMIC(len + 1);
@@ -117,7 +124,7 @@ char *b64_decode(char *b64) {
 }
 
 Bytes *b64_decode_bytes(char *b64) {
-  if (!b64) THROW exc_null_pointer("b64") _THROW
+  XNULL(b64)
 
   if (*b64) {
     size_t len;
@@ -128,14 +135,14 @@ Bytes *b64_decode_bytes(char *b64) {
 }
 
 char *b64_encode(char *s) {
-  if (!s) THROW exc_null_pointer("s") _THROW
+  XNULL(s)
 
   size_t len;
   return base64_encode((unsigned char *)s, strlen(s), &len);
 }
 
 char *b64_encode_bytes(Bytes *bs) {
-  if (!bs) THROW exc_null_pointer("bs") _THROW
+  XNULL(bs)
 
   size_t len;
   return base64_encode(bytes_bs(bs), bytes_length(bs), &len);

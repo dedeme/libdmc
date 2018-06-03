@@ -1,4 +1,4 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 2-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Bytes structure
@@ -15,6 +15,8 @@
 ///   char b41 = b41_encodeBytes(bs);
 ///   assert(!strcmp("RRoixx", b41));
 typedef struct bytes_Bytes Bytes;
+typedef struct json_Json Json;
+typedef struct ajson_Ajson Ajson;
 
 ///
 Bytes *bytes_new(void);
@@ -42,5 +44,12 @@ void bytes_add (Bytes *this, Bytes *another);
 
 /// Adds to 'this' a copy of 's' without the ending zero
 void bytes_add_str (Bytes *this, char *s);
+
+/// bytes_to_json returns a serialization of 'this' using 'to' to
+/// convert elements.
+Ajson *bytes_to_json(Bytes *this);
+
+/// bytes_from_json restores a serialized Bytes using 'from' to convert elements.
+Bytes *bytes_from_json(Ajson *js);
 
 #endif

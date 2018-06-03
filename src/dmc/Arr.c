@@ -1,8 +1,13 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
-
+#include <gc.h>
+#include "dmc/Arr.h"
+#include "dmc/str.h"
+#include "dmc/exc.h"
+#include "dmc/rnd.h"
+#include "dmc/It.h"
+#include "dmc/DEFS.h"
 
 struct arr_Arr{
   size_t size;           // R
@@ -23,17 +28,15 @@ Arr *arr_new_buf (size_t size_buf) {
   return this;
 }
 
-inline
 size_t arr_size (Arr *this) {
+  XNULL(this)
   return this->size;
 }
 
-inline
-void **arr_es (Arr *this) {
-  return this->es;
-}
-
 void arr_add (Arr *this, void *element) {
+  XNULL(this)
+  XNULL(element)
+
   *(this->es + this->size++) = element;
   size_t max = this->_max_size;
   if (this->size >= max) {
@@ -44,6 +47,9 @@ void arr_add (Arr *this, void *element) {
 }
 
 void arr_add_arr (Arr *this, Arr *another) {
+  XNULL(this)
+  XNULL(another)
+
   void **array = another->es;
   size_t asize = another->size;
   size_t sum = this->size + asize;
@@ -63,28 +69,30 @@ void arr_add_arr (Arr *this, Arr *another) {
 }
 
 void *arr_get (Arr *this, size_t index) {
-  if (index < 0 || index >= this->size) {
-    THROW exc_range(0, this->size, index) _THROW
-  }
-  void *e = this->es[index];
-  if (e) {
-    return e;
-  }
-  THROW exc_null_pointer("arr[index]") _THROW
-  return NULL;
-}
+  XNULL(this)
+  if (index < 0 || index >= this->size)
+    THROW(exc_range_t) exc_range(0, this->size, index) _THROW
 
-void *arr_nget (Arr *this, size_t index) {
-  if (index < 0 || index >= this->size) {
-    THROW exc_range(0, this->size, index) _THROW
-  }
   return this->es[index];
 }
 
+void arr_set (Arr *this, size_t index, void *element) {
+  XNULL(this)
+  XNULL(element)
+  if (index < 0 || index >= this->size) {
+    THROW(exc_range_t) exc_range(0, this->size, index) _THROW
+  }
+
+  this->es[index] = element;
+}
+
 void arr_insert (Arr *this, size_t index, void *element) {
+  XNULL(this)
+  XNULL(element)
+
   const size_t size = this->size;
   if (index > size || index < 0) {
-    THROW exc_range(0, size + 1, index) _THROW
+    THROW(exc_range_t) exc_range(0, size + 1, index) _THROW
   }
   if (index == size) {
     arr_add(this, element);
@@ -109,9 +117,12 @@ void arr_insert (Arr *this, size_t index, void *element) {
 }
 
 void arr_insert_arr (Arr *this, size_t index, Arr *another) {
+  XNULL(this)
+  XNULL(another)
+
   const size_t size = this->size;
   if (index > size || index < 0) {
-    THROW exc_range(0, size + 1, index) _THROW
+    THROW(exc_range_t) exc_range(0, size + 1, index) _THROW
   }
 
   if (index == size) {
@@ -142,8 +153,9 @@ void arr_insert_arr (Arr *this, size_t index, Arr *another) {
 }
 
 void arr_remove (Arr *this, size_t index) {
+  XNULL(this)
   if (index < 0 || index >= this->size) {
-    THROW exc_range(0, this->size, index) _THROW
+    THROW(exc_range_t) exc_range(0, this->size, index) _THROW
   }
 
   void **target = this->es + index;
@@ -161,11 +173,12 @@ void arr_remove (Arr *this, size_t index) {
 }
 
 void arr_remove_range (Arr *this, size_t begin, size_t end) {
+  XNULL(this)
   if (begin < 0 || begin >= this->size) {
-    THROW exc_range(0, this->size, begin) _THROW
+    THROW(exc_range_t) exc_range(0, this->size, begin) _THROW
   }
   if (end < 0 || end > this->size) {
-    THROW exc_range(0, this->size, end) _THROW
+    THROW(exc_range_t) exc_range(0, this->size, end) _THROW
   }
 
   void **source = this->es + end;
@@ -183,6 +196,8 @@ void arr_remove_range (Arr *this, size_t begin, size_t end) {
 }
 
 void arr_reverse (Arr *this) {
+  XNULL(this)
+
   void **begin = this->es;
   void **end = begin + (this->size - 1);
   void *tmp;
@@ -193,31 +208,9 @@ void arr_reverse (Arr *this) {
   }_REPEAT
 }
 
-void arr_set (Arr *this, size_t index, void *element) {
-  if (index < 0 || index >= this->size) {
-    THROW exc_range(0, this->size, index) _THROW
-  }
-
-  this->es[index] = element;
-}
-
-int arr_sindex (Arr *this, void *e, int (*f)(void *, void*)) {
-  size_t start = 0;
-  size_t end = this->size;
-  size_t ix;
-  for (;;) {
-    if (end == start) return -1;
-
-    ix = (start + end) >> 1;
-    int r = f(e, this->es[ix]);
-
-    if (r < 0) end = ix;
-    else if (r > 0) start = ix + 1;
-    else return ix;
-  }
-}
-
 void arr_sort (Arr *this, bool (*f)(void *, void *)) {
+  XNULL(this)
+
   size_t cx = this->size;
   void **x = this->es;
   void **y;
@@ -236,17 +229,9 @@ void arr_sort (Arr *this, bool (*f)(void *, void *)) {
   }
 }
 
-void arr_sort_str (Arr *this) {
-  FNE (cmp, char, e1, e2) { return strcmp(e1, e2) > 0; }_FN
-  arr_sort(this, cmp);
-}
-
-void arr_sort_locale (Arr *this) {
-  FNE (cmp, char, e1, e2) { return strcoll(e1, e2) > 0; }_FN
-  arr_sort(this, cmp);
-}
-
 void arr_shuffle (Arr *this) {
+  XNULL(this)
+
   size_t size = this->size;
   void **es = this->es;
   void **p = es + size - 1;
@@ -263,29 +248,28 @@ void arr_shuffle (Arr *this) {
 /**/  void **es;
 /**/  size_t n;
 /**/  size_t i;
-/**/} to_it_O;
-/**/
-/**/inline
-/**/static FNP (to_it_has_next, to_it_O, o) { return o->i < o->n; }_FN
-/**/
-/**/static FNM (to_it_next, to_it_O, o) {
-/**/  void *r = o->es[o->i];
+/**/} arr_to_it_O;
+/**/static FNM (to_it_next, arr_to_it_O, o) {
+/**/  size_t i = o->i;
 /**/  o->i += 1;
-/**/  return r;
+/**/  return i < o->n ? o->es[i] : NULL;
 /**/}_FN
 It *arr_to_it (Arr *this) {
-  to_it_O *o = MALLOC(to_it_O);
+  XNULL(this)
+
+  arr_to_it_O *o = MALLOC(arr_to_it_O);
   o->es = this->es;
   o->n = this->size;
   o->i = 0;
-  return it_new(o, to_it_has_next, to_it_next);
+  return it_new(o, to_it_next);
 }
 
 Arr *arr_from_it (It *it) {
+  XNULL(it)
+
   Arr *r = arr_new();
   while (it_has_next(it)) {
     arr_add(r, it_next(it));
   }
   return r;
 }
-

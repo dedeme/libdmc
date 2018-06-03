@@ -1,10 +1,12 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 01-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// B64 encoder - decoder
 
 #ifndef DM_B64_H
   #define DM_B64_H
+
+typedef struct bytes_Bytes Bytes;
 
 ///
 char *b64_decode(char *b64);

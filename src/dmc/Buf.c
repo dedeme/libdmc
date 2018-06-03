@@ -1,7 +1,13 @@
-// Copyright 04-Feb-2018 ºDeme
+// Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
+#include <string.h>
+#include <stddef.h>
+#include <gc.h>
+#include "dmc/Buf.h"
+#include "dmc/str.h"
+#include "dmc/exc.h"
+#include "dmc/DEFS.h"
 
 struct buf_Buf{
   char *str;     // R
@@ -19,17 +25,20 @@ Buf *buf_new () {
   return this;
 }
 
-inline
 char *buf_str (Buf *this) {
+  XNULL(this)
   return this->str;
 }
 
-inline
 size_t buf_length (Buf *this) {
+  XNULL(this)
   return this->length;
 }
 
-void buf_add_buf (Buf *this, const char *data, size_t length) {
+void buf_add_buf (Buf *this, char *data, size_t length) {
+  XNULL(this)
+  XNULL(data)
+
   int ixend = this->length + length;
   if (this->_size < ixend) {
       while (this->_size < ixend) {
@@ -45,17 +54,18 @@ void buf_add_buf (Buf *this, const char *data, size_t length) {
   this->length = ixend;
 }
 
-inline
-void buf_add (Buf *this, const char *data) {
+void buf_add (Buf *this, char *data) {
+  XNULL(this)
+  XNULL(data)
   buf_add_buf(this, data, strlen(data));
 }
 
-inline
 void buf_cadd (Buf *this, char data) {
+  XNULL(this)
   buf_add_buf(this, &data, 1);
 }
 
-inline
 char *buf_to_str (Buf *this) {
+  XNULL(this)
   return str_copy(this->str);
 }

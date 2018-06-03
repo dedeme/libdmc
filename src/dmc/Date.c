@@ -1,8 +1,15 @@
-// Copyright 05-Feb-2018 ºDeme
+// Copyright 02-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/all.h"
 #include <math.h>
+#include <string.h>
+#include <stdlib.h>
+#include "dmc/Date.h"
+#include "dmc/str.h"
+#include "dmc/Dec.h"
+#include "dmc/ct/Achar.h"
+#include "dmc/exc.h"
+#include "dmc/DEFS.h"
 
 Date date_new(int day, int month, int year) {
   struct tm t;
@@ -12,7 +19,7 @@ Date date_new(int day, int month, int year) {
   t.tm_mday = day;
   t.tm_hour = 12;
 
-  return mktime(&t);
+  return (Date) mktime(&t);
 }
 
 inline
@@ -21,6 +28,8 @@ Date date_now() {
 }
 
 Date date_from_str(char *date) {
+  XNULL(date)
+
   char tpl[5];
   memset (tpl, 0, 5);
   memcpy(tpl, date + 6, 2);
@@ -32,33 +41,39 @@ Date date_from_str(char *date) {
   return date_new(d, m, y);
 }
 
-inline
 Date date_from_iso(char *date) {
+  XNULL(date)
   return date_new(atoi(date), atoi(date + 3), atoi(date + 6));
 }
 
-inline
 Date date_from_us(char *date) {
+  XNULL(date)
   return date_new(atoi(date + 3), atoi(date), atoi(date + 6));
 }
 
 Date _date_from_sep (char *d, char *m, char *y) {
-  if (strlen(d) > 2 || !dec_digits(d)) return 0;
-  if (strlen(m) > 2 || !dec_digits(m)) return 0;
-  if (strlen(y) > 4 || !dec_digits(y)) return 0;
+  if (str_len(d) > 2 || !dec_digits(d)) return 0;
+  if (str_len(m) > 2 || !dec_digits(m)) return 0;
+  if (str_len(y) > 4 || !dec_digits(y)) return 0;
   return date_new(atoi(d), atoi(m), atoi(y));
 }
 
 Date date_from_iso_sep (char *date, char sep) {
-  Arr *parts = str_csplit(date, sep);
-  if (arr_size(parts) != 3) return 0;
-  return _date_from_sep(arr_es(parts)[0], arr_es(parts)[1], arr_es(parts)[2]);
+  XNULL(date)
+  Achar *parts = str_csplit(date, sep);
+  if (achar_size(parts) != 3) return 0;
+  return _date_from_sep(
+    achar_get(parts, 0), achar_get(parts, 1), achar_get(parts, 2)
+  );
 }
 
 Date date_from_us_sep (char *date, char sep) {
-  Arr *parts = str_csplit(date, sep);
-  if (arr_size(parts) != 3) return 0;
-  return _date_from_sep(arr_es(parts)[1], arr_es(parts)[0], arr_es(parts)[2]);
+  XNULL(date)
+  Achar *parts = str_csplit(date, sep);
+  if (achar_size(parts) != 3) return 0;
+  return _date_from_sep(
+    achar_get(parts, 1), achar_get(parts, 0), achar_get(parts, 2)
+  );
 }
 
 inline
@@ -97,6 +112,8 @@ int date_year(Date this) {
 }
 
 char *date_format(Date this, char *template) {
+  XNULL(template)
+
   char *s, *rs;
   struct tm *t = localtime(&this);
   int size = 126;
