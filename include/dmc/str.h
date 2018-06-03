@@ -7,6 +7,7 @@
   #define DM_STR_H
 
 #include <stdbool.h>
+#include <stdarg.h>
 
 typedef struct achar_Achar Achar;
 typedef struct ichar_Ichar Ichar;
