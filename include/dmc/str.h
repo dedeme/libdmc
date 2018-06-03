@@ -109,6 +109,9 @@ char *str_creplace(char *s, char old, char new);
 /// If 'old' is "", returns a copy of 's'.
 char *str_replace(char *s, char *old, char *new);
 
+/// str_vprintf returns a string with format similar to 'vprintf'
+char *str_vprintf(char *format, va_list args);
+
 /// str_printf returns a string with format similar to 'printf'
 char *str_printf(char *format, ...);
 

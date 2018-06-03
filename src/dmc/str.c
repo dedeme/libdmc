@@ -340,7 +340,7 @@ char *str_replace(char *s, char *old, char *new) {
   return buf_to_str(bf);
 }
 
-static char *str_vprintf(char *format, va_list args) {
+char *str_vprintf(char *format, va_list args) {
   XNULL(format)
 
   int length = 0;
