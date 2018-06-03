@@ -3,8 +3,8 @@
 
 /// Map of Json *
 
-#ifndef DM_MJSON_H
-  #define DM_MJSON_H
+#ifndef DM_CT_MJSON_H
+  #define DM_CT_MJSON_H
 
 typedef struct json_Json Json;
 

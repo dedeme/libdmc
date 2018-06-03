@@ -3,8 +3,8 @@
 
 /// Opt of Json *
 
-#ifndef DM_OJSON_H
-  #define DM_OJSON_H
+#ifndef DM_CT_OJSON_H
+  #define DM_CT_OJSON_H
 
 typedef struct json_Json Json;
 

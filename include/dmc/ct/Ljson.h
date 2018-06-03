@@ -3,8 +3,10 @@
 
 /// List of Json *
 
-#ifndef DM_LJSON_H
-  #define DM_LJSON_H
+#ifndef DM_CT_LJSON_H
+  #define DM_CT_LJSON_H
+
+typedef struct json_Json Json;
 
 #define TY Json
 #define FN json

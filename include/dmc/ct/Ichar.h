@@ -3,8 +3,8 @@
 
 /// Iterator of char *
 
-#ifndef DM_ICHAR_H
-  #define DM_ICHAR_H
+#ifndef DM_CT_ICHAR_H
+  #define DM_CT_ICHAR_H
 
 #include <stdbool.h>
 

@@ -11,9 +11,12 @@
 #include "dmc/str.h"
 #include "dmc/Buf.h"
 #include "dmc/ct/Achar.h"
+#include "dmc/ct/Ajson.h"
 #include "dmc/ct/Ichar.h"
 #include "dmc/Opt.h"
+#include "dmc/Json.h"
 #include "dmc/exc.h"
+
 #include "dmc/DEFS.h"
 
 size_t str_len(char *s) {
@@ -612,4 +615,19 @@ char *str_from_escape (char *s) {
 
   buf_str(bf)[buf_length(bf) - 1] = 0;
   return buf_to_str(bf);
+}
+
+Ajson *str_to_json(char *s) {
+  XNULL(s)
+
+  Ajson *r = ajson_new();
+  ajson_add(r, json_wstring(s));
+  return r;
+}
+
+///
+char *str_from_json(Ajson *js) {
+  XNULL(js)
+
+  return json_rstring(ajson_get(js, 0));
 }

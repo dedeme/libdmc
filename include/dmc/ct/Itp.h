@@ -3,8 +3,8 @@
 
 /// Iterator of Tp *
 
-#ifndef DM_ITP_H
-  #define DM_ITP_H
+#ifndef DM_CT_ITP_H
+  #define DM_CT_ITP_H
 
 typedef struct tp_Tp Tp;
 

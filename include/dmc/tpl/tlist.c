@@ -73,12 +73,12 @@ CT *FUN(from_arr)(Arr *a) {
 }
 
 inline
-Ajson *FUN(to_json)(CT *this, Json *(*to)(TY *)) {
+Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *)) {
   return list_to_json((List *)this, (TO_JSON)to);
 }
 
 inline
-CT *FUN(from_json)(Ajson *js, TY *(*from)(Json *)) {
+CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *)) {
   return (CT *)list_from_json(js, (FROM_JSON)from);
 }
 

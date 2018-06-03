@@ -3,8 +3,8 @@
 
 /// Map of char *
 
-#ifndef DM_MCHAR_H
-  #define DM_MCHAR_H
+#ifndef DM_CT_MCHAR_H
+  #define DM_CT_MCHAR_H
 
 #define TY char
 #define FN char

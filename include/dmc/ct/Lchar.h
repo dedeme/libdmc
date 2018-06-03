@@ -3,8 +3,8 @@
 
 /// List of char *
 
-#ifndef DM_LCHAR_H
-  #define DM_LCHAR_H
+#ifndef DM_CT_LCHAR_H
+  #define DM_CT_LCHAR_H
 
 #define TY char
 #define FN char

@@ -3,8 +3,8 @@
 
 /// Array of char *
 
-#ifndef DM_ACHAR_H
-  #define DM_ACHAR_H
+#ifndef DM_CT_ACHAR_H
+  #define DM_CT_ACHAR_H
 
 #define TY char
 #define FN char

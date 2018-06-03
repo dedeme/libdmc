@@ -3,8 +3,8 @@
 
 /// Iterator of Json *
 
-#ifndef DM_IJSON_H
-  #define DM_IJSON_H
+#ifndef DM_CT_IJSON_H
+  #define DM_CT_IJSON_H
 
 typedef struct json_Json Json;
 

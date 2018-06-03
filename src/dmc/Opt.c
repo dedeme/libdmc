@@ -7,6 +7,7 @@
 #include "dmc/DEFS.h"
 #include "dmc/exc.h"
 #include "dmc/str.h"
+#include "dmc/Json.h"
 #include "dmc/ct/Ajson.h"
 #include "dmc/ct/Ojson.h"
 
@@ -38,24 +39,24 @@ void *opt_value(Opt *this) {
   return this->value;
 }
 
-Ajson *opt_to_json(Opt *this, Json *(*to)(void *)) {
+Ajson *opt_to_json(Opt *this, Ajson *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
   if (!opt_is_null(this)) {
-    ajson_add(r, to(this->value));
+    ajson_add(r, json_warray(to(this->value)));
   }
   return r;
 }
 
-Opt *opt_from_json(Ajson *js, void *(*from)(Json *)) {
+Opt *opt_from_json(Ajson *js, void *(*from)(Ajson *)) {
   XNULL(js)
   size_t size = ajson_size(js);
   if (size > 1)
     THROW(exc_range_t) exc_range(1, 2, size) _THROW
 
   if (size) {
-    return opt_new(from(ajson_get(js, 0)));
+    return opt_new(from(json_rarray(ajson_get(js, 0))));
   }
   return opt_null();
 }

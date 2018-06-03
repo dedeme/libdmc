@@ -3,8 +3,8 @@
 
 /// Opt of char *
 
-#ifndef DM_OCHAR_H
-  #define DM_OCHAR_H
+#ifndef DM_CT_OCHAR_H
+  #define DM_CT_OCHAR_H
 
 #define TY char
 #define FN char

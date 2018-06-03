@@ -3,8 +3,8 @@
 
 /// Array of Json *
 
-#ifndef DM_AJSON_H
-  #define DM_AJSON_H
+#ifndef DM_CT_AJSON_H
+  #define DM_CT_AJSON_H
 
 typedef struct json_Json Json;
 

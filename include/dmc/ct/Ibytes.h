@@ -3,8 +3,8 @@
 
 /// Iterator of Bytes *
 
-#ifndef DM_IBYTES_H
-  #define DM_IBYTES_H
+#ifndef DM_CT_IBYTES_H
+  #define DM_CT_IBYTES_H
 
 typedef struct bytes_Bytes Bytes;
 

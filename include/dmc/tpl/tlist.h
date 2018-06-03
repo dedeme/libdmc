@@ -56,10 +56,10 @@ Arr *FUN(to_arr)(CT *this);
 CT *FUN(from_arr)(Arr *a);
 
 ///
-Ajson *FUN(to_json)(CT *this, Json *(*to)(TY *));
+Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *));
 
 ///
-CT *FUN(from_json)(Ajson *js, TY *(*from)(Json *));
+CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *));
 
 #undef CT
 #undef IT

@@ -3,8 +3,8 @@
 
 /// Iterator of Kv *
 
-#ifndef DM_IKV_H
-  #define DM_IKV_H
+#ifndef DM_CT_IKV_H
+  #define DM_CT_IKV_H
 
 typedef struct kv_Kv Kv;
 
