@@ -10,7 +10,7 @@
 /// <tt>sys_new("app_name")</tt> by <tt>sys_new_cgi("app_name")</tt>
 
 #ifndef DM_SYS_H
-# define DM_SYS_H
+  #define DM_SYS_H
 
 #include <stddef.h>
 #include "Arr.h"

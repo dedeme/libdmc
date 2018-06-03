@@ -4,7 +4,7 @@
 /// Map structure
 
 #ifndef DM_MAP_H
-# define DM_MAP_H
+  #define DM_MAP_H
 
 #include "Arr.h"
 

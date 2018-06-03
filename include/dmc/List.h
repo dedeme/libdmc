@@ -1,15 +1,12 @@
 // Copyright 05-Feb-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities to manage exceptions.<p>
-/// Only functions 'init'  and 'throw' is intended to be use directly. The
-/// rest must be used through the macros TRY-CATCH-FINALLY-_TRY. (see
-/// <a href="?libdm@dm/defs#hp:TRY">defs</a>)
+/// List structure
+
 #ifndef DM_LIST_H
   #define DM_LIST_H
 
 #include "It.h"
-
 
 ///
 typedef struct list_List List;
