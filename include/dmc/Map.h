@@ -7,6 +7,7 @@
   #define DM_MAP_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 ///
 typedef struct map_Map Map;
@@ -16,7 +17,7 @@ typedef struct ichar_Ichar Ichar;
 typedef struct ikv_Ikv Ikv;
 typedef struct ajson_Ajson Ajson;
 
-/// Initializates a map. Map can be cast to Arr.
+/// map_new initializates a map. Map can be cast to Arr.
 Map *map_new(void);
 
 ///
@@ -33,7 +34,7 @@ void map_put(Map *this, char *key, void *value);
 /// not exist
 Opt *map_get(Map *this, char *key);
 
-/// map_opget returns the value pointer by key or option if 'key' does not
+/// map_opget returns the value pointer by key or 'option' if 'key' does not
 /// exist
 void *map_oget(Map *this, char *key, void *option);
 
@@ -50,20 +51,23 @@ Ichar *map_keys(Map *this);
 /// map_values returns values of this
 It *map_values(Map *this);
 
-/// map_to_it returns an iterator of Kv's
-Ikv *map_to_it (Map *this);
+///
+Ikv *map_to_it(Map *this);
 
 /// map_to_it_sort returns an iterator of Kv's sorted by key
-Ikv *map_to_it_sort (Map *this);
+Ikv *map_to_it_sort(Map *this);
 
-/// mapt_to_it_sort_locale returns an iterator of Kv's sorted by key in locale
-Ikv *map_to_it_sort_locale (Map *this);
+/// map_to_it_sort_locale returns an iterator of Kv's sorted by key in locale
+Ikv *map_to_it_sort_locale(Map *this);
 
-/// list_to_json returns a serialization of 'this' using 'to' to
+///
+Map *map_from_it(Ikv *it);
+
+/// map_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
 Ajson *map_to_json(Map *this, Ajson *(*to)(void *));
 
-/// list_from_json restores a serialized List using 'from' to convert elements.
+/// map_from_json restores a serialized Map using 'from' to convert elements.
 Map *map_from_json(Ajson *js, void *(*from)(Ajson *));
 
 #endif

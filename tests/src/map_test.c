@@ -7,6 +7,7 @@
 #include "dmc/ct/Ochar.h"
 #include "dmc/str.h"
 #include "dmc/Buf.h"
+#include "dmc/Tuples.h"
 #include "dmc/ct/Ikv.h"
 #include "dmc/DEFS.h"
 
@@ -41,14 +42,14 @@ void map_test() {
   assert(str_eq("3", ochar_value(mchar_get(m, "tres"))));
   assert(str_eq("1", ochar_value(mchar_get(m, "uno"))));
   assert(!mchar_has_key(m, "dos"));
-/*
+
   Buf *bf = buf_new();
-  FNX (tostr, IKv, kv) { buf_add(bf, iKv_key(kv)); buf_cadd(bf,'-'); }_FN
-  ichar_each(mchar_to_it(m), tostr);
+  void tostr(Kv *kv) { buf_add(bf, kv_key(kv)); buf_cadd(bf,'-'); }
+  ikv_each(mchar_to_it(m), tostr);
   assert(str_eq("uno-tres-", buf_str(bf)));
   bf = buf_new();
-  it_each(mchar_to_it_sort(m), tostr);
+  ikv_each(mchar_to_it_sort(m), tostr);
   assert(str_eq("tres-uno-", buf_str(bf)));
-*/
+
   printf("    Finshed\n");
 }

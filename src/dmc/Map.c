@@ -119,6 +119,11 @@ Ikv *map_to_it_sort_locale (Map *this) {
   return (Ikv *)it_sort(arr_to_it((Arr *)this), cmp_locale);
 }
 
+Map *map_from_it(Ikv *it) {
+  XNULL(it)
+  return (Map *)arr_from_it((It *)it);
+}
+
 Ajson *map_to_json(Map *this, Ajson *(*to)(void *)) {
   XNULL(this)
 

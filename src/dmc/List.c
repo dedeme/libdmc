@@ -23,6 +23,17 @@ List *list_new(void) {
   return this;
 }
 
+size_t list_count(List *this) {
+  XNULL(this)
+
+  size_t c = 0;
+  while (this->next) {
+    this = this->next;
+    ++c;
+  }
+  return c;
+}
+
 List *list_tail(List *this) {
   XNULL(this)
   if (this->next) {

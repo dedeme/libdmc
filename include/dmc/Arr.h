@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-
 ///
 typedef struct arr_Arr Arr;
 typedef struct it_It It;

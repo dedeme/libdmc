@@ -20,7 +20,11 @@
 typedef struct FUN(CT) CT;
 typedef struct TPL_CAT_FUN(i, FN, IT) IT;
 
+///
 CT *FUN(new)(void);
+
+///
+size_t FUN(count)(CT *this);
 
 /// FUN(head returns every element of 'this' less the first one. If "this" is
 /// empty, throws an exception

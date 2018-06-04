@@ -6,6 +6,7 @@
   #define DM_LIST_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 ///
 typedef struct list_List List;
@@ -15,6 +16,9 @@ typedef struct ajson_Ajson Ajson;
 
 ///
 List *list_new(void);
+
+///
+size_t list_count(List *this);
 
 /// list_head returns every element of 'this' less the first one. If "this" is
 /// empty, throws an exception

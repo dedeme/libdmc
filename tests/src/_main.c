@@ -11,6 +11,7 @@
 #include "arr_test.h"
 #include "list_test.h"
 #include "map_test.h"
+#include "hash_test.h"
 #include "bytes_test.h"
 #include "b64_test.h"
 #include "cryp_test.h"
@@ -36,6 +37,7 @@ int main (int argc, char **argv) {
   arr_test();
   list_test();
   map_test();
+  hash_test();
   bytes_test();
   b64_test();
   cryp_test();

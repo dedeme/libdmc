@@ -1,7 +1,7 @@
-// Copyright 1-Jun-2018 ºDeme
+// Copyright 04-Jun-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Code Map template.<p>
+/// Code Hash template.<p>
 /// Use:
 ///   #define TY char                    // Element type
 ///   #define FN char                    // Function prefix
@@ -12,84 +12,89 @@
 #include "dmc/tpl/DEFS.h"
 #include "dmc/DEFS.h"
 
-#define CT TPL_CAT(M, FN)
+#define CT TPL_CAT(H, FN)
 #define IT TPL_CAT(I, FN)
 #define OP TPL_CAT(O, FN)
-#define FUN(id) TPL_CAT_FUN(m, FN, id)
+#define FUN(id) TPL_CAT_FUN(h, FN, id)
 
 inline
 CT *FUN(new)(void) {
-  return (CT *)map_new();
+  return (CT *)hash_new();
 }
 
 inline
-size_t FUN(size)(CT *this) {
-  return map_size((Map *)this);
+size_t FUN(count)(CT *this) {
+  return hash_count((Hash *)this);
 }
 
 inline
-void FUN(put)(CT *this, char *key, TY *value) {
-  map_put((Map *)this, key, value);
+CT *FUN(put)(CT *this, char *key, TY *value) {
+  return (CT *)hash_put((Hash *)this, key, value);
 }
 
 inline
 OP *FUN(get)(CT *this, char *key) {
-  return (OP *)map_get((Map *)this, key);
+  return (OP *)hash_get((Hash *)this, key);
 }
 
 inline
 TY *FUN(oget)(CT *this, char *key, TY *option) {
-  return (TY *)map_get((Map *)this, key);
+  return (TY *)hash_get((Hash *)this, key);
 }
 
 inline
-void FUN(remove)(CT *this, char *key) {
-  map_remove((Map *)this, key);
+CT *FUN(remove)(CT *this, char *key) {
+  return (CT *)hash_remove((Hash *)this, key);
+}
+
+inline
+CT *FUN(compact)(CT *this) {
+  return (CT *)hash_compact((Hash *)this);
 }
 
 inline
 bool FUN(has_key)(CT *this, char *key) {
-  return map_has_key((Map *)this, key);
+  return hash_has_key((Hash *)this, key);
 }
 
 inline
 Ichar *FUN(keys)(CT *this) {
-  return map_keys((Map *)this);
+  return hash_keys((Hash *)this);
 }
 
 inline
 IT *FUN(values)(CT *this) {
-  return (IT *)map_values((Map *)this);
+  return (IT *)hash_values((Hash *)this);
 }
 
 inline
 Ikv *FUN(to_it)(CT *this) {
-  return map_to_it((Map *)this);
+  return hash_to_it((Hash *)this);
 }
 
 inline
 Ikv *FUN(to_it_sort)(CT *this) {
-  return map_to_it_sort((Map *)this);
+  return hash_to_it_sort((Hash *)this);
 }
 
 inline
 Ikv *FUN(to_it_sort_locale)(CT *this) {
-  return map_to_it_sort_locale((Map *)this);
+  return hash_to_it_sort_locale((Hash *)this);
 }
 
 inline
 CT *FUN(from_it)(Ikv *it) {
-  return (CT *)map_from_it(it);
+  return (CT *)hash_from_it(it);
 }
 
 inline
 Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *)) {
-  return map_to_json((Map *)this, (TO_JSON)to);
+  return hash_to_json((Hash *)this, (TO_JSON)to);
 }
 
 inline
 CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *)) {
-  return (CT *)map_from_json(js, (FROM_JSON)from);
+  return (CT *)hash_from_json(js, (FROM_JSON)from);
 }
 
 #undef CT

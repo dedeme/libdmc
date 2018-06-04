@@ -22,6 +22,11 @@ CT *FUN(new)(void) {
 }
 
 inline
+size_t FUN(count)(CT *this) {
+  return list_count((List *)this);
+}
+
+inline
 CT *FUN(tail)(CT *this) {
   return (CT *)list_tail((List *)this);
 }
