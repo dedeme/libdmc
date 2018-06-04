@@ -10,7 +10,6 @@
 ///   #undef FN
 
 #include "dmc/tpl/DEFS.h"
-
 #include "dmc/Opt.h"
 
 #define CT TPL_CAT(O, FN)

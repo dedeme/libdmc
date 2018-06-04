@@ -10,6 +10,7 @@
 ///   #undef FN
 
 #include "dmc/tpl/DEFS.h"
+#include "dmc/DEFS.h"
 
 #define CT TPL_CAT(A, FN)
 #define IT TPL_CAT(I, FN)
@@ -88,6 +89,16 @@ IT *FUN(to_it)(CT *this) {
 inline
 CT *FUN(from_it)(IT *it) {
   return (CT *)arr_from_it((It *)it);
+}
+
+inline
+Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *)) {
+  return arr_to_json((Arr *)this, (TO_JSON)to);
+}
+
+inline
+CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *)) {
+  return (CT *)arr_from_json(js, (FROM_JSON)from);
 }
 
 #undef CT

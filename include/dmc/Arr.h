@@ -13,6 +13,7 @@
 ///
 typedef struct arr_Arr Arr;
 typedef struct it_It It;
+typedef struct ajson_Ajson Ajson;
 
 /// arr_new initializes an array
 Arr *arr_new (void);
@@ -71,5 +72,12 @@ It *arr_to_it (Arr *this);
 
 ///
 Arr *arr_from_it (It *it);
+
+/// arr_to_json returns a serialization of 'this' using 'to' to
+/// convert elements.
+Ajson *arr_to_json(Arr *this, Ajson *(*to)(void *));
+
+/// arr_from_json restores a serialized Arr using 'from' to convert elements.
+Arr *arr_from_json(Ajson *js, void *(*from)(Ajson *));
 
 #endif

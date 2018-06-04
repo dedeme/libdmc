@@ -9,8 +9,8 @@
 ///   #undef FN
 ///   #undef TY
 
-#include <stdbool.h>
 #include "dmc/tpl/DEFS.h"
+#include "dmc/Map.h"
 
 #define CT TPL_CAT(M, FN)
 #define IT TPL_CAT(I, FN)
@@ -66,6 +66,12 @@ Ikv *FUN(to_it_sort)(CT *this);
 
 /// mapt_to_it_sort_locale returns an iterator of Kv's sorted by key in locale
 Ikv *FUN(to_it_sort_locale)(CT *this);
+
+///
+Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *));
+
+///
+CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *));
 
 #undef CT
 #undef IT

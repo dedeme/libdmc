@@ -12,7 +12,6 @@
 #include "dmc/tpl/DEFS.h"
 #include "dmc/DEFS.h"
 
-
 #define CT TPL_CAT(L, FN)
 #define IT TPL_CAT(I, FN)
 #define FUN(id) TPL_CAT_FUN(l, FN, id)

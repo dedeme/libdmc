@@ -10,6 +10,7 @@
 ///   #undef FN
 
 #include "dmc/tpl/DEFS.h"
+#include "dmc/DEFS.h"
 
 #define CT TPL_CAT(M, FN)
 #define IT TPL_CAT(I, FN)
@@ -74,6 +75,16 @@ Ikv *FUN(to_it_sort)(CT *this) {
 inline
 Ikv *FUN(to_it_sort_locale)(CT *this) {
   return map_to_it_sort_locale((Map *)this);
+}
+
+inline
+Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *)) {
+  return map_to_json((Map *)this, (TO_JSON)to);
+}
+
+inline
+CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *)) {
+  return (CT *)map_from_json(js, (FROM_JSON)from);
 }
 
 #undef CT

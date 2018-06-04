@@ -14,6 +14,7 @@ typedef struct opt_Opt Opt;
 typedef struct it_It It;
 typedef struct ichar_Ichar Ichar;
 typedef struct ikv_Ikv Ikv;
+typedef struct ajson_Ajson Ajson;
 
 /// Initializates a map. Map can be cast to Arr.
 Map *map_new(void);
@@ -57,5 +58,12 @@ Ikv *map_to_it_sort (Map *this);
 
 /// mapt_to_it_sort_locale returns an iterator of Kv's sorted by key in locale
 Ikv *map_to_it_sort_locale (Map *this);
+
+/// list_to_json returns a serialization of 'this' using 'to' to
+/// convert elements.
+Ajson *map_to_json(Map *this, Ajson *(*to)(void *));
+
+/// list_from_json restores a serialized List using 'from' to convert elements.
+Map *map_from_json(Ajson *js, void *(*from)(Ajson *));
 
 #endif
