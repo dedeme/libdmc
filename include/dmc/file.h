@@ -36,6 +36,7 @@ void file_mkdir (char *path);
 
 /// file_dir returns an Arr[char *] with paths of files and directories
 /// existing in 'path'<br>
+/// Directory are made with 'path' + name.<br>
 /// Values '.' and '..' are not in the return.<br>
 /// Throws exception
 Achar *file_dir (char *path);

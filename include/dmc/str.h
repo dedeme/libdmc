@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 typedef struct achar_Achar Achar;
 typedef struct ajson_Ajson Ajson;

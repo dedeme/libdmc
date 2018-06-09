@@ -14,6 +14,7 @@
 
 #define CT TPL_CAT(L, FN)
 #define IT TPL_CAT(I, FN)
+#define AR TPL_CAT(A, FN)
 #define FUN(id) TPL_CAT_FUN(l, FN, id)
 
 inline
@@ -67,13 +68,13 @@ CT *FUN(from_it)(IT *it) {
 }
 
 inline
-Arr *FUN(to_arr)(CT *this) {
-  return list_to_arr((List *)this);
+AR *FUN(to_arr)(CT *this) {
+  return (AR *)list_to_arr((List *)this);
 }
 
 inline
-CT *FUN(from_arr)(Arr *a) {
-  return (CT *)list_from_arr(a);
+CT *FUN(from_arr)(AR *a) {
+  return (CT *)list_from_arr((Arr *)a);
 }
 
 inline
@@ -88,4 +89,5 @@ CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *)) {
 
 #undef CT
 #undef IT
+#undef AR
 #undef FUN

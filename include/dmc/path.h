@@ -20,7 +20,7 @@ char *path_extension (char *path);
 char *path_only_name (char *path);
 
 /// path_parnet puts the parent path of 'path'.<br>
-/// If 'path' is "" or "/" 'target' is an empty string.
+/// If 'path' is "/" or a string without '/', it returns an empty string.
 char *path_parent (char *path);
 
 /// path_cat concatenates paths. Variable argumens must finish with NULL.

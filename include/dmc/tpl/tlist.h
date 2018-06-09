@@ -14,11 +14,13 @@
 
 #define CT TPL_CAT(L, FN)
 #define IT TPL_CAT(I, FN)
+#define AR TPL_CAT(A, FN)
 #define FUN(id) TPL_CAT_FUN(l, FN, id)
 
 ///
 typedef struct FUN(CT) CT;
 typedef struct TPL_CAT_FUN(i, FN, IT) IT;
+typedef struct TPL_CAT_FUN(a, FN, AR) AR;
 
 ///
 CT *FUN(new)(void);
@@ -53,10 +55,10 @@ IT *FUN(to_it)(CT *this);
 CT *FUN(from_it)(IT *it);
 
 ///
-Arr *FUN(to_arr)(CT *this);
+AR *FUN(to_arr)(CT *this);
 
 ///
-CT *FUN(from_arr)(Arr *a);
+CT *FUN(from_arr)(AR *a);
 
 ///
 Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *));
@@ -66,4 +68,5 @@ CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *));
 
 #undef CT
 #undef IT
+#undef AR
 #undef FUN
