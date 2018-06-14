@@ -16,6 +16,7 @@
 # define DM_COM_JSON_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef struct arr_Arr Arr;
 typedef struct map_Map Map;
