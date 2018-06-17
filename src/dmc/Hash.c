@@ -160,7 +160,7 @@ Hash *hash_from_json(Ajson *js, void *(*from)(Ajson *)) {
   Kv *kv;
   for (int i = size - 1; i >= 0; --i) {
     kv = kv_new(achar_get(ks, i), arr_get(vs, i));
-    list_cons(l, kv);
+    l = list_cons(l, kv);
   }
   return (Hash *) l;
 }
