@@ -36,12 +36,12 @@ TY *FUN(value)(CT *this) {
 }
 
 inline
-Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *)) {
+Json *FUN(to_json)(CT *this, Json *(*to)(TY *)) {
   return opt_to_json((Opt *)this, (TO_JSON)to);
 }
 
 inline
-CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *)) {
+CT *FUN(from_json)(Json *js, TY *(*from)(Json *)) {
   return (CT *)opt_from_json(js, (FROM_JSON)from);
 }
 

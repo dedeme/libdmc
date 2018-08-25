@@ -16,7 +16,6 @@
 ///   assert(!strcmp("RRoixx", b41));
 typedef struct bytes_Bytes Bytes;
 typedef struct json_Json Json;
-typedef struct ajson_Ajson Ajson;
 
 ///
 Bytes *bytes_new(void);
@@ -47,9 +46,9 @@ void bytes_add_str (Bytes *this, char *s);
 
 /// bytes_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
-Ajson *bytes_to_json(Bytes *this);
+Json *bytes_to_json(Bytes *this);
 
 /// bytes_from_json restores a serialized Bytes using 'from' to convert elements.
-Bytes *bytes_from_json(Ajson *js);
+Bytes *bytes_from_json(Json *js);
 
 #endif

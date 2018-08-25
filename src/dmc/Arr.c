@@ -276,22 +276,22 @@ Arr *arr_from_it (It *it) {
   return r;
 }
 
-Ajson *arr_to_json(Arr *this, Ajson *(*to)(void *)) {
+Json *arr_to_json(Arr *this, Json *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
   EACH(this, void, e) {
-    ajson_add(r, json_warray(to(e)));
+    ajson_add(r, to(e));
   }_EACH
-  return r;
+  return json_warray(r);
 }
 
-Arr *arr_from_json(Ajson *js, void *(*from)(Ajson *)) {
+Arr *arr_from_json(Json *js, void *(*from)(Json *)) {
   XNULL(js)
 
   Arr *r = arr_new();
-  EACH(js, Json, j) {
-    arr_add(r, from(json_rarray(j)));
+  EACH(json_rarray(js), Json, j) {
+    arr_add(r, from(j));
   }_EACH
   return r;
 }

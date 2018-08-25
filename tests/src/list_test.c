@@ -21,7 +21,7 @@ void list_test() {
 
   Lchar *s = lchar_new();
   assert(lchar_empty(s));
-  s = lchar_from_json(lchar_to_json(s, str_to_json), str_from_json);
+  s = lchar_from_json(lchar_to_json(s, json_wstring), json_rstring);
   assert(lchar_empty(s));
   s = lchar_cons(s, "a");
   assert(!lchar_empty(s));
@@ -34,7 +34,7 @@ void list_test() {
   assert(str_eq("ba", paste(lchar_to_it(s))));
   assert(str_eq("ba", paste(lchar_to_it(s))));
 
-  s = lchar_from_json(lchar_to_json(s, str_to_json), str_from_json);
+  s = lchar_from_json(lchar_to_json(s, json_wstring), json_rstring);
 
   assert(str_eq("ba", paste(lchar_to_it(s))));
   assert(str_eq("ba", paste(lchar_to_it(s))));

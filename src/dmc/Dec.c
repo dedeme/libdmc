@@ -113,20 +113,21 @@ bool dec_number (char *s) {
   return 1;
 }
 
-Ajson *dec_to_json(Dec *this) {
+Json *dec_to_json(Dec *this) {
   XNULL(this)
 
   Ajson *r = ajson_new();
   ajson_add(r, json_wdouble(this->n, this->scale));
   ajson_add(r, json_wint(this->scale));
-  return r;
+  return json_warray(r);
 }
 
-Dec *dec_from_json(Ajson *js) {
+Dec *dec_from_json(Json *js) {
   XNULL(js)
-  size_t size = ajson_size(js);
+  Ajson *ajs = json_rarray(js);
+  size_t size = ajson_size(ajs);
   if (size != 2)
     THROW(exc_range_t) exc_range(2, 3, size) _THROW
 
-  return dec_new(json_rdouble(ajson_get(js, 0)), json_rint(ajson_get(js, 1)));
+  return dec_new(json_rdouble(ajson_get(ajs, 0)), json_rint(ajson_get(ajs, 1)));
 }

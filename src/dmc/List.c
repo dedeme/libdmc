@@ -145,22 +145,22 @@ List *list_from_arr (Arr *a) {
   return r;
 }
 
-Ajson *list_to_json(List *this, Ajson *(*to)(void *)) {
+Json *list_to_json(List *this, Json *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
   EACHL(this, void, e) {
-    ajson_add(r, json_warray(to(e)));
+    ajson_add(r, to(e));
   }_EACH
-  return r;
+  return json_warray(r);
 }
 
-List *list_from_json(Ajson *js, void *(*from)(Ajson *)) {
+List *list_from_json(Json *js, void *(*from)(Json *)) {
   XNULL(js)
 
   List *r = list_new();
-  EACHR(js, Json, j) {
-    r = list_cons(r, from(json_rarray(j)));
+  EACHR(json_rarray(js), Json, j) {
+    r = list_cons(r, from(j));
   }_EACH
   return r;
 }

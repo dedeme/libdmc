@@ -39,24 +39,25 @@ void *opt_value(Opt *this) {
   return this->value;
 }
 
-Ajson *opt_to_json(Opt *this, Ajson *(*to)(void *)) {
+Json *opt_to_json(Opt *this, Json *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
   if (!opt_is_null(this)) {
-    ajson_add(r, json_warray(to(this->value)));
+    ajson_add(r, to(this->value));
   }
-  return r;
+  return json_warray(r);
 }
 
-Opt *opt_from_json(Ajson *js, void *(*from)(Ajson *)) {
+Opt *opt_from_json(Json *js, void *(*from)(Json *)) {
   XNULL(js)
-  size_t size = ajson_size(js);
+  Ajson *ajs = json_rarray(js);
+  size_t size = ajson_size(ajs);
   if (size > 1)
     THROW(exc_range_t) exc_range(1, 2, size) _THROW
 
   if (size) {
-    return opt_new(from(json_rarray(ajson_get(js, 0))));
+    return opt_new(from(ajson_get(ajs, 0)));
   }
   return opt_null();
 }

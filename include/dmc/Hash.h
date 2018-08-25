@@ -15,7 +15,7 @@ typedef struct opt_Opt Opt;
 typedef struct it_It It;
 typedef struct ichar_Ichar Ichar;
 typedef struct ikv_Ikv Ikv;
-typedef struct ajson_Ajson Ajson;
+typedef struct json_Json Json;
 
 /// hash_new nitializates a Hash. Hash is an immutable struct which can be
 /// cast to List.
@@ -67,9 +67,9 @@ Hash *hash_from_it(Ikv *it);
 
 /// hash_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
-Ajson *hash_to_json(Hash *this, Ajson *(*to)(void *));
+Json *hash_to_json(Hash *this, Json *(*to)(void *));
 
 /// hash_from_json restores a serialized Hash using 'from' to convert elements.
-Hash *hash_from_json(Ajson *js, void *(*from)(Ajson *));
+Hash *hash_from_json(Json *js, void *(*from)(Json *));
 
 #endif

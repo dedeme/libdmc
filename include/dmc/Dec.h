@@ -11,7 +11,6 @@
 ///
 typedef struct dec_Dec Dec;
 typedef struct json_Json Json;
-typedef struct ajson_Ajson Ajson;
 
 /// dec_new makes a new Dec
 ///   n : Number which will be rounded to 'scale'
@@ -54,10 +53,10 @@ bool dec_number (char *s);
 
 /// dec_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
-Ajson *dec_to_json(Dec *this);
+Json *dec_to_json(Dec *this);
 
 /// dec_from_json restores a serialized Dec using 'from' to convert elements.
-Dec *dec_from_json(Ajson *js);
+Dec *dec_from_json(Json *js);
 
 #endif
 

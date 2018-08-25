@@ -10,7 +10,7 @@
 
 ///
 typedef struct opt_Opt Opt;
-typedef struct ajson_Ajson Ajson;
+typedef struct json_Json Json;
 
 ///
 Opt *opt_null(void);
@@ -28,9 +28,9 @@ void *opt_value(Opt *this);
 
 /// opt_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
-Ajson *opt_to_json(Opt *this, Ajson *(*to)(void *));
+Json *opt_to_json(Opt *this, Json *(*to)(void *));
 
 /// opt_from_json restores a serialized Opt using 'from' to convert elements.
-Opt *opt_from_json(Ajson *js, void *(*from)(Ajson *));
+Opt *opt_from_json(Json *js, void *(*from)(Json *));
 
 #endif

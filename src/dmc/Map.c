@@ -124,29 +124,30 @@ Map *map_from_it(Ikv *it) {
   return (Map *)arr_from_it((It *)it);
 }
 
-Ajson *map_to_json(Map *this, Ajson *(*to)(void *)) {
+Json *map_to_json(Map *this, Json *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
-  ajson_add(r, json_warray(achar_to_json(
-    achar_from_it(map_keys(this)), str_to_json
-  )));
-  ajson_add(r, json_warray(arr_to_json(
-    arr_from_it(map_values(this)), to)
+  ajson_add(r, achar_to_json(
+    achar_from_it(map_keys(this)), json_wstring
   ));
-  return r;
+  ajson_add(r, arr_to_json(
+    arr_from_it(map_values(this)), to)
+  );
+  return json_warray(r);
 }
 
-Map *map_from_json(Ajson *js, void *(*from)(Ajson *)) {
+Map *map_from_json(Json *js, void *(*from)(Json *)) {
   XNULL(js);
 
-  Ajson *jks = json_rarray(ajson_get(js, 0));
-  Ajson *jvs = json_rarray(ajson_get(js, 1));
-  size_t size = ajson_size(jks);
-  if (ajson_size(jvs) != size)
-    THROW(exc_range_t) exc_range(size, size + 1, ajson_size(jvs)) _THROW
-  Achar *ks = achar_from_json(jks, str_from_json);
+  Ajson *ajs = json_rarray(js);
+  Json *jks = ajson_get(ajs, 0);
+  Json *jvs = ajson_get(ajs, 1);
+  Achar *ks = achar_from_json(jks, json_rstring);
   Arr *vs = arr_from_json(jvs, from);
+  size_t size = achar_size(ks);
+  if (arr_size(vs) != size)
+    THROW(exc_range_t) exc_range(size, size + 1, arr_size(vs)) _THROW
 
   Arr *r = arr_new();
   Kv *kv;

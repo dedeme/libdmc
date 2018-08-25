@@ -11,7 +11,6 @@
 #include <stddef.h>
 
 typedef struct achar_Achar Achar;
-typedef struct ajson_Ajson Ajson;
 typedef struct ichar_Ichar Ichar;
 typedef struct opt_Opt Opt;
 
@@ -158,11 +157,5 @@ char *str_to_escape (char *s);
 /// str_from_escape restores the string escaped with 'escape'. If 's' does not
 /// come from 'escape' the result is indefined.
 char *str_from_escape (char *s);
-
-///
-Ajson *str_to_json(char *s);
-
-///
-char *str_from_json(Ajson *js);
 
 #endif

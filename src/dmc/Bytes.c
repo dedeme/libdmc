@@ -73,7 +73,7 @@ void bytes_add_str (Bytes *this, char *s) {
   bytes_add_bytes(this, (unsigned char *)s, strlen(s));
 }
 
-Ajson *bytes_to_json(Bytes *this) {
+Json *bytes_to_json(Bytes *this) {
   XNULL(this)
 
   Ajson *r = ajson_new();
@@ -81,15 +81,16 @@ Ajson *bytes_to_json(Bytes *this) {
   REPEAT(this->length) {
     ajson_add(r, json_wuint((unsigned)*p++));
   }_REPEAT
-  return r;
+  return json_warray(r);
 }
 
-Bytes *bytes_from_json(Ajson *js) {
+Bytes *bytes_from_json(Json *js) {
   XNULL(js)
 
-  Bytes *r = bytes_new_len(ajson_size(js));
+  Ajson *ajs = json_rarray(js);
+  Bytes *r = bytes_new_len(ajson_size(ajs));
   unsigned char *p = r->bs;
-  EACH(js, Json, j) {
+  EACH(ajs, Json, j) {
     *p++ = (unsigned char)json_ruint(j);
   }_EACH
   return r;

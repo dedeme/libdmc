@@ -12,7 +12,7 @@
 typedef struct list_List List;
 typedef struct it_It It;
 typedef struct arr_Arr Arr;
-typedef struct ajson_Ajson Ajson;
+typedef struct json_Json Json;
 
 ///
 List *list_new(void);
@@ -54,9 +54,9 @@ List *list_from_arr (Arr *a);
 
 /// list_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
-Ajson *list_to_json(List *this, Ajson *(*to)(void *));
+Json *list_to_json(List *this, Json *(*to)(void *));
 
 /// list_from_json restores a serialized List using 'from' to convert elements.
-List *list_from_json(Ajson *js, void *(*from)(Ajson *));
+List *list_from_json(Json *js, void *(*from)(Json *));
 
 #endif

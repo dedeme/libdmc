@@ -15,7 +15,7 @@ typedef struct opt_Opt Opt;
 typedef struct it_It It;
 typedef struct ichar_Ichar Ichar;
 typedef struct ikv_Ikv Ikv;
-typedef struct ajson_Ajson Ajson;
+typedef struct json_Json Json;
 
 /// map_new initializates a map. Map can be cast to Arr.
 Map *map_new(void);
@@ -65,9 +65,9 @@ Map *map_from_it(Ikv *it);
 
 /// map_to_json returns a serialization of 'this' using 'to' to
 /// convert elements.
-Ajson *map_to_json(Map *this, Ajson *(*to)(void *));
+Json *map_to_json(Map *this, Json *(*to)(void *));
 
 /// map_from_json restores a serialized Map using 'from' to convert elements.
-Map *map_from_json(Ajson *js, void *(*from)(Ajson *));
+Map *map_from_json(Json *js, void *(*from)(Json *));
 
 #endif

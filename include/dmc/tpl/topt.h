@@ -32,10 +32,10 @@ bool FUN(is_null)(CT *this);
 TY *FUN(value)(CT *this);
 
 ///
-Ajson *FUN(to_json)(CT *this, Ajson *(*to)(TY *));
+Json *FUN(to_json)(CT *this, Json *(*to)(TY *));
 
 ///
-CT *FUN(from_json)(Ajson *js, TY *(*from)(Ajson *));
+CT *FUN(from_json)(Json *js, TY *(*from)(Json *));
 
 #undef CT
 #undef FUN

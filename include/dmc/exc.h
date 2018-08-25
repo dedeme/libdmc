@@ -4,7 +4,7 @@
 /// Utilities to manage exceptions.<p>
 /// Only functions 'exc_init', 'exc_stack'  and 'exc_throw' must be used
 /// directly. The rest must be used through the macros TRY-CATCH-_TRY and
-/// THROW-_THROW. (see <a href="?libdm@DEFS#hp:TRY">DEFS</a>)
+/// THROW-_THROW. (see <a href="?libdmc@dmc/DEFS#hp:TRY">DEFS</a>)
 
 #ifndef DM_EXC_H
   #define DM_EXC_H
