@@ -153,10 +153,10 @@
   , __FILE__, (char *)__func__, __LINE__);
 
 /// FROM_JSON is the Json restorer function type
-#define FROM_JSON void *(*)(Ajson *)
+#define FROM_JSON void *(*)(Json *)
 
 /// TO_JSON is the Json serializer function type
-#define TO_JSON Ajson *(*)(void *)
+#define TO_JSON Json *(*)(void *)
 
 #endif
 
