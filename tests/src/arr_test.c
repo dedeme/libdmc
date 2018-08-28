@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <assert.h>
+#include "dmc/It.h"
 #include "dmc/ct/Ichar.h"
 #include "dmc/ct/Achar.h"
 #include "dmc/sys.h"
@@ -224,6 +225,11 @@ void arr_test() {
 
   i = 0;
   EACH(a1, char, o) {
+    assert(str_eq(o, achar_get(a1, i++)));
+  }_EACH
+
+  i = 0;
+  EACHI(achar_to_it(a1), char, o) {
     assert(str_eq(o, achar_get(a1, i++)));
   }_EACH
 

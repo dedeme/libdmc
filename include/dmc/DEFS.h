@@ -58,22 +58,23 @@
 ///
 #define _RANGE }
 
-/// Iterates over a 'List'.
-///   list   : An List *
+/// Iterates over an 'It'. You can access to the 'element' index with _i.
+///   a      : An It *
 ///   type   : Element type without pointer sign (*)
 ///   element: An element of type 'type'
 /// For example:
-///   EACHL(list, char, s) {
-///     printf("%s\n", s);
+///   EACH(it, char, s) {
+///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
-#define EACHL(list, type, element) { \
-  List *_EACHL_list = (List *)list; \
+#define EACHI(it, type, element) { \
+  It *__it = (It *)it; \
+  int _i = -1; \
   type *element; \
-  while (!list_empty(_EACHL_list)) { \
-    element = list_head(_EACHL_list); \
-    _EACHL_list = list_tail(_EACHL_list);
+  while (it_has_next(__it)) { \
+    ++_i; \
+    element = it_next(__it);
 
-/// Iterates over a 'Arr'. You can access to the 'element' index with _i.
+/// Iterates over an 'Arr'. You can access to the 'element' index with _i.
 ///   a      : An Arr *
 ///   type   : Element type without pointer sign (*)
 ///   element: An element of type 'type'
@@ -88,6 +89,21 @@
   type *element; \
   for (_i = 0; _i < __size; ++_i) { \
     element = arr_get(__arr, _i);
+
+/// Iterates over a 'List'.
+///   list   : An List *
+///   type   : Element type without pointer sign (*)
+///   element: An element of type 'type'
+/// For example:
+///   EACHL(list, char, s) {
+///     printf("%s\n", s);
+///   } _EACH
+#define EACHL(list, type, element) { \
+  List *_EACHL_list = (List *)list; \
+  type *element; \
+  while (!list_empty(_EACHL_list)) { \
+    element = list_head(_EACHL_list); \
+    _EACHL_list = list_tail(_EACHL_list);
 
 /// Iterates over an 'Arr' in reverse order. You can access to the 'element'
 /// index with _i.
@@ -136,7 +152,7 @@
   if(_TRY_val != 0) {_TRY_catch(exc_msg());} else {_TRY_try();}}
 
 /// Example
-///   THROW "Working directory can no be find: %s", strerror(errno) _THROW
+///   THROW(exc_io_t) "Working directory not found: %s", strerror(errno) _THROW
 #define THROW(type) exc_throw(type, str_printf(
 
 ///
