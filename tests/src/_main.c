@@ -1,7 +1,8 @@
 // Copyright 29-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include <stdio.h>
+
+#include "dmc/std.h"
 #include "dmc/sys.h"
 #include "opt_test.h"
 #include "sys_test.h"
