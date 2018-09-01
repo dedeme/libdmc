@@ -20,6 +20,8 @@ void map_test() {
 
   mchar_put(m, "uno", "2");
   assert(str_eq("2", ochar_value(mchar_get(m, "uno"))));
+  assert(str_eq("", mchar_oget(m, "two", "")));
+  assert(str_eq("2", mchar_oget(m, "uno", "")));
   mchar_put(m, "dos", "2");
   assert(str_eq("2", ochar_value(mchar_get(m, "dos"))));
   mchar_put(m, "uno", "1");

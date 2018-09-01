@@ -58,7 +58,7 @@ void *map_oget(Map *this, char *key, void *option) {
 
   EACH(this, Kv, kv) {
     if (str_eq(kv_key(kv), key)) {
-      return opt_new(kv_value(kv));
+      return kv_value(kv);
     }
   }_EACH
   return option;

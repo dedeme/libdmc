@@ -39,7 +39,7 @@ OP *FUN(get)(CT *this, char *key) {
 
 inline
 TY *FUN(oget)(CT *this, char *key, TY *option) {
-  return (TY *)map_get((Map *)this, key);
+  return (TY *)map_oget((Map *)this, key, option);
 }
 
 inline
