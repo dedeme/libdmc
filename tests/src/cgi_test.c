@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <locale.h>
-#include "dmc/Cgi.h"
+#include "dmc/cgi.h"
 #include "dmc/cryp.h"
 #include "dmc/ct/Mjson.h"
 #include "dmc/Json.h"
@@ -32,7 +32,6 @@ void cgi_test() {
 
   r = decryp((char *)cgi_add_user("admin", dm_key, "new", "abc", "1"));
   assert(jmap_gbool(r, "ok"));
-  assert(str_eq(jmap_gstring(r, "error"), ""));
 
   cgi_init(sys_home(), 1000);
   cgi_set_key(key);

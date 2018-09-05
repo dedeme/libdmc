@@ -11,9 +11,6 @@
 typedef struct json_Json Json;
 typedef struct mjson_Mjson Mjson;
 
-/// cgi_klen returns the standard length of keys.
-int cgi_klen();
-
 /// CgiRp is a Map[Json] serialized with 'json_wobject()' and encrypted with
 /// 'cryp_cryp()' using the key of 'cgi_set_key()'.<br>
 /// The Map[Json] has ever a field called 'error' set to "" in ok responses
@@ -23,6 +20,9 @@ typedef struct cgiRp_CgiRp CgiRp;
 ///
 typedef struct cgi_Cgi Cgi;
 
+/// cgi_klen returns the standard length of keys.
+int cgi_klen(void);
+
 /// cgi_new initializes a new interface of commnications.
 ///   home        : Aboslute path of application directory below wwwcgi/dmcgi
 ///                 directory. (e.g. /peter/wwwcgi/dmcgi/JsMon)
@@ -30,7 +30,7 @@ typedef struct cgi_Cgi Cgi;
 void cgi_init(char *home, time_t t_expiration);
 
 ///
-char *cgi_home();
+char *cgi_home(void);
 
 /// cgi_set_key sets the key which 'cgi_ok' and 'cgi_err' will use. This
 /// function is called when connection or authentication.
@@ -107,6 +107,6 @@ CgiRp *cgi_ok(Mjson *data);
 CgiRp *cgi_error(char *msg);
 
 /// cgi_expired creates a new CgiRp, setting {expired:true, error:""}
-CgiRp *cgi_expired();
+CgiRp *cgi_expired(void);
 
 #endif

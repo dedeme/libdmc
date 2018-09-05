@@ -2,7 +2,7 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include <gc.h>
-#include "dmc/Cgi.h"
+#include "dmc/cgi.h"
 #include "dmc/ct/Achar.h"
 #include "dmc/ct/Ochar.h"
 #include "dmc/ct/Mjson.h"
@@ -268,11 +268,11 @@ static void set_connection_id(char *session_id, char *con_id) {
 
 // Public interface ----------------------------------------
 
-int cgi_klen() {
+int cgi_klen(void) {
   return klen;
 }
 
-char *cgi_home() {
+char *cgi_home(void) {
   if (!cgi) {
     exc_illegal_state("'cgi' has not been intialized");
   }
@@ -417,8 +417,6 @@ CgiRp *cgi_ok(Mjson *data) {
   if (!cgi->key) {
     return (CgiRp *)"cgi_ok: this->key not set";
   }
-
-  jmap_pstring(data, "error", "");
   return (CgiRp *)cryp_cryp(cgi->key, (char *)json_wobject(data));
 }
 
@@ -435,7 +433,7 @@ CgiRp *cgi_error(char *msg) {
   return (CgiRp *)cryp_cryp(cgi->key, (char *)json_wobject(data));
 }
 
-CgiRp *cgi_expired(Cgi *this) {
+CgiRp *cgi_expired(void) {
   if (!cgi) {
     exc_illegal_state("'cgi' has not been intialized");
   }
