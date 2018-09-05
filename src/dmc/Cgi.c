@@ -16,6 +16,7 @@
 #include "dmc/Arr.h"
 #include "dmc/Date.h"
 #include "dmc/It.h"
+#include "dmc/exc.h"
 #include "dmc/DEFS.h"
 
 static size_t klen = 300;
@@ -27,10 +28,6 @@ static char *deme_key =
     "KqpJp4K96QqtVjmXwhVcST9l+u1XUPL6K9HQfEEGMGcToMGUrzNQxCzlg2g+"
     "Hg55i7iiKbA0ogENhEIFjMG+wmFDNzgjvDnNYOaPTQ7l4C8aaPsEfl3sugiw";
 
-int cgi_klen() {
-  return klen;
-}
-
 struct cgi_Cgi {
   char *fkey; // key to encrypt files
   char *key;  // key to communications. Must be set before to call ok or error
@@ -38,19 +35,21 @@ struct cgi_Cgi {
   time_t t_expiration;
 };
 
-static void write_users(Cgi *this, Achar *users);
-static void put_user(Cgi *this, char *user, char *key, char *level);
-static void write_sessions(Cgi *this, Arr/*Ajson*/ *sessions);
+static Cgi *cgi = NULL;
 
-Cgi *cgi_new(char *home, time_t t_expiration) {
+static void write_users(Achar *users);
+static void put_user(char *user, char *key, char *level);
+static void write_sessions(Arr/*Ajson*/ *sessions);
+
+void cgi_init(char *home, time_t t_expiration) {
   rnd_init();
 
-  Cgi *this = MALLOC(Cgi);
+  cgi = MALLOC(Cgi);
 
-  this->fkey = cryp_key(deme_key, str_len(deme_key));
-  this->key = NULL;
-  this->home = home;
-  this->t_expiration = t_expiration;
+  cgi->fkey = cryp_key(deme_key, str_len(deme_key));
+  cgi->key = NULL;
+  cgi->home = home;
+  cgi->t_expiration = t_expiration;
 
   if (!file_exists(home)) {
     file_mkdir(home);
@@ -58,33 +57,26 @@ Cgi *cgi_new(char *home, time_t t_expiration) {
 
   char *fusers = path_cat(home, "users.db", NULL);
   if (!file_exists(fusers)) {
-    write_users(this, achar_new());
-    put_user(this, "admin", deme_key, "0");
-    write_sessions(this, arr_new());
+    write_users(achar_new());
+    put_user("admin", deme_key, "0");
+    write_sessions(arr_new());
   }
-
-  return this;
-}
-
-inline
-char *cgi_home(Cgi *this) {
-  return this->home;
 }
 
 // User ----------------------------------------------------
 
-static void write_users(Cgi *this, Achar *users) {
-  char *path = path_cat(this->home, "users.db", NULL);
+static void write_users(Achar *users) {
+  char *path = path_cat(cgi->home, "users.db", NULL);
   Ajson *tmp = ajson_new();
   EACH(users, char, udata) {
     ajson_add(tmp, json_wstring(udata));
   }_EACH
-  file_write(path, cryp_cryp(this->fkey, (char *)json_warray(tmp)));
+  file_write(path, cryp_cryp(cgi->fkey, (char *)json_warray(tmp)));
 }
 
-static Achar *read_users(Cgi *this) {
-  char *path = path_cat(this->home, "users.db", NULL);
-  Ajson *tmp = json_rarray((Json *)cryp_decryp(this->fkey, file_read(path)));
+static Achar *read_users() {
+  char *path = path_cat(cgi->home, "users.db", NULL);
+  Ajson *tmp = json_rarray((Json *)cryp_decryp(cgi->fkey, file_read(path)));
   Achar *r = achar_new();
   EACH(tmp, Json, js) {
     achar_add(r, json_rstring(js));
@@ -103,21 +95,21 @@ static Achar *remove_user(Achar *users, char *user) {
   return r;
 }
 
-static void del_user(Cgi *this, char *user) {
-  write_users(this, remove_user(read_users(this), user));
+static void del_user(char *user) {
+  write_users(remove_user(read_users(), user));
 }
 
-static void put_user(Cgi *this, char *user, char *key, char *level) {
-  Achar *users = remove_user(read_users(this), user);
+static void put_user(char *user, char *key, char *level) {
+  Achar *users = remove_user(read_users(cgi), user);
   char *kkey = cryp_key(key, klen);
   achar_add(users, str_printf("%s:%s:%s", user, kkey, level));
-  write_users(this, users);
+  write_users(users);
 }
 
 // If fails r is opt_null()
-static Ochar *check_user(Cgi *this, char *id, char *key) {
+static Ochar *check_user(char *id, char *key) {
   char *kkey = cryp_key(key, klen);
-  Achar *users = read_users(this);
+  Achar *users = read_users();
 
   EACH(users, char, udata) {
     Achar *parts = str_csplit(udata, ':');
@@ -131,8 +123,8 @@ static Ochar *check_user(Cgi *this, char *id, char *key) {
   return ochar_null();
 }
 
-static bool change_level(Cgi *this, char *user, char *level) {
-  Achar *users = read_users(this);
+static bool change_level(char *user, char *level) {
+  Achar *users = read_users();
 
   bool r = false;
   RANGE0(i, achar_size(users)){
@@ -148,15 +140,15 @@ static bool change_level(Cgi *this, char *user, char *level) {
     }
   }_RANGE
   if (r) {
-    write_users(this, users);
+    write_users(users);
   }
   return r;
 }
 
-static bool change_pass(Cgi *this, char *user, char *old_pass, char *new_pass) {
+static bool change_pass(char *user, char *old_pass, char *new_pass) {
   char *kold = cryp_key(old_pass, klen);
   char *knew = cryp_key(new_pass, klen);
-  Achar *users = read_users(this);
+  Achar *users = read_users();
 
   bool r = false;
   RANGE0(i, achar_size(users)){
@@ -175,25 +167,25 @@ static bool change_pass(Cgi *this, char *user, char *old_pass, char *new_pass) {
     }
   }_RANGE
   if (r) {
-    write_users(this, users);
+    write_users(users);
   }
   return r;
 }
 
 // Session -------------------------------------------------
 
-static void write_sessions(Cgi *this, Arr/*Ajson*/ *sessions) {
-  char *path = path_cat(this->home, "sessions.db", NULL);
+static void write_sessions(Arr/*Ajson*/ *sessions) {
+  char *path = path_cat(cgi->home, "sessions.db", NULL);
   Ajson *tmp = ajson_new();
   EACH(sessions, Ajson, sdata) {
     ajson_add(tmp, json_warray(sdata));
   }_EACH
-  file_write(path, cryp_cryp(this->fkey, (char *)json_warray(tmp)));
+  file_write(path, cryp_cryp(cgi->fkey, (char *)json_warray(tmp)));
 }
 
-static Arr/*Arr[Json]*/ *read_sessions(Cgi *this) {
-  char *path = path_cat(this->home, "sessions.db", NULL);
-  Ajson *tmp = json_rarray((Json*)cryp_decryp(this->fkey, file_read(path)));
+static Arr/*Arr[Json]*/ *read_sessions() {
+  char *path = path_cat(cgi->home, "sessions.db", NULL);
+  Ajson *tmp = json_rarray((Json*)cryp_decryp(cgi->fkey, file_read(path)));
   Arr/*char*/ *r = arr_new();
   EACH(tmp, Json, js) {
     arr_add(r, json_rarray(js));
@@ -203,7 +195,7 @@ static Arr/*Arr[Json]*/ *read_sessions(Cgi *this) {
 
 // If expiration is 0 tNoExpiration is used
 static void add_session(
-  Cgi* this, char *session_id, char *user, char *key, time_t expiration
+  char *session_id, char *user, char *key, time_t expiration
 ) {
   time_t lapse = expiration ? expiration : t_no_expiration;
   Date time = date_now() + lapse;
@@ -220,10 +212,9 @@ static void add_session(
   /**/  return !str_eq(user, json_rstring(ajson_get(row, 1)));
   /**/}_FN
   write_sessions(
-    this,
     arr_from_it(it_cat(
       it_unary(row),
-      it_filter(arr_to_it(read_sessions(this)), filter)
+      it_filter(arr_to_it(read_sessions()), filter)
     ))
   );
 }
@@ -232,7 +223,7 @@ static void add_session(
 // Fields are: sessionId:key:time:lapse
 // If identification fails returns ""
 static void read_session(
-  char **key, char** conId, Cgi *this, char *session_id
+  char **key, char** conId, char *session_id
 ) {
   *key = "";
   *conId = "";
@@ -250,22 +241,20 @@ static void read_session(
   /**/  return row;
   /**/}_FN
   write_sessions(
-    this,
-    arr_from_it(it_map(it_filter(arr_to_it(read_sessions(this)), filter), map))
+    arr_from_it(it_map(it_filter(arr_to_it(read_sessions()), filter), map))
   );
 }
 
-static void del_session(Cgi *this, char *session_id) {
+static void del_session(char *session_id) {
   /**/FNP(filter, Arr/*Json*/, row) {
   /**/  return !str_eq(session_id, json_rstring(arr_get(row, 0)));
   /**/}_FN
   write_sessions(
-    this,
-    arr_from_it(it_filter(arr_to_it(read_sessions(this)), filter))
+    arr_from_it(it_filter(arr_to_it(read_sessions()), filter))
   );
 }
 
-static void set_connection_id(Cgi *this, char *session_id, char *con_id) {
+static void set_connection_id(char *session_id, char *con_id) {
   /**/FNM(map, Arr/*Json*/, row) {
   /**/  if (str_eq(json_rstring(arr_get(row, 0)), session_id)){
   /**/    arr_set(row, 3, json_wstring(con_id));
@@ -273,57 +262,81 @@ static void set_connection_id(Cgi *this, char *session_id, char *con_id) {
   /**/  return row;
   /**/}_FN
   write_sessions(
-    this,
-    arr_from_it(it_map(arr_to_it(read_sessions(this)), map))
+    arr_from_it(it_map(arr_to_it(read_sessions()), map))
   );
 }
 
 // Public interface ----------------------------------------
 
-inline
-void cgi_set_key(Cgi* this, char *k) {
-  this->key = k;
+int cgi_klen() {
+  return klen;
+}
+
+char *cgi_home() {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  return cgi->home;
+}
+
+void cgi_set_key(char *k) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  cgi->key = k;
 }
 
 void cgi_get_session_data(
-  char **key, char **connectionId, Cgi *this, char *session_id
+  char **key, char **connectionId, char *session_id
 ) {
-  read_session(key, connectionId, this, session_id);
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  read_session(key, connectionId, session_id);
 }
 
 CgiRp *cgi_add_user(
-  Cgi *this, char *admin, char *akey, char *user, char *ukey, char *level
+  char *admin, char *akey, char *user, char *ukey, char *level
 ){
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
   Mjson *m = mjson_new();
-  Ochar *alevel = check_user(this, admin, akey);
+  Ochar *alevel = check_user(admin, akey);
   if (!ochar_is_null(alevel) && str_eq(ochar_value(alevel), "0")) {
-    put_user(this, user, ukey, level);
+    put_user(user, ukey, level);
     jmap_pbool(m, "ok", true);
   } else {
     jmap_pbool(m, "ok", false);
   }
-  return cgi_ok(this, m);
+  return cgi_ok(m);
 }
 
-CgiRp *cgi_del_user(Cgi *this, char *admin, char *akey, char *user) {
+CgiRp *cgi_del_user(char *admin, char *akey, char *user) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
   Mjson *m = mjson_new();
-  Ochar *alevel = check_user(this, admin, akey);
+  Ochar *alevel = check_user(admin, akey);
   if (!ochar_is_null(alevel) && str_eq(ochar_value(alevel), "0")) {
-    del_user(this, user);
+    del_user(user);
     jmap_pbool(m, "ok", true);
   } else {
     jmap_pbool(m, "ok", false);
   }
-  return cgi_ok(this, m);
+  return cgi_ok(m);
 }
 
 CgiRp *cgi_change_level(
-  Cgi *this, char *admin, char *akey, char *user, char *level
+  char *admin, char *akey, char *user, char *level
 ) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
   Mjson *m = mjson_new();
-  Ochar *alevel = check_user(this, admin, akey);
+  Ochar *alevel = check_user(admin, akey);
   if (!ochar_is_null(alevel) && str_eq(ochar_value(alevel), "0")) {
-    if (change_level(this, user, level)) {
+    if (change_level(user, level)) {
       jmap_pbool(m, "ok", true);
     } else {
       jmap_pbool(m, "ok", false);
@@ -331,34 +344,43 @@ CgiRp *cgi_change_level(
   } else {
     jmap_pbool(m, "ok", false);
   }
-  return cgi_ok(this, m);
+  return cgi_ok(m);
 }
 
-CgiRp *cgi_change_pass(Cgi *this, char *user, char *key, char *new_key) {
+CgiRp *cgi_change_pass(char *user, char *key, char *new_key) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
   Mjson *m = mjson_new();
-  if (change_pass(this, user, key, new_key)) {
+  if (change_pass(user, key, new_key)) {
     jmap_pbool(m, "ok", true);
   } else {
     jmap_pbool(m, "ok", false);
   }
-  return cgi_ok(this, m);
+  return cgi_ok(m);
 }
 
 
-CgiRp *cgi_del_session(Cgi *this, char *session_id) {
-  del_session(this, session_id);
-  return cgi_ok(this, mjson_new());
+CgiRp *cgi_del_session(char *session_id) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  del_session(session_id);
+  return cgi_ok(mjson_new());
 }
 
-CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
+CgiRp *cgi_authentication(char *user, char *key, bool expiration) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
   Mjson *rp = mjson_new();
 
-  Ochar *level = check_user(this, user, key);
+  Ochar *level = check_user(user, key);
   if (!ochar_is_null(level)) {
     char *session_id = cryp_genk(klen);
     char *key = cryp_genk(klen);
     add_session(
-      this, session_id, user, key, expiration ? this->t_expiration : 0
+      session_id, user, key, expiration ? cgi->t_expiration : 0
     );
     jmap_pstring(rp, "level", ochar_value(level));
     jmap_pstring(rp, "sessionId", session_id);
@@ -369,43 +391,55 @@ CgiRp *cgi_authentication(Cgi *this, char *user, char *key, bool expiration) {
     jmap_pstring(rp, "key", "");
   }
 
-  return cgi_ok(this, rp);
+  return cgi_ok(rp);
 }
 
-CgiRp *cgi_connect(Cgi *this, char *session_id) {
-  set_connection_id(this, session_id, cryp_genk(klen));
+CgiRp *cgi_connect(char *session_id) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  set_connection_id(session_id, cryp_genk(klen));
 
   char *key;
   char *connectionId;
-  read_session(&key, &connectionId, this, session_id);
+  read_session(&key, &connectionId, session_id);
 
   Mjson *rp = mjson_new();
   jmap_pstring(rp, "key", key);
   jmap_pstring(rp, "connectionId", connectionId);
-  return cgi_ok(this, rp);
+  return cgi_ok(rp);
 }
 
-CgiRp *cgi_ok(Cgi *this, Mjson *data) {
-  if (!this->key) {
+CgiRp *cgi_ok(Mjson *data) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  if (!cgi->key) {
     return (CgiRp *)"cgi_ok: this->key not set";
   }
 
   jmap_pstring(data, "error", "");
-  return (CgiRp *)cryp_cryp(this->key, (char *)json_wobject(data));
+  return (CgiRp *)cryp_cryp(cgi->key, (char *)json_wobject(data));
 }
 
-CgiRp *cgi_error(Cgi *this, char *msg) {
-  if (!this->key) {
+CgiRp *cgi_error(char *msg) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
+  if (!cgi->key) {
     return (CgiRp *)"cgi_ok: this->key not set";
   }
 
   Mjson *data = mjson_new();
   jmap_pstring(data, "error", msg);
-  return (CgiRp *)cryp_cryp(this->key, (char *)json_wobject(data));
+  return (CgiRp *)cryp_cryp(cgi->key, (char *)json_wobject(data));
 }
 
 CgiRp *cgi_expired(Cgi *this) {
+  if (!cgi) {
+    exc_illegal_state("'cgi' has not been intialized");
+  }
   Mjson *data = mjson_new();
   jmap_pbool(data, "expired", true);
-  return cgi_ok(this, data);
+  return cgi_ok(data);
 }

@@ -614,7 +614,7 @@ bool jmap_gnull(Mjson *this, char *key) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   return json_rnull(value);
@@ -624,7 +624,7 @@ bool jmap_gbool(Mjson *this, char *key) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   return json_rbool(value);
@@ -634,7 +634,7 @@ int jmap_gint(Mjson *this, char *key) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   return json_rint(value);
@@ -644,7 +644,7 @@ unsigned jmap_guint(Mjson *this, char *key) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   return json_ruint(value);
@@ -654,7 +654,7 @@ double jmap_gdouble(Mjson *this, char *key) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   return json_rdouble(value);
@@ -664,7 +664,7 @@ char *jmap_gstring(Mjson *this, char *key) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   return json_rstring(value);
@@ -674,7 +674,7 @@ Arr *jmap_garray(Mjson *this, char *key, void *(*from)(Json *)) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value =ojson_value(mjson_get(this, key));
   Arr *r = arr_new();
@@ -689,7 +689,7 @@ Map *jmap_gobject(Mjson *this, char *key, void *(*from)(Json *)) {
   XNULL(this)
   XNULL(key)
   if (!mjson_has_key(this, key))
-    THROW(exc_generic_t) "'this' has not the key '%s', key" _THROW
+    THROW(exc_generic_t) "'this' has not the key '%s'", key _THROW
 
   Json *value = ojson_value(mjson_get(this, key));
   Map *m = map_new();

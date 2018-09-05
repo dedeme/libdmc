@@ -22,46 +22,46 @@ void cgi_test() {
     return json_robject((Json *)cryp_decryp(key, msg));
   }
 
-  Cgi *cgi = cgi_new(sys_home(), 1000);
-  cgi_set_key(cgi, key);
+  cgi_init(sys_home(), 1000);
+  cgi_set_key(key);
 
   Mjson *r = decryp(
-    (char *)cgi_authentication(cgi, "admin", dm_key, false)
+    (char *)cgi_authentication("admin", dm_key, false)
   );
   assert(str_eq(jmap_gstring(r, "level"), "0"));
 
-  r = decryp((char *)cgi_add_user(cgi, "admin", dm_key, "new", "abc", "1"));
+  r = decryp((char *)cgi_add_user("admin", dm_key, "new", "abc", "1"));
   assert(jmap_gbool(r, "ok"));
   assert(str_eq(jmap_gstring(r, "error"), ""));
 
-  cgi = cgi_new(sys_home(), 1000);
-  cgi_set_key(cgi, key);
+  cgi_init(sys_home(), 1000);
+  cgi_set_key(key);
 
-  r = decryp((char *)cgi_authentication(cgi, "new", "abc", false));
+  r = decryp((char *)cgi_authentication("new", "abc", false));
   assert(str_eq(jmap_gstring(r, "level"), "1"));
-  r = decryp((char *)cgi_authentication(cgi, "new", "abcd", false));
+  r = decryp((char *)cgi_authentication("new", "abcd", false));
   assert(str_eq(jmap_gstring(r, "level"), ""));
-  cgi_change_level(cgi, "admin", dm_key, "new", "2");
-  cgi_change_pass(cgi, "new", "abc", "a");
-  r = decryp((char *)cgi_authentication(cgi, "new", "a", false));
+  cgi_change_level("admin", dm_key, "new", "2");
+  cgi_change_pass("new", "abc", "a");
+  r = decryp((char *)cgi_authentication("new", "a", false));
   assert(str_eq(jmap_gstring(r, "level"), "2"));
 
   char *skey = jmap_gstring(r, "key");
   char *session_id = jmap_gstring(r, "sessionId");
 
-  r = decryp((char *)cgi_connect(cgi, session_id));
+  r = decryp((char *)cgi_connect(session_id));
   char *skey2 = jmap_gstring(r, "key");
   assert(str_eq(skey, skey2));
 
   char *conId;
-  cgi_get_session_data(&skey, &conId, cgi, session_id);
+  cgi_get_session_data(&skey, &conId, session_id);
   assert(str_eq(skey, skey2));
 
-  r = decryp((char *)cgi_expired(cgi));
+  r = decryp((char *)cgi_expired());
   assert(jmap_gbool(r, "expired"));
 
-  cgi_del_session(cgi, session_id);
-  r = decryp((char *)cgi_connect(cgi, session_id));
+  cgi_del_session(session_id);
+  r = decryp((char *)cgi_connect(session_id));
   assert(str_eq(jmap_gstring(r, "key"), ""));
 
   file_del(path_cat(sys_home(), "sessions.db", NULL));
