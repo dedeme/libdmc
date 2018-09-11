@@ -70,6 +70,22 @@ int str_cindex (char *str, char ch) {
   return -1;
 }
 
+int str_cindex_from (char *str, char ch, size_t from) {
+  XNULL(str)
+  if (from >= strlen(str)) {
+    return -1;
+  }
+  int c = from;
+  char *p  = str + from;
+  while (*p) {
+    if (*p++ == ch) {
+      return c;
+    };
+    ++c;
+  }
+  return -1;
+}
+
 int str_index (char *str, char *substr) {
   XNULL(str)
   XNULL(substr)
@@ -80,7 +96,32 @@ int str_index (char *str, char *substr) {
   int c = 0;
   int limit = strlen(str) - strlen(substr);
   char *p  = str;
-  while (*p) {
+  for (;;) {
+    if (c > limit) {
+      break;
+    }
+    if (str_starts(p++, substr)) {
+      return c;
+    };
+    ++c;
+  }
+  return -1;
+}
+
+int str_index_from (char *str, char *substr, size_t from) {
+  XNULL(str)
+  XNULL(substr)
+  if (from >= strlen(str)) {
+    return -1;
+  }
+
+  if (!*substr) {
+    return from;
+  }
+  int c = from;
+  int limit = strlen(str) - strlen(substr);
+  char *p  = str + from;
+  for (;;) {
     if (c > limit) {
       break;
     }
@@ -186,10 +227,17 @@ char *str_sub (char *str, int begin, int end) {
 }
 
 char *str_sub_end (char *str, int begin) {
-  XNULL(str)
-
   return str_sub(str, begin, strlen(str));
 }
+
+char *str_left(char *str, int end) {
+  return str_sub(str, 0, end);
+}
+
+char *str_right(char *str, int begin) {
+  return str_sub(str, begin, strlen(str));
+}
+
 
 char *str_ltrim (char *str) {
   XNULL(str)

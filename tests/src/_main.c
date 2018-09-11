@@ -29,10 +29,10 @@ int main (int argc, char **argv) {
 
   puts("dmTest. v201805\n");
   sys_init("dmTest");
-
+/*
   opt_test();
   sys_test();
-  str_test();
+*/  str_test();/*
   buf_test();
   it_test();
   arr_test();
@@ -50,6 +50,6 @@ int main (int argc, char **argv) {
   dec_test();
   date_test();
   cgi_test();
-
+*/
   return(0);
 }

@@ -33,11 +33,19 @@ bool str_starts(char *str, char *substr);
 bool str_ends(char *str, char *substr);
 
 /// str_cindex returns first position of 'ch' in 'str' or -1 if 'ch' is missing.
-int str_cindex (char *str, char ch);
+int str_cindex(char *str, char ch);
+
+/// str_cindex_from returns first position of 'ch' in 'str' from start or -1 if
+/// 'ch' is missing.
+int str_cindex_from(char *str, char ch, size_t start);
 
 /// str_index returns first position of 'substr' in 'str' or -1 if 'substr'
 /// is missing.
 int str_index(char *str, char *substr);
+
+/// str_index_from returns first position of 'substr' in 'str' from start or -1
+/// if 'substr'is missing.
+int str_index_from(char *str, char *substr, size_t start);
 
 /// str_last_cindex returns last position of 'ch' in 'str' or -1 if 'ch' is
 /// missing.
@@ -60,8 +68,14 @@ char *str_cat(char *s, ...);
 /// If 'begin' or 'end' are out of bounds function returns "".
 char *str_sub(char *str, int begin, int end);
 
-/// str_sub_end is equals to str_sub(s, begin, strlen(s))
+/// str_sub_end is equals to str_sub(str, begin, strlen(s))
 char *str_sub_end(char *str, int begin);
+
+/// str_left is equals to str_sub(str, 0, end);
+char *str_left(char *str, int end);
+
+/// str_right is equals to str_sub_end
+char *str_right(char *str, int begin);
 
 /// str_ltrim returns a new string removing spaces (' ', '\\f', '\\n', '\\r',
 /// '\\t' and '\\v') at left.

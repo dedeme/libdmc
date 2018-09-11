@@ -33,8 +33,10 @@ void str_test() {
   printf("    str-index/last_index\n");
 
   assert(str_cindex("ab", 'a') == 0);
+  assert(str_cindex_from("ab", 'a', 1) == -1);
   assert(str_cindex("", 'a') == -1);
   assert(str_cindex("ab", 'b') == 1);
+  assert(str_cindex_from("ab", 'b', 1) == 1);
   assert(str_cindex("ab", 'c') == -1);
 
   assert(str_index("ab", "a") == 0);
@@ -47,6 +49,9 @@ void str_test() {
   assert(str_index("abcd", "bc") == 1);
   assert(str_index("abcd", "bcd") == 1);
   assert(str_index("abcd", "d") == 3);
+  assert(str_index_from("abcd", "d", 0) == 3);
+  assert(str_index_from("abcd", "d", 2) == 3);
+  assert(str_index_from("abcde", "d", 4) == -1);
   assert(str_index("abcd", "ad") == -1);
 
   assert(str_last_cindex("ab", 'a') == 0);
