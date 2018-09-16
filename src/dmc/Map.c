@@ -128,9 +128,7 @@ Json *map_to_json(Map *this, Json *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
-  ajson_add(r, achar_to_json(
-    achar_from_it(map_keys(this)), json_wstring
-  ));
+  ajson_add(r, achar_to_json(achar_from_it(map_keys(this))));
   ajson_add(r, arr_to_json(
     arr_from_it(map_values(this)), to)
   );
@@ -143,7 +141,7 @@ Map *map_from_json(Json *js, void *(*from)(Json *)) {
   Ajson *ajs = json_rarray(js);
   Json *jks = ajson_get(ajs, 0);
   Json *jvs = ajson_get(ajs, 1);
-  Achar *ks = achar_from_json(jks, json_rstring);
+  Achar *ks = achar_from_json(jks);
   Arr *vs = arr_from_json(jvs, from);
   size_t size = achar_size(ks);
   if (arr_size(vs) != size)

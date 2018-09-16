@@ -135,9 +135,7 @@ Json *hash_to_json(Hash *this, Json *(*to)(void *)) {
   XNULL(this)
 
   Ajson *r = ajson_new();
-  ajson_add(r, achar_to_json(
-    achar_from_it(hash_keys(this)), json_wstring
-  ));
+  ajson_add(r, achar_to_json(achar_from_it(hash_keys(this))));
   ajson_add(r, arr_to_json(
     arr_from_it(hash_values(this)), to)
   );
@@ -151,7 +149,7 @@ Hash *hash_from_json(Json *js, void *(*from)(Json *)) {
   Ajson *ajs = json_rarray(js);
   Json *jks = ajson_get(ajs, 0);
   Json *jvs = ajson_get(ajs, 1);
-  Achar *ks = achar_from_json(jks, json_rstring);
+  Achar *ks = achar_from_json(jks);
   Arr *vs = arr_from_json(jvs, from);
   size_t size = achar_size(ks);
   if (arr_size(vs) != size)
