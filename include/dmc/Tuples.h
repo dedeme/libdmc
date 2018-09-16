@@ -6,6 +6,8 @@
 #ifndef DM_TUPLES_H
   #define DM_TUPLES_H
 
+#include "Json.h"
+
 ///
 typedef struct tp_Tp Tp;
 
@@ -43,5 +45,12 @@ char *kv_key(Kv *this);
 
 ///
 void *kv_value(Kv *this);
+
+/// kv_to_jsonf returns a serialization of 'this' using 'to' to
+/// convert its value.
+Json *kv_to_json(Kv *this, Json *(*to)(void *));
+
+/// kv_from_jsonf restores a serialized Kv using 'from' to convert its value.
+Kv *kv_from_json(Json *js, void *(*from)(Json *));
 
 #endif

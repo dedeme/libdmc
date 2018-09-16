@@ -75,10 +75,10 @@ IT *FUN(to_it)(CT *this);
 CT *FUN(from_it)(IT *it);
 
 ///
-Json *FUN(to_json)(CT *this, Json *(*to)(TY *));
+Json *FUN(to_jsonf)(CT *this, Json *(*to)(TY *));
 
 ///
-CT *FUN(from_json)(Json *js, TY *(*from)(Json *));
+CT *FUN(from_jsonf)(Json *js, TY *(*from)(Json *));
 
 #undef CT
 #undef IT

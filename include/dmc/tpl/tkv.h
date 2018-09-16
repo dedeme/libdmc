@@ -10,6 +10,7 @@
 ///   #undef FN
 
 #include "dmc/tpl/DEFS.h"
+#include "dmc/Json.h"
 
 #define CT TPL_CAT(K, FN)
 #define FUN(id) TPL_CAT_FUN(k, FN, id)
@@ -24,6 +25,12 @@ char *FUN(key)(CT *this);
 
 ///
 TY *FUN(value)(CT *this);
+
+///
+Json *FUN(to_jsonf)(CT *this, Json *(*to)(TY *));
+
+///
+CT *FUN(from_jsonf)(Json *js, TY *(*from)(Json *));
 
 #undef CT
 #undef FUN

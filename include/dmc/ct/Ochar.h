@@ -12,4 +12,10 @@
 #undef TY
 #undef FN
 
+///
+Json *ochar_to_json(Ochar *this);
+
+///
+Ochar *ochar_from_json(Json *js);
+
 #endif

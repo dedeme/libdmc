@@ -83,12 +83,12 @@ CT *FUN(from_it)(Ikv *it) {
 }
 
 inline
-Json *FUN(to_json)(CT *this, Json *(*to)(TY *)) {
+Json *FUN(to_jsonf)(CT *this, Json *(*to)(TY *)) {
   return map_to_json((Map *)this, (TO_JSON)to);
 }
 
 inline
-CT *FUN(from_json)(Json *js, TY *(*from)(Json *)) {
+CT *FUN(from_jsonf)(Json *js, TY *(*from)(Json *)) {
   return (CT *)map_from_json(js, (FROM_JSON)from);
 }
 

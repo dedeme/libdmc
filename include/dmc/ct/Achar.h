@@ -18,5 +18,10 @@ void achar_sort (Achar *this);
 /// Ascending local sort
 void achar_sort_locale (Achar *this);
 
+///
+Json *achar_to_json(Achar *this);
+
+///
+Achar *achar_from_json(Json *js);
 
 #endif

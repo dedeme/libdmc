@@ -5,6 +5,7 @@
 #include "dmc/ct/Achar.h"
 #include "dmc/str.h"
 #include "dmc/exc.h"
+#include "dmc/Json.h"
 #include "dmc/DEFS.h"
 
 #define TY char
@@ -25,4 +26,12 @@ void achar_sort_locale (Achar *this) {
 
   bool cmp(char *e1, char *e2) { return strcoll(e1, e2) > 0; }
   return achar_sortf(this, cmp);
+}
+
+Json *achar_to_json(Achar *this) {
+  return achar_to_jsonf(this, json_wstring);
+}
+
+Achar *achar_from_json(Json *js) {
+  return achar_from_jsonf(js, json_rstring);
 }

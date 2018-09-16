@@ -22,7 +22,7 @@ void opt_test() {
 
   Ochar *oc = ochar_null();
   assert(ochar_is_null(oc));
-  oc = ochar_from_json(ochar_to_json(oc, json_wstring), json_rstring);
+  oc = ochar_from_json(ochar_to_json(oc));
   assert(ochar_is_null(oc));
 
   d = "data";
@@ -30,7 +30,7 @@ void opt_test() {
   assert(!ochar_is_null(oc));
   assert(str_eq(ochar_value(oc), "data"));
 
-  oc = ochar_from_json(ochar_to_json(oc, json_wstring), json_rstring);
+  oc = ochar_from_json(ochar_to_json(oc));
   assert(!ochar_is_null(oc));
   assert(str_eq(ochar_value(oc), "data"));
 

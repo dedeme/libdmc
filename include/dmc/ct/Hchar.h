@@ -12,4 +12,10 @@
 #undef TY
 #undef FN
 
+///
+Json *hchar_to_json(Hchar *this);
+
+///
+Hchar *hchar_from_json(Json *js);
+
 #endif

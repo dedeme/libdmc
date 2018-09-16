@@ -10,6 +10,8 @@
 ///   #undef FN
 
 #include "dmc/tpl/DEFS.h"
+#include "dmc/DEFS.h"
+#include "dmc/Tuples.h"
 
 #define CT TPL_CAT(K, FN)
 #define FUN(id) TPL_CAT_FUN(k, FN, id)
@@ -25,6 +27,16 @@ char *FUN(key)(CT *this) {
 
 TY *FUN(value)(CT *this) {
   return kv_value((Kv *)this);
+}
+
+inline
+Json *FUN(to_jsonf)(CT *this, Json *(*to)(TY *)) {
+  return kv_to_json((Kv *)this, (TO_JSON)to);
+}
+
+inline
+CT *FUN(from_jsonf)(Json *js, TY *(*from)(Json *)) {
+  return (CT *)kv_from_json(js, (FROM_JSON)from);
 }
 
 #undef CT

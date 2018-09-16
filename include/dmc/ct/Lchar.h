@@ -12,4 +12,10 @@
 #undef TY
 #undef FN
 
+///
+Json *lchar_to_json(Lchar *this);
+
+///
+Lchar *lchar_from_json(Json *js);
+
 #endif

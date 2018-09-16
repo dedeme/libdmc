@@ -4,6 +4,7 @@
 #include "gc.h"
 #include "dmc/Tuples.h"
 #include "dmc/exc.h"
+#include "dmc/ct/Ajson.h"
 #include "dmc/DEFS.h"
 
 struct tp_Tp {
@@ -84,4 +85,21 @@ char *kv_key(Kv *this) {
 void *kv_value(Kv *this) {
   XNULL(this);
   return this->value;
+}
+
+Json *kv_to_json(Kv *this, Json *(*to)(void *)) {
+  XNULL(this);
+  Ajson *a = ajson_new();
+  ajson_add(a, json_wstring(this->key));
+  ajson_add(a, to(this->value));
+  return json_warray(a);
+}
+
+Kv *kv_from_json(Json *js, void *(*from)(Json *)) {
+  XNULL(js);
+  Ajson *a = json_rarray(js);
+  Kv *this = MALLOC(Kv);
+  this->key = json_rstring(ajson_get(a, 0));
+  this->value = from(ajson_get(a, 1));
+  return this;
 }
