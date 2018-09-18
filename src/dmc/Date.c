@@ -42,20 +42,22 @@ Date date_from_str(char *date) {
 }
 
 Date date_from_iso(char *date) {
-  XNULL(date)
-  return date_new(atoi(date), atoi(date + 3), atoi(date + 6));
+  return date_from_iso_sep(date, '/');
 }
 
 Date date_from_us(char *date) {
-  XNULL(date)
-  return date_new(atoi(date + 3), atoi(date), atoi(date + 6));
+  return date_from_us_sep(date, '/');
 }
 
 Date _date_from_sep (char *d, char *m, char *y) {
   if (str_len(d) > 2 || !dec_digits(d)) return 0;
   if (str_len(m) > 2 || !dec_digits(m)) return 0;
   if (str_len(y) > 4 || !dec_digits(y)) return 0;
-  return date_new(atoi(d), atoi(m), atoi(y));
+  int year = atoi(y);
+  if (year < 100) {
+    year += 2000;
+  }
+  return date_new(atoi(d), atoi(m), year);
 }
 
 Date date_from_iso_sep (char *date, char sep) {

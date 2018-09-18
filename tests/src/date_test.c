@@ -61,16 +61,16 @@ void date_test() {
   assert(!date_from_us_sep("23c/34/234b", '/'));
   assert(!date_from_us_sep("23/34x/234", '/'));
 
-  assert(date_eq(date_from_iso("01-02-2015"),
+  assert(date_eq(date_from_iso("01/02/2015"),
     date_from_iso_sep("1/2/2015", '/')));
 
-  assert(date_eq(date_from_iso("01-02-0015"),
-    date_from_iso_sep("1/02/15", '/')));
+  assert(date_eq(date_from_iso("01/02/15"),
+    date_from_iso_sep("1/02/2015", '/')));
 
-  assert(date_eq(date_from_iso("01-02-2015"),
+  assert(date_eq(date_from_us("02/01/2015"),
     date_from_us_sep("2/1/2015", '/')));
 
-  assert(date_eq(date_from_iso("01-02-0015"),
+  assert(date_eq(date_from_us("02/01/2015"),
     date_from_us_sep("02/1/15", '/')));
 
   printf("    Finshed\n");

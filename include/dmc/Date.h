@@ -26,20 +26,20 @@ Date date_now (void);
 /// (month and day in base 1)
 Date date_from_str (char *date);
 
-/// date_from_iso makes a date from a string in format dd/mm/yyyy
+/// date_from_iso makes a date from a string in format [x]x/[x]x/[xxx]x
 /// (month and day in base 1)
 Date date_from_iso (char *date);
 
-/// date_from_us makes a date from a string in format  mm/dd/yyyy
+/// date_from_us makes a date from a string in format  [x]x/[x]x/[xxx]x
 /// (month and day in base 1)
 Date date_from_us (char *date);
 
 /// date_from_iso_sep makes a date from a string is in format
-/// [x]x/[x]x/[xxx]x. If 'data' is not valid, returns '0'
+/// [x]xSP[x]xSP[xxx]x. If 'data' is not valid, returns '0'
 Date date_from_iso_sep (char *date, char sep);
 
 /// date_from_us_sep makes a date from a string in format
-/// [x]x/[x]x/[xxx]x. If 'data' is not valid, returns '0'
+/// [x]xSP[x]xSP[xxx]x. If 'data' is not valid, returns '0'
 Date date_from_us_sep (char *date, char sep);
 
 ///
