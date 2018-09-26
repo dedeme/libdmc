@@ -213,6 +213,63 @@ void arr_reverse (Arr *this) {
 void arr_sort (Arr *this, bool (*f)(void *, void *)) {
   XNULL(this)
 
+  void sort(void** a, size_t size) {
+    if (size < 2) {
+      return;
+    }
+    size_t mid1 = size / 2;
+    size_t mid2 = size - mid1;
+    void **a1 = ATOMIC(mid1 * sizeof(void*));
+    void **a2 = ATOMIC(mid2 * sizeof(void*));
+    void **pa = a;
+    void **pa1 = a1;
+    void **pa2 = a2;
+    REPEAT(mid1) {
+      *pa1++ = *pa++;
+    }_REPEAT
+    REPEAT(mid2) {
+      *pa2++ = *pa++;
+    }_REPEAT
+    sort(a1, mid1);
+    sort(a2, mid2);
+
+    pa = a;
+    size_t ia1 = 0;
+    pa1 = a1;
+    size_t ia2 = 0;
+    pa2 = a2;
+
+    for(;;) {
+      if (ia1 == mid1) {
+        for(;;) {
+          if (ia2++ == mid2) {
+            break;
+          }
+          *pa++ = *pa2++;
+        }
+        break;
+      }
+      if (ia2 == mid2) {
+        for (;;) {
+          if (ia1++ == mid1) {
+            break;
+          }
+          *pa++ = *pa1++;
+        }
+        break;
+      }
+      if (f(*pa1, *pa2)) {
+        *pa++ = *pa2++;
+        ++ia2;
+      } else {
+        *pa++ = *pa1++;
+        ++ia1;
+      }
+    }
+  }
+  sort(this->es, this->size);
+
+/*
   size_t cx = this->size;
   void **x = this->es;
   void **y;
@@ -229,6 +286,7 @@ void arr_sort (Arr *this, bool (*f)(void *, void *)) {
     }_REPEAT
     ++x;
   }
+*/
 }
 
 void arr_shuffle (Arr *this) {
