@@ -1,7 +1,7 @@
 # libdmc
 C utilities.
 
-libdmc use the Boehm garbage collector and requires libgc.
+Some utilities from C language.
 
 ## Compilation
 

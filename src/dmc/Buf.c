@@ -1,53 +1,49 @@
-// Copyright 29-May-2018 ºDeme
+// Copyright 16-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include <string.h>
-#include <stddef.h>
-#include <gc.h>
 #include "dmc/Buf.h"
-#include "dmc/str.h"
-#include "dmc/exc.h"
-#include "dmc/DEFS.h"
+#include "dmc/std.h"
+#include "string.h"
 
 struct buf_Buf{
-  char *str;     // R
-  size_t length; // R Length of string in str.
-  size_t _size;  // - Buffer size
+  char *str;
+  int length;
+  int size;
 };
 
-Buf *buf_new () {
-  Buf *this = MALLOC(Buf);
-  size_t memsize = 151;
-  this->_size = memsize - 1;
-  this->str = ATOMIC(memsize);
-  memset(this->str, 0, memsize);
+Buf *buf_new(void) {
+  return buf_new2(151);
+}
+
+Buf *buf_new2(int buffer_size) {
+  Buf *this = malloc(sizeof(Buf));
+  this->size = buffer_size - 1;
+  this->str = malloc(buffer_size);
+  memset(this->str, 0, buffer_size);
   this->length = 0;
   return this;
 }
 
-char *buf_str (Buf *this) {
-  XNULL(this)
-  return this->str;
+void buf_free(Buf *this) {
+  free(this->str);
+  free(this);
 }
 
-size_t buf_length (Buf *this) {
-  XNULL(this)
+int buf_len(Buf *this) {
   return this->length;
 }
 
-void buf_add_buf (Buf *this, char *data, size_t length) {
-  XNULL(this)
-  XNULL(data)
-
+void buf_add_buf (Buf *this, char *data, int length) {
   int ixend = this->length + length;
-  if (this->_size < ixend) {
-      while (this->_size < ixend) {
-          this->_size += this->_size;
+  if (this->size < ixend) {
+      while (this->size < ixend) {
+          this->size += this->size;
       }
-      size_t memsize = this->_size + 1;
-      char *newstr = ATOMIC(memsize);
+      int memsize = this->size + 1;
+      char *newstr = malloc(memsize);
       memset(newstr, 0, memsize);
       memcpy(newstr, this->str, this->length);
+      free(this->str);
       this->str = newstr;
   }
   memcpy(this->str + this->length, data, length);
@@ -55,17 +51,18 @@ void buf_add_buf (Buf *this, char *data, size_t length) {
 }
 
 void buf_add (Buf *this, char *data) {
-  XNULL(this)
-  XNULL(data)
   buf_add_buf(this, data, strlen(data));
 }
 
 void buf_cadd (Buf *this, char data) {
-  XNULL(this)
   buf_add_buf(this, &data, 1);
 }
 
-char *buf_to_str (Buf *this) {
-  XNULL(this)
-  return str_copy(this->str);
+char *buf_to_str_new (Buf *this) {
+  return str_new(this->str);
+}
+
+void buf_reset(Buf *this) {
+  memset(this->str, 0, this->size);
+  this->length = 0;
 }

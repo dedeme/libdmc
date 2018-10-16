@@ -1,355 +1,265 @@
-// Copyright 29-May-2018 ºDeme
+// Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include <gc.h>
 #include "dmc/Arr.h"
-#include "dmc/str.h"
-#include "dmc/exc.h"
-#include "dmc/rnd.h"
-#include "dmc/It.h"
-#include "dmc/ct/Ajson.h"
-#include "dmc/Json.h"
-#include "dmc/DEFS.h"
+#include "string.h"
 
-struct arr_Arr{
-  size_t size;           // R
-  void **es;             // R & W (elements. See arr_set && arr_get)
-  size_t _max_size;      // -
-};
+#include "dmc/std.h"
 
-inline
-Arr *arr_new () {
-  return arr_new_buf(15);
+static void free_es(void **es, int len, void(*ffree)(void *)) {
+  void **p = es;
+  REPEAT(len)
+    ffree(*p++);
+  _REPEAT
+  free(es);
 }
 
-Arr *arr_new_buf (size_t size_buf) {
-  Arr *this = MALLOC(Arr);
-  this->size = 0;
-  this->_max_size = size_buf;
-  this->es = (void **)GC_MALLOC(sizeof(void *) * size_buf);
+struct arr_Arr {
+  void **es;
+  void **end;
+  void **endbf;
+  void (*ffree)(void *);
+};
+
+Arr *arr_new(void(*ffree)(void *)) {
+  return arr_2_new(15, ffree);
+}
+
+///
+Arr *arr_2_new(int buffer, void(*ffree)(void *)) {
+  Arr *this = malloc(sizeof(Arr));
+  void **es = malloc(buffer * sizeof(double));
+  this->es = es;
+  this->end = es;
+  this->endbf = es + buffer;
+  this->ffree = ffree;
   return this;
 }
 
-size_t arr_size (Arr *this) {
-  XNULL(this)
-  return this->size;
+
+Arr *arr_left_new(Arr *this, int ix, void *(*copy_new)(void *)) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
+  }
+  Arr *tmp = malloc(sizeof(Arr));
+  tmp->es = this->es;
+  tmp->end = this->es + ix;
+  Arr *r = arr_new(this->ffree);
+  arr_cat(r, tmp, copy_new);
+  free(tmp);
+  return r;
 }
 
-void arr_add (Arr *this, void *element) {
-  XNULL(this)
-  XNULL(element)
 
-  *(this->es + this->size++) = element;
-  size_t max = this->_max_size;
-  if (this->size >= max) {
-    max = max * 2;
-    this->es = (void **)GC_REALLOC(this->es, max * sizeof(void *));
-    this->_max_size = max;
+Arr *arr_right_new(Arr *this, int ix, void *(*copy_new)(void *)) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
   }
+  Arr *tmp = malloc(sizeof(Arr));
+  tmp->es = this->es + ix;
+  tmp->end = this->end;
+  Arr *r = arr_new(this->ffree);
+  arr_cat(r, tmp, copy_new);
+  free(tmp);
+  return r;
 }
 
-void arr_add_arr (Arr *this, Arr *another) {
-  XNULL(this)
-  XNULL(another)
-
-  void **array = another->es;
-  size_t asize = another->size;
-  size_t sum = this->size + asize;
-  size_t max = this->_max_size;
-  if (sum > max) {
-    max = sum + max;
-    void **os = (void **)GC_REALLOC(this->es, max * sizeof(void *));
-    this->es = os;
-    this->_max_size = max;
+Arr *arr_sub_new(Arr *this, int begin, int end, void *(*copy_new)(void *)) {
+  if (begin < 0) {
+    begin = (this->end - this->es) + begin;
   }
-  void **source = array;
-  void **target = this->es + this->size;
-  REPEAT(asize) {
-    *target++ = *source++;
-  }_REPEAT
-  this->size = sum;
-}
-
-void *arr_get (Arr *this, size_t index) {
-  XNULL(this)
-  if (index < 0 || index >= this->size)
-    THROW(exc_range_t) exc_range(0, this->size, index) _THROW
-
-  return this->es[index];
-}
-
-void arr_set (Arr *this, size_t index, void *element) {
-  XNULL(this)
-  XNULL(element)
-  if (index < 0 || index >= this->size) {
-    THROW(exc_range_t) exc_range(0, this->size, index) _THROW
+  if (end < 0) {
+    end = (this->end - this->es) + end;
   }
-
-  this->es[index] = element;
-}
-
-void arr_insert (Arr *this, size_t index, void *element) {
-  XNULL(this)
-  XNULL(element)
-
-  const size_t size = this->size;
-  if (index > size || index < 0) {
-    THROW(exc_range_t) exc_range(0, size + 1, index) _THROW
-  }
-  if (index == size) {
-    arr_add(this, element);
-    return;
-  }
-
-  const size_t sum = size + 1;
-  size_t max = this->_max_size;
-  if (sum > max) {
-    max = sum + max;
-    void **os = (void **)GC_REALLOC(this->es, max * sizeof(void *));
-    this->es = os;
-    this->_max_size = max;
-  }
-  void **target = this->es + sum - 1;
-  void **source = target - 1;
-  REPEAT(size - index) {
-    *target-- = *source--;
-  }_REPEAT
-  *target = element;
-  this->size = sum;
-}
-
-void arr_insert_arr (Arr *this, size_t index, Arr *another) {
-  XNULL(this)
-  XNULL(another)
-
-  const size_t size = this->size;
-  if (index > size || index < 0) {
-    THROW(exc_range_t) exc_range(0, size + 1, index) _THROW
-  }
-
-  if (index == size) {
-    arr_add_arr(this, another);
-    return;
-  }
-
-  void **array = another->es;
-  size_t asize = another->size;
-  const size_t sum = size + asize;
-  size_t max = this->_max_size;
-  if (sum > max) {
-    max = sum + max;
-    void **os = (void **)GC_REALLOC(this->es, max * sizeof(void *));
-    this->es = os;
-    this->_max_size = max;
-  }
-  void **target = this->es + sum - 1;
-  void **source = target - asize;
-  REPEAT(size - index) {
-    *target-- = *source--;
-  }_REPEAT
-  source = array + asize - 1;
-  REPEAT(asize) {
-    *target-- = *source--;
-  }_REPEAT
-  this->size = sum;
-}
-
-void arr_remove (Arr *this, size_t index) {
-  XNULL(this)
-  if (index < 0 || index >= this->size) {
-    THROW(exc_range_t) exc_range(0, this->size, index) _THROW
-  }
-
-  void **target = this->es + index;
-  void **source = target + 1;
-  REPEAT(this->size - index - 1) {
-    *target++ = *source++;
-  }_REPEAT
-  this->size--;
-  if (this->size > 15 && this->size * 4 < this->_max_size) {
-    size_t max = this->_max_size / 2;
-    void **os = (void **)GC_REALLOC(this->es, max * sizeof(void *));
-    this->es = os;
-    this->_max_size = max;
-  }
-}
-
-void arr_remove_range (Arr *this, size_t begin, size_t end) {
-  XNULL(this)
-  if (begin < 0 || begin >= this->size) {
-    THROW(exc_range_t) exc_range(0, this->size, begin) _THROW
-  }
-  if (end < 0 || end > this->size) {
-    THROW(exc_range_t) exc_range(0, this->size, end) _THROW
-  }
-
-  void **source = this->es + end;
-  void **target = this->es + begin;
-  REPEAT(this->size - end) {
-    *target++ = *source++;
-  }_REPEAT
-  this->size = this->size + begin - end;
-  if (this->size > 15 && this->size * 4 < this->_max_size) {
-    size_t max = this->_max_size / 2;
-    void **os = (void **)GC_REALLOC(this->es, max * sizeof(void *));
-    this->es = os;
-    this->_max_size = max;
-  }
-}
-
-void arr_reverse (Arr *this) {
-  XNULL(this)
-
-  void **begin = this->es;
-  void **end = begin + (this->size - 1);
-  void *tmp;
-  REPEAT (this->size / 2) {
-    tmp = *begin;
-    *begin++ = *end;
-    *end-- = tmp;
-  }_REPEAT
-}
-
-void arr_sort (Arr *this, bool (*f)(void *, void *)) {
-  XNULL(this)
-
-  void sort(void** a, size_t size) {
-    if (size < 2) {
-      return;
-    }
-    size_t mid1 = size / 2;
-    size_t mid2 = size - mid1;
-    void **a1 = ATOMIC(mid1 * sizeof(void*));
-    void **a2 = ATOMIC(mid2 * sizeof(void*));
-    void **pa = a;
-    void **pa1 = a1;
-    void **pa2 = a2;
-    REPEAT(mid1) {
-      *pa1++ = *pa++;
-    }_REPEAT
-    REPEAT(mid2) {
-      *pa2++ = *pa++;
-    }_REPEAT
-    sort(a1, mid1);
-    sort(a2, mid2);
-
-    pa = a;
-    size_t ia1 = 0;
-    pa1 = a1;
-    size_t ia2 = 0;
-    pa2 = a2;
-
-    for(;;) {
-      if (ia1 == mid1) {
-        for(;;) {
-          if (ia2++ == mid2) {
-            break;
-          }
-          *pa++ = *pa2++;
-        }
-        break;
-      }
-      if (ia2 == mid2) {
-        for (;;) {
-          if (ia1++ == mid1) {
-            break;
-          }
-          *pa++ = *pa1++;
-        }
-        break;
-      }
-      if (f(*pa1, *pa2)) {
-        *pa++ = *pa2++;
-        ++ia2;
-      } else {
-        *pa++ = *pa1++;
-        ++ia1;
-      }
-    }
-  }
-  sort(this->es, this->size);
-
-/*
-  size_t cx = this->size;
-  void **x = this->es;
-  void **y;
-  void *tmp;
-  while (cx--) {
-    y = x + 1;
-    REPEAT(cx) {
-      if (f(*x, *y)) {
-        tmp = *x;
-        *x = *y;
-        *y = tmp;
-      }
-      ++y;
-    }_REPEAT
-    ++x;
-  }
-*/
-}
-
-void arr_shuffle (Arr *this) {
-  XNULL(this)
-
-  size_t size = this->size;
-  void **es = this->es;
-  void **p = es + size - 1;
-  void **pix, *tmp;
-  while (size > 1) {
-    pix = es + rnd_i(size--);
-    tmp = *p;
-    *p-- = *(pix);
-    *(pix) = tmp;
-  }
-}
-
-/**/typedef struct {
-/**/  void **es;
-/**/  size_t n;
-/**/  size_t i;
-/**/} arr_to_it_O;
-/**/static FNM (to_it_next, arr_to_it_O, o) {
-/**/  size_t i = o->i;
-/**/  o->i += 1;
-/**/  return i < o->n ? o->es[i] : NULL;
-/**/}_FN
-It *arr_to_it (Arr *this) {
-  XNULL(this)
-
-  arr_to_it_O *o = MALLOC(arr_to_it_O);
-  o->es = this->es;
-  o->n = this->size;
-  o->i = 0;
-  return it_new(o, to_it_next);
-}
-
-Arr *arr_from_it (It *it) {
-  XNULL(it)
-
-  Arr *r = arr_new();
-  while (it_has_next(it)) {
-    arr_add(r, it_next(it));
+  Arr *r = arr_new(this->ffree);
+  if (end > begin) {
+    Arr *tmp = malloc(sizeof(Arr));
+    tmp->es = this->es + begin;
+    tmp->end = this->es + end;
+    arr_cat(r, tmp, copy_new);
+    free(tmp);
   }
   return r;
 }
 
-Json *arr_to_json(Arr *this, Json *(*to)(void *)) {
-  XNULL(this)
-
-  Ajson *r = ajson_new();
-  EACH(this, void, e) {
-    ajson_add(r, to(e));
-  }_EACH
-  return json_warray(r);
+void arr_free(Arr *this) {
+  free_es(this->es, this->end - this->es, this->ffree);
+  free(this);
 }
 
-Arr *arr_from_json(Json *js, void *(*from)(Json *)) {
-  XNULL(js)
+int arr_size(Arr *this) {
+  return this->end - this->es;
+}
 
-  Arr *r = arr_new();
-  EACH(json_rarray(js), Json, j) {
-    arr_add(r, from(j));
-  }_EACH
-  return r;
+void *arr_get(Arr *this, int ix) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
+  }
+  return *(this->es + ix);
+}
+
+void **arr_start(Arr *this) {
+  return this->es;
+}
+
+void **arr_end(Arr *this) {
+  return this->end;
+}
+
+void arr_push(Arr *this, void *e) {
+  if (this->end == this->endbf) {
+    int size = this->endbf - this->es;
+    int new_size = size + size;
+    this->es = realloc(this->es, new_size * sizeof(double));
+    this->end = this->es + size;
+    this->endbf = this->es + new_size;
+  }
+  *this->end++ = e;
+}
+
+void arr_set(Arr *this, int ix, void *e) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
+  }
+  void **p = this->es + ix;
+  this->ffree(*p);
+  *p = e;
+}
+
+void arr_insert(Arr *this, int ix, void *e) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
+  }
+  Arr *new = arr_2_new((this->endbf - this->es) + 1, this->ffree);
+  void **p = this->es;
+  void **p_end = this->end;
+  void **t = new->es;
+  int c = 0;
+  while (p < p_end) {
+    if (c == ix) {
+      *t++ = e;
+      break;
+    }
+    *t++ = *p++;
+    ++c;
+  }
+  if (p < p_end) {
+    while (p < p_end) {
+      *t++ = *p++;
+    }
+  } else {
+    *t++ = e;
+  }
+
+  free(this->es);
+  this->es = new->es;
+  this->end = t;
+  this->endbf = new->endbf;
+  free(new);
+}
+
+///
+void arr_remove(Arr *this, int ix) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
+  }
+  Arr *new = arr_2_new((this->endbf - this->es) - 1, this->ffree);
+  void **p = this->es;
+  void **p_end = this->end;
+  void **t = new->es;
+  int c = 0;
+  while (p < p_end) {
+    if (c == ix) {
+      this->ffree(*p);
+      ++p;
+      break;
+    }
+    *t++ = *p++;
+    ++c;
+  }
+  while (p < p_end) {
+    *t++ = *p++;
+  }
+
+  free(this->es);
+  this->es = new->es;
+  this->end = t;
+  this->endbf = new->endbf;
+  free(new);
+}
+
+void arr_cat(Arr *this, Arr *other, void *(*copy_new)(void *)) {
+  int other_len = other->end - other->es;
+  if (other_len) {
+    int this_len = this->end - this->es;
+    int this_size = this->endbf - this->es;
+    if (this_len + other_len >= this_size){
+      int new_size = this_size + other_len;
+      this->es = realloc(this->es, new_size * sizeof(double));
+      this->end = this->es + this_len;
+      this->endbf = this->es + new_size;
+    }
+    void **s = other->es;
+    void **t = this->end;
+    REPEAT(other_len)
+      *t++ = copy_new(*s++);
+    _REPEAT
+    this->end = t;
+  }
+}
+
+void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy_new)(void *)) {
+  if (ix < 0) {
+    ix = (this->end - this->es) + ix;
+  }
+  Arr *other_new = arr_new(this->ffree);
+  arr_cat(other_new, other, copy_new);
+  Varr *left = varr_left_new((Varr *)this, ix);
+  Varr *right = varr_right_new((Varr *)this, ix);
+  varr_cat(left, (Varr *)other_new);
+  varr_cat(left, right);
+
+  free(this->es);
+  this->es = ((Arr *)left)->es;
+  this->end = ((Arr *)left)->end;
+  this->endbf = ((Arr *)left)->endbf;
+
+  varr_free(right);
+  varr_free((Varr *)other_new);
+  free(left);
+}
+
+void arr_remove_range(Arr *this, int begin, int end) {
+  if (begin < 0) {
+    begin = (this->end - this->es) + begin;
+  }
+  if (end < 0) {
+    end = (this->end - this->es) + end;
+  }
+
+  void **p = this->es + begin;
+  void (*ffree)(void *) = this->ffree;
+  REPEAT(end - begin)
+    ffree(*p++);
+  _REPEAT
+
+  Varr *left = varr_left_new((Varr *)this, begin);
+  Varr *right = varr_right_new((Varr *)this, end);
+  varr_cat(left, right);
+
+  free(this->es);
+  this->es = ((Arr *)left)->es;
+  this->end = ((Arr *)left)->end;
+  this->endbf = ((Arr *)left)->endbf;
+
+  varr_free(right);
+  free(left);
+}
+
+void arr_reverse(Arr *this) {
+  varr_reverse((Varr *)this);
+}
+
+void arr_sort(Arr *this, int (*greater)(void *, void *)) {
+  varr_sort((Varr *)this, greater);
 }

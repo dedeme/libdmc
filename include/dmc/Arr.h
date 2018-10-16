@@ -1,82 +1,67 @@
-// Copyright 29-May-2018 ºDeme
+// Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Array structure
-
-#ifndef DM_ARR_H
-  # define DM_ARR_H
-
-#include <stdbool.h>
-#include <stddef.h>
+#ifndef DMC_ARR_H
+  #define DMC_ARR_H
 
 ///
 typedef struct arr_Arr Arr;
-typedef struct it_It It;
-typedef struct json_Json Json;
-
-/// arr_new initializes an array
-Arr *arr_new (void);
-
-/// arr_new initializes an array with an intial buffer.
-///   this   : object created
-///   buffer : Initial buffer size. Its default is 15.
-Arr *arr_new_buf (size_t size_buf);
-
-/// arr_size returns 'this' size
-size_t arr_size (Arr *this);
-
-/// arr_add adds an element. 'element' can not be NULL.<p>
-/// Throws exception.
-void arr_add (Arr *this, void *element);
-
-/// arr_add_arr dds an array
-void arr_add_arr (Arr *this, Arr *another);
-
-/// arr_get returns element at position 'index'. Tests limits.<p>
-void *arr_get (Arr *this, size_t index);
-
-/// arr_set replaces element at 'index' by a new 'element'. Tests limits
-/// and 'element'
-/// can not be NULL.<p>
-void arr_set (Arr *this, size_t index, void *element);
-
-/// arr_insert inserts an element at 'index'. Tests limits and 'element' can
-/// no be NULL.<p>
-void arr_insert (Arr *this, size_t index, void *element);
-
-/// arr_insert_arr inserts an array at 'index'. Tests limits.<p>
-void arr_insert_arr (Arr *this, size_t index, Arr *another);
-
-/// arr_remove removes the elemente at 'index'. Tests limits.<p>
-void arr_remove (Arr *this, size_t index);
-
-/// arr_remove_range removes elements between 'begin' (inclusive) and 'end'
-/// (exclusive). Tests limits.<p>
-void arr_remove_range (Arr *this, size_t begin, size_t end);
-
-/// arr_reverse reverses elements of 'this'
-void arr_reverse (Arr *this);
-
-/// arr_sort sorts elements of 'this' according 'f'
-///   f: Function which returns 'true' if the order is ascendent and e1 > e2,
-///      or the order is descendent and e2 > e1
-void arr_sort (Arr *this, bool (*f)(void *e1, void *e2));
-
-/// arr_shuflle remix 'this' elements. It should be used after calling
-/// <tt>rnd_init()</tt> or <tt>sys_init()</tt>
-void arr_shuffle (Arr *this);
 
 ///
-It *arr_to_it (Arr *this);
+Arr *arr_new(void(*ffree)(void *));
+
+/// buffer must be > 0
+Arr *arr_2_new(int buffer, void(*ffree)(void *));
+
+/// If ix is < 0 then is changed to 'arr_size - ix'
+Arr *arr_left_new(Arr *this, int ix, void *(*copy_new)(void *));
+
+/// If ix is < 0 then is changed to 'arr_size - ix'
+Arr *arr_right_new(Arr *this, int ix, void *(*copy_new)(void *));
+
+/// If begin or end are < 0 then is changed to 'arr_size - itsValue'
+Arr *arr_sub_new(Arr *this, int begin, int end, void *(*copy_new)(void *));
 
 ///
-Arr *arr_from_it (It *it);
+void arr_free(Arr *this);
 
-/// arr_to_json returns a serialization of 'this' using 'to' to
-/// convert elements.
-Json *arr_to_json(Arr *this, Json *(*to)(void *));
+///
+int arr_size(Arr *this);
 
-/// arr_from_json restores a serialized Arr using 'from' to convert elements.
-Arr *arr_from_json(Json *js, void *(*from)(Json *));
+/// If ix is < 0 then is changed to 'arr_size - ix'
+void *arr_get(Arr *this, int ix);
+
+///
+void **arr_start(Arr *this);
+
+///
+void **arr_end(Arr *this);
+
+///
+void arr_push(Arr *this, void *e);
+
+/// If ix is < 0 then is changed to 'arr_size - ix'
+void arr_set(Arr *this, int ix, void *e);
+
+/// If ix is < 0 then is changed to 'arr_size - ix'
+void arr_insert(Arr *this, int ix, void *e);
+
+/// If ix is < 0 then is changed to 'arr_size - ix'
+void arr_remove(Arr *this, int ix);
+
+///
+void arr_cat(Arr *this, Arr *other, void *(*copy_new)(void *));
+
+/// If ix is < 0 then is changed to 'arr_size - ix'
+void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy_new)(void *));
+
+/// If begin or end are < 0 then is changed to 'arr_size - itsValue'
+void arr_remove_range(Arr *this, int begin, int end);
+
+///
+void arr_reverse(Arr *this);
+
+///
+void arr_sort(Arr *this, int (*greater)(void *, void *));
 
 #endif
