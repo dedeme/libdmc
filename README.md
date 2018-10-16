@@ -8,7 +8,7 @@ libdmc use the Boehm garbage collector and requires libgc.
 ### 1. Clone repository
 
 ```sh
-https://github.com/dedeme/libdmc.git
+https://github.com/dedeme/libdmc.git v201805
 ```
 
 ### 2. Create directories _lib_ and _obj_ in _libdmc_ and _bin_ and _obj_ in _libdmc/tests_
