@@ -79,12 +79,30 @@ Varr *vmap_keys_new(Vmap *this) {
   return r;
 }
 
+Arr *vmap_kvs(Vmap *this) {
+  return (Arr *)this;
+}
+
 char *vmap_key(Vkv *entry) {
   return entry->key;
 }
 
 void *vmap_value(Vkv *entry) {
   return entry->value;
+}
+
+void vmap_sort(Vmap *this) {
+  int greater(Vkv *e1, Vkv *e2) {
+    return str_greater(e1->key, e2->key);
+  }
+  varr_sort((Varr *)this, (FGREATER) greater);
+}
+
+void vmap_sort_locale(Vmap *this) {
+  int greater(Vkv *e1, Vkv *e2) {
+    return str_greater_locale(e1->key, e2->key);
+  }
+  varr_sort((Varr *)this, (FGREATER) greater);
 }
 
 

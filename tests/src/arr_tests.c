@@ -22,7 +22,7 @@ static double *double_copy_new(double *n) {
 void arr_tests(void) {
   puts("Arr tests");
   // Arr[double]
-  Arr *ia = arr_2_new(1, free);
+  Arr *ia = arr_bf_new(1, free);
 
   assert(arr_size(ia) == 0);
   arr_push(ia, double_new(1));

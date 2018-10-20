@@ -1,6 +1,8 @@
 // Copyright 16-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Strings constructor.
+
 #ifndef DMC_BUF_H
   #define DMC_BUF_H
 

@@ -1,6 +1,8 @@
 // Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Array of ints
+
 #ifndef DMC_IARR_H
   #define DMC_IARR_H
 

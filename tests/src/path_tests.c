@@ -1,0 +1,61 @@
+// Copyright 17-Oct-2018 ºDeme
+// GNU General Public License - V3 <http://www.gnu.org/licenses/>
+
+#include "path_tests.h"
+#include <assert.h>
+
+void path_tests(void) {
+  puts("Path tests");
+
+  int test_path(void (*f)(char **), char *path, char *rs) {
+    char *p = str_new(path);
+    f(&p);
+    int r = str_eq(p, rs);
+    free(p);
+    return r;
+  }
+
+  assert(test_path(path_name, "", ""));
+  assert(test_path(path_name, "/", ""));
+  assert(test_path(path_name, "ab", "ab"));
+  assert(test_path(path_name, "/ab.c", "ab.c"));
+  assert(test_path(path_name, "cd/", ""));
+  assert(test_path(path_name, "c/ab.c", "ab.c"));
+
+  assert(test_path(path_parent, "", ""));
+  assert(test_path(path_parent, "/", ""));
+  assert(test_path(path_parent, "ab", ""));
+  assert(test_path(path_parent, "/ab.c", ""));
+  assert(test_path(path_parent, "cd/", "cd"));
+  assert(test_path(path_parent, "cg/r/ab.c", "cg/r"));
+
+  assert(test_path(path_extension, "", ""));
+  assert(test_path(path_extension, "/", ""));
+  assert(test_path(path_extension, "ab", ""));
+  assert(test_path(path_extension, "/ab.c", ".c"));
+  assert(test_path(path_extension, "cd/", ""));
+  assert(test_path(path_extension, "cd/ab.c", ".c"));
+  assert(test_path(path_extension, "cd/.", "."));
+  assert(test_path(path_extension, "cd/f.", "."));
+
+  assert(test_path(path_only_name, "", ""));
+  assert(test_path(path_only_name, "/", ""));
+  assert(test_path(path_only_name, "ab", "ab"));
+  assert(test_path(path_only_name, "/ab.c", "ab"));
+  assert(test_path(path_only_name, "cd/", ""));
+  assert(test_path(path_only_name, "/cd/a.b", "a"));
+  assert(test_path(path_only_name, "cd/.", ""));
+  assert(test_path(path_only_name, "cd/f.", "f"));
+
+
+  char *s0 = "";
+  char *s1 = "1";
+
+  char *r = path_cat_new(s0, s1, "ab", "ab", "", "cd", NULL);
+  assert(str_eq(r, "1/ab/ab/cd"));
+
+  free(r);
+
+  puts("    Finished");
+}
+

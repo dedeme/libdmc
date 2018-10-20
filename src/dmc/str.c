@@ -2,7 +2,6 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/str.h"
-#include <string.h>
 #include <ctype.h>
 #include <wctype.h>
 #include "dmc/std.h"
@@ -10,6 +9,13 @@
 char *str_new (char *s) {
   char *r = malloc(strlen(s) + 1);
   strcpy(r, s);
+  return r;
+}
+
+char *str_c_new (char ch) {
+  char *r = malloc(2);
+  *r = ch;
+  r[1] = 0;
   return r;
 }
 
@@ -142,15 +148,14 @@ int str_last_index(char *str, char *substr) {
   return r;
 }
 
-void str_cat(char **s, char *other, ...) {
+char *str_cat_new(char *s, ...) {
   va_list args;
   char *tmp;
 
   Buf *bf = buf_new();
-  buf_add(bf, *s);
-  buf_add(bf, other);
+  buf_add(bf, s);
 
-  va_start(args, other);
+  va_start(args, s);
   tmp = va_arg(args, char *);
   while (tmp) {
     buf_add(bf, tmp);
@@ -158,12 +163,12 @@ void str_cat(char **s, char *other, ...) {
   }
   va_end(args);
 
-  free(*s);
-  *s = buf_to_str_new(bf);
+  char *r = buf_to_str_new(bf);
   buf_free(bf);
+  return r;
 }
 
-void str_cat2(char **s1, char *s2) {
+void str_cat(char **s1, char *s2) {
   char *s = *s1;
   int len1 = strlen(s);
   char *r = malloc(len1 + strlen(s2) + 1);
@@ -546,8 +551,7 @@ char *str_from_iso_new(char *s) {
 void str_to_upper(char **s) {
   unsigned *ws = str_to_unicode_new_null(*s);
   if (!ws) {
-    printf("str_to_upper: 's' is not a valid utf8 string");
-    exit(1);
+    FAIL("str_to_upper: 's' is not a valid utf8 string")
   }
 
   unsigned *p = ws;
@@ -559,8 +563,7 @@ void str_to_upper(char **s) {
   char *r = str_from_unicode_new_null(ws);
   free(ws);
   if (!r) {
-    printf("str_to_upper: 'ws' is not a valid unicode string");
-    exit(1);
+    FAIL("str_to_upper: 'ws' is not a valid unicode string")
   }
   free(*s);
   *s = r;
@@ -569,8 +572,7 @@ void str_to_upper(char **s) {
 void str_to_lower(char **s) {
   unsigned *ws = str_to_unicode_new_null(*s);
   if (!ws) {
-    printf("str_to_lower: 's' is not a valid utf8 string");
-    exit(1);
+    FAIL("str_to_lower: 's' is not a valid utf8 string")
   }
 
   unsigned *p = ws;
@@ -582,8 +584,7 @@ void str_to_lower(char **s) {
   char *r = str_from_unicode_new_null(ws);
   free(ws);
   if (!r) {
-    printf("str_to_lower: 'ws' is not a valid unicode string");
-    exit(1);
+    FAIL("str_to_lower: 'ws' is not a valid unicode string")
   }
   free(*s);
   *s = r;

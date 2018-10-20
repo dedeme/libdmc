@@ -5,6 +5,17 @@
 #include <assert.h>
 #include "dmc/std.h"
 
+static char *keys_to_s_new(Varr *keys) {
+  Buf *bf = buf_new();
+  EACH(keys, char, e)
+    buf_add(bf, e);
+    buf_cadd(bf, '-');
+  _EACH
+  char *r = buf_to_str_new(bf);
+  buf_free(bf);
+  return r;
+}
+
 void vmap_tests(void) {
   puts("Vmap tests");
 
@@ -38,30 +49,41 @@ void vmap_tests(void) {
   assert(str_eq("1", vmap_get_null(m, "uno")));
   assert(!vmap_get_null(m, "dos"));
 
-  Buf *bf = buf_new();
   // Varr[char]
   Varr *keys = vmap_keys_new(m);
-  EACH(keys, char, e)
-    buf_add(bf, e);
-    buf_cadd(bf, '-');
-  _EACH
-  char *r = buf_to_str_new(bf);
+  char *r = keys_to_s_new(keys);
   assert(str_eq("uno-tres-", r));
   free(r);
 
   varr_sort(keys, (FGREATER)str_greater);
-
-  buf_reset(bf);
-  EACH(keys, char, e)
-    buf_add(bf, e);
-    buf_cadd(bf, '-');
-  _EACH
-  r = buf_to_str_new(bf);
+  r = keys_to_s_new(keys);
   assert(str_eq("tres-uno-", r));
-  free(r);
+  free(r); varr_free(keys);
 
-  buf_free(bf);
-  varr_free(keys);
+  arr_reverse((Arr *)m);
+  keys = vmap_keys_new(m);
+  r = keys_to_s_new(keys);
+  assert(str_eq("tres-uno-", r));
+  free(r); varr_free(keys);
+
+  arr_reverse((Arr *)m);
+  keys = vmap_keys_new(m);
+  r = keys_to_s_new(keys);
+  assert(str_eq("uno-tres-", r));
+  free(r); varr_free(keys);
+
+  vmap_sort(m);
+  keys = vmap_keys_new(m);
+  r = keys_to_s_new(keys);
+  assert(str_eq("tres-uno-", r));
+  free(r); varr_free(keys);
+
+  arr_reverse((Arr *)m);
+  vmap_sort_locale(m);
+  keys = vmap_keys_new(m);
+  r = keys_to_s_new(keys);
+  assert(str_eq("tres-uno-", r));
+  free(r); varr_free(keys);
 
   vmap_free(m);
 

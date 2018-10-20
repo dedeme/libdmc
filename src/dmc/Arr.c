@@ -22,13 +22,13 @@ struct arr_Arr {
 };
 
 Arr *arr_new(void(*ffree)(void *)) {
-  return arr_2_new(15, ffree);
+  return arr_bf_new(15, ffree);
 }
 
 ///
-Arr *arr_2_new(int buffer, void(*ffree)(void *)) {
+Arr *arr_bf_new(int buffer, void(*ffree)(void *)) {
   Arr *this = malloc(sizeof(Arr));
-  void **es = malloc(buffer * sizeof(double));
+  void **es = malloc(buffer * sizeof(void *));
   this->es = es;
   this->end = es;
   this->endbf = es + buffer;
@@ -106,15 +106,28 @@ void **arr_end(Arr *this) {
   return this->end;
 }
 
+FPROC arr_ffree(Arr *this) {
+  return this->ffree;
+}
+
 void arr_push(Arr *this, void *e) {
   if (this->end == this->endbf) {
     int size = this->endbf - this->es;
     int new_size = size + size;
-    this->es = realloc(this->es, new_size * sizeof(double));
+    this->es = realloc(this->es, new_size * sizeof(void *));
     this->end = this->es + size;
     this->endbf = this->es + new_size;
   }
   *this->end++ = e;
+}
+
+void *arr_pop_new(Arr *this) {
+  --this->end;
+  return *this->end;
+}
+
+void *arr_peek(Arr *this) {
+  return *(this->end - 1);
 }
 
 void arr_set(Arr *this, int ix, void *e) {
@@ -130,7 +143,7 @@ void arr_insert(Arr *this, int ix, void *e) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Arr *new = arr_2_new((this->endbf - this->es) + 1, this->ffree);
+  Arr *new = arr_bf_new((this->endbf - this->es) + 1, this->ffree);
   void **p = this->es;
   void **p_end = this->end;
   void **t = new->es;
@@ -163,7 +176,7 @@ void arr_remove(Arr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Arr *new = arr_2_new((this->endbf - this->es) - 1, this->ffree);
+  Arr *new = arr_bf_new((this->endbf - this->es) - 1, this->ffree);
   void **p = this->es;
   void **p_end = this->end;
   void **t = new->es;
@@ -195,7 +208,7 @@ void arr_cat(Arr *this, Arr *other, void *(*copy_new)(void *)) {
     int this_size = this->endbf - this->es;
     if (this_len + other_len >= this_size){
       int new_size = this_size + other_len;
-      this->es = realloc(this->es, new_size * sizeof(double));
+      this->es = realloc(this->es, new_size * sizeof(void *));
       this->end = this->es + this_len;
       this->endbf = this->es + new_size;
     }
@@ -262,4 +275,27 @@ void arr_reverse(Arr *this) {
 
 void arr_sort(Arr *this, int (*greater)(void *, void *)) {
   varr_sort((Varr *)this, greater);
+}
+
+void arr_shuffle(Arr *this) {
+  varr_shuffle((Varr *)this);
+}
+
+int arr_index(Arr *this, int (*pred)(void *e)) {
+  return varr_index((Varr *)this, pred);
+}
+
+void arr_filter(Arr *this, int (*pred)(void *e)) {
+  void **p = this->es;
+  void **end = this->end;
+  void **new_end = p;
+  while (p < end) {
+    if (pred(*p)) {
+      *new_end++ = *p;
+    } else {
+      this->ffree(*p);
+    }
+    ++p;
+  }
+  this->end = new_end;
 }

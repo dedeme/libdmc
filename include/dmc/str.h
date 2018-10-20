@@ -7,10 +7,14 @@
   #define DMC_STR_H
 
 #include <stdarg.h>
+#include <string.h>
 #include "Arr.h"
 
 /// str_new returns a copy of 'str'.
-char *str_new(char *source);
+char *str_new(char *s);
+
+/// str_new returns a string with the character 'ch'.
+char *str_c_new(char ch);
 
 /// str_cmp reuturns strcoll(s1, s2)
 int str_cmp_locale(char *s1, char *s2);
@@ -55,10 +59,10 @@ int str_last_index(char *str, char *substr);
 
 /// str_cat is a string concatenation.<br>
 /// Variable argumens must finish with NULL.<br>
-void str_cat(char **s, char *other, ...);
+char *str_cat_new(char *s, ...);
 
 /// str_cat set s1 as 's1 + s2'.
-void str_cat2(char **s1, char *s2);
+void str_cat(char **s1, char *s2);
 
 /// str_sub set str as a substring of itself.<br>
 /// If 'begin' or 'end' are negatives they are subtracted from 'strlen(s)'.

@@ -5,6 +5,7 @@
 #include "string.h"
 
 #include "dmc/std.h"
+#include "dmc/rnd.h"
 
 struct varr_Varr {
   void **es;
@@ -105,6 +106,15 @@ void varr_push(Varr *this, void *e) {
     this->endbf = this->es + new_size;
   }
   *this->end++ = e;
+}
+
+void *varr_pop(Varr *this) {
+  --this->end;
+  return *this->end;
+}
+
+void *varr_peek(Varr *this) {
+  return *(this->end - 1);
 }
 
 void varr_set(Varr *this, int ix, void *e) {
@@ -294,4 +304,41 @@ void varr_sort(Varr *this, int (*greater)(void *, void *)) {
     free(a2);
   }
   sort(this->es, this->end - this->es);
+}
+
+void varr_shuffle(Varr *this) {
+  void **es = this->es;
+  int size = this->end - es;
+  void **p = this->end - 1;
+  void **pix, *tmp;
+  while (p > es) {
+    pix = es + rnd_i(size--);
+    tmp = *p;
+    *p-- = *(pix);
+    *(pix) = tmp;
+  }
+}
+
+int varr_index(Varr *this, int (*pred)(void *e)) {
+  int ix = -1;
+  EACH_IX(this, void, e, i)
+    if (pred(e)) {
+      ix = i;
+      break;
+    }
+  _EACH
+  return ix;
+}
+
+void varr_filter(Varr *this, int (*pred)(void *e)) {
+  void **p = this->es;
+  void **end = this->end;
+  void **new_end = p;
+  while (p < end) {
+    if (pred(*p)) {
+      *new_end++ = *p;
+    }
+    ++p;
+  }
+  this->end = new_end;
 }

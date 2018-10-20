@@ -86,16 +86,16 @@ void str_tests(void) {
   free(r);
 
   r = str_new(s0);
-  str_cat2(&r, s1);
+  str_cat(&r, s1);
   assert(str_eq(r, "1"));
 
-  str_cat(&r, "ab", NULL);
-  assert(str_eq(r, "1ab"));
-  str_cat(&r, "ab", "", "cd", NULL);
-  assert(str_eq(r, "1ababcd"));
-  str_cat(&r, "ab", s1, "cd", NULL);
+  char *r2 = str_cat_new(r, "ab", NULL);
+  assert(str_eq(r2, "1ab"));
+  free(r);
+  r = str_cat_new(r2, "ab", "", "cd", "ab", s1, "cd", NULL);
   assert(str_eq(r, "1ababcdab1cd"));
 
+  free(r2);
   free(r);
 
   printf("    str-sub\n");
@@ -103,25 +103,25 @@ void str_tests(void) {
   r = str_new("ab");
   str_left(&r, 1);
   assert(str_eq(r, "a"));
-  str_cat2(&r, "b");
+  str_cat(&r, "b");
   str_sub(&r, -2, -1);
   assert(str_eq(r, "a"));
-  str_cat2(&r, "b");
+  str_cat(&r, "b");
   str_sub(&r, 0, 0);
   assert(str_eq(r, ""));
-  str_cat2(&r, "ab");
+  str_cat(&r, "ab");
   str_sub(&r, -1, 0);
   assert(str_eq(r, ""));
-  str_cat2(&r, "ab");
+  str_cat(&r, "ab");
   str_sub(&r, 0, 35);
   assert(str_eq(r, ""));
-  str_cat2(&r, "ab");
+  str_cat(&r, "ab");
   str_sub(&r, 3, 3);
   assert(str_eq(r, ""));
-  str_cat2(&r, "ab");
+  str_cat(&r, "ab");
   str_sub(&r, 2, 2);
   assert(str_eq(r, ""));
-  str_cat2(&r, "ab");
+  str_cat(&r, "ab");
   str_sub(&r, 0, 2);
   assert(str_eq(r, "ab"));
   str_sub(&r, 1, 2);
@@ -129,7 +129,7 @@ void str_tests(void) {
   str_right(&r, 20);
   str_left(&r, 0);
   assert(str_eq(r, ""));
-  str_cat2(&r, "ab");
+  str_cat(&r, "ab");
   str_right(&r, 0);
   assert(str_eq(r, "ab"));
   str_right(&r, -1);

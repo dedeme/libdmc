@@ -1,12 +1,15 @@
 // Copyright 16-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Map structure
+
 #ifndef DMC_VMAP_H
   #define DMC_VMAP_H
 
 #include "dmc/Varr.h"
+#include "dmc/Arr.h"
 
-/// Vmpa entries type.<br>
+/// Vmap entries type.<br>
 /// For example:
 ///   EACH(map, Vkv, e)
 ///   ...
@@ -32,7 +35,7 @@ int vmap_size(Vmap *this);
 ///   value : New value
 void vmap_put(Vmap *this, char *key, void *value);
 
-/// vmap_get returns the value pointed by key or NULL if 'key' does
+/// vmap_get_null returns the value pointed by key or NULL if 'key' does
 /// not exist
 void *vmap_get_null(Vmap *this, char *key);
 
@@ -40,13 +43,23 @@ void *vmap_get_null(Vmap *this, char *key);
 /// not exist
 void vmap_remove(Vmap *this, char *key);
 
-/// vmap_keys returns keys of this in a Varr[char]
+/// vmap_keys_new returns keys of this in a Varr[char]
 Varr *vmap_keys_new(Vmap *this);
+
+/// Equals to (Arr *)this.<br>
+/// Returns an Arr[Vkv]
+Arr *vmap_kvs(Vmap *this);
 
 /// vmap_key returns the key of entry
 char *vmap_key(Vkv *entry);
 
 /// vmap_key returns the value of entry
 void *vmap_value(Vkv *entry);
+
+/// vmap_sort sorts 'this' from keys
+void vmap_sort(Vmap *this);
+
+/// vmap_sort_locale sorts 'this' in locale from keys
+void vmap_sort_locale(Vmap *this);
 
 #endif
