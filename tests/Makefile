@@ -7,7 +7,7 @@ TESTS = $(C_TESTS) $(H_TESTS)
 OBJECTS = $(subst src/$(LIB),obj,$(patsubst %.c,%.o,$(wildcard ../src/$(LIB)/*.c)))
 
 bin/tests : $(TESTS) ../lib/lib$(LIB).a
-	gcc $(CFLAGS) $(TESTS) -D'DEBUG' -o bin/tests -Iinclude \
+	gcc $(CFLAGS) $(TESTS) -o bin/tests -Iinclude \
 		-I../include -L../lib -l$(LIB)
 
 ../lib/lib$(LIB).a : $(OBJECTS)

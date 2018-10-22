@@ -12,10 +12,10 @@ struct buf_Buf{
 };
 
 Buf *buf_new(void) {
-  return buf_new2(151);
+  return buf_bf_new(151);
 }
 
-Buf *buf_new2(int buffer_size) {
+Buf *buf_bf_new(int buffer_size) {
   Buf *this = malloc(sizeof(Buf));
   this->size = buffer_size - 1;
   this->str = malloc(buffer_size);
@@ -31,6 +31,10 @@ void buf_free(Buf *this) {
 
 int buf_len(Buf *this) {
   return this->length;
+}
+
+char *buf_str(Buf *this) {
+  return this->str;
 }
 
 void buf_add_buf (Buf *this, char *data, int length) {
