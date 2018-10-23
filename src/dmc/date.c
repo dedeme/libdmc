@@ -20,7 +20,7 @@ time_t date_now() {
   return time(NULL);
 }
 
-time_t date_from_str(char *date) {
+time_t date_from_str(const char *date) {
   char tpl[5];
   memset (tpl, 0, 5);
   memcpy(tpl, date + 6, 2);
@@ -32,11 +32,11 @@ time_t date_from_str(char *date) {
   return date_new(d, m, y);
 }
 
-time_t date_from_iso(char *date) {
+time_t date_from_iso(const char *date) {
   return date_from_iso_sep(date, '/');
 }
 
-time_t date_from_us(char *date) {
+time_t date_from_us(const char *date) {
   return date_from_us_sep(date, '/');
 }
 
@@ -51,7 +51,7 @@ static time_t _date_from_sep (char *d, char *m, char *y) {
   return date_new(atoi(d), atoi(m), year);
 }
 
-time_t date_from_iso_sep (char *date, char sep) {
+time_t date_from_iso_sep (const char *date, char sep) {
   // Arr[char]
   Arr *parts = str_csplit_new(date, sep);
   if (arr_size(parts) != 3) {
@@ -65,7 +65,7 @@ time_t date_from_iso_sep (char *date, char sep) {
   return r;
 }
 
-time_t date_from_us_sep (char *date, char sep) {
+time_t date_from_us_sep (const char *date, char sep) {
   // Arr[char]
   Arr *parts = str_csplit_new(date, sep);
   if (arr_size(parts) != 3) {
@@ -108,7 +108,7 @@ int date_year(time_t this) {
   return localtime(&this)->tm_year + 1900;
 }
 
-char *date_f_new(time_t this, char *template) {
+char *date_f_new(time_t this, const char *template) {
   char *s, *rs;
   struct tm *t = localtime(&this);
   int size = 126;

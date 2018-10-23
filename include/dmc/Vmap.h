@@ -33,15 +33,15 @@ int vmap_size(Vmap *this);
 ///   this  : The map
 ///   key   : Entry key. It must not be NULL.
 ///   value : New value
-void vmap_put(Vmap *this, char *key, void *value);
+void vmap_put(Vmap *this, const char *key, void *value);
 
 /// vmap_get_null returns the value pointed by key or NULL if 'key' does
 /// not exist
-void *vmap_get_null(Vmap *this, char *key);
+void *vmap_get_null(Vmap *this, const char *key);
 
 /// vmap_remove removes value with key 'key' or does nothing if 'key' does
 /// not exist
-void vmap_remove(Vmap *this, char *key);
+void vmap_remove(Vmap *this, const char *key);
 
 /// vmap_keys_new returns keys of this in a Varr[char]
 Varr *vmap_keys_new(Vmap *this);

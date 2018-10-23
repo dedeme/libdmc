@@ -21,23 +21,23 @@ time_t date_now (void);
 
 /// date_from_str makes a date from a string is in format yyyymmdd
 /// (month and day in base 1)
-time_t date_from_str (char *date);
+time_t date_from_str (const char *date);
 
 /// date_from_iso makes a date from a string in format [x]x/[x]x/[xxx]x
 /// (month and day in base 1)
-time_t date_from_iso (char *date);
+time_t date_from_iso (const char *date);
 
 /// date_from_us makes a date from a string in format  [x]x/[x]x/[xxx]x
 /// (month and day in base 1)
-time_t date_from_us (char *date);
+time_t date_from_us (const char *date);
 
 /// date_from_iso_sep makes a date from a string is in format
 /// [x]xSP[x]xSP[xxx]x. If 'data' is not valid, returns '0'
-time_t date_from_iso_sep (char *date, char sep);
+time_t date_from_iso_sep (const char *date, char sep);
 
 /// date_from_us_sep makes a date from a string in format
 /// [x]xSP[x]xSP[xxx]x. If 'data' is not valid, returns '0'
-time_t date_from_us_sep (char *date, char sep);
+time_t date_from_us_sep (const char *date, char sep);
 
 ///
 int date_eq (time_t this, time_t another);
@@ -139,7 +139,7 @@ int date_year (time_t this);
 ///          minute offset from UTC). (SU)
 ///   %Z     The timezone name or abbreviation.
 ///   %%     A literal '%' character.
-char *date_f_new(time_t this, char *template);
+char *date_f_new(time_t this, const char *template);
 
 /// date_to_str returns a string in format yyyymmdd
 char *date_to_str_new(time_t this);

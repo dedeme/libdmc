@@ -28,10 +28,10 @@ char *buf_str(Buf *this);
 /// 'length' must be less or equals to 'strlen(data)'.<br>
 /// It is not necessary that 'data' be a null-terminated string, but it must
 /// no have characters \0
-void buf_add_buf(Buf *this, char *data, int length);
+void buf_add_buf(Buf *this, const char *data, int length);
 
 /// buf_add adds 'data' to 'buf'.
-void buf_add(Buf *this, char *data);
+void buf_add(Buf *this, const char *data);
 
 /// buf_cadd adds a character
 void buf_cadd(Buf *this, char data);

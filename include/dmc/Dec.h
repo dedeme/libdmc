@@ -39,7 +39,7 @@ int dec_eqf_gap(float d1, float d2, float gap);
 
 /// dec_digits returns true if all characters of 's' are digits.
 /// ("" returns 'true')
-int dec_digits(char *s);
+int dec_digits(const char *s);
 
 /// dec_regularize_iso_new sets a number without thousand separators and
 /// with decimal point.
@@ -51,7 +51,7 @@ void dec_regularize_us(char **s);
 
 /// dec_number Returns 'true' if "s" is a regularized number.<br>
 /// "" returns 'true'. "xxx.", "." or ".xxx" also returns 'true'
-int dec_number(char *s);
+int dec_number(const char *s);
 
 ///
 Js *dec_to_js_new(Dec *this);

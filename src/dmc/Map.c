@@ -11,7 +11,7 @@ struct map_Kv {
   void (*ffree)(void *);
 };
 
-static Kv *kv_new(char *key, void *value, void (*ffree)(void *)) {
+static Kv *kv_new(const char *key, void *value, void (*ffree)(void *)) {
   Kv *this = malloc(sizeof(Kv));
   this->key = str_new(key);
   this->value = value;
@@ -61,7 +61,7 @@ int map_size(Map *this) {
   return arr_size((Arr *) this);
 }
 
-void map_put(Map *this, char *key, void *value) {
+void map_put(Map *this, const char *key, void *value) {
   int no_added = 1;
   EACH(this, Kv, e)
     if (str_eq(e->key, key)) {
@@ -76,7 +76,7 @@ void map_put(Map *this, char *key, void *value) {
   }
 }
 
-void *map_get_null(Map *this, char *key) {
+void *map_get_null(Map *this, const char *key) {
   EACH(this, Kv, e)
     if (str_eq(e->key, key)) {
       return e->value;
@@ -85,7 +85,7 @@ void *map_get_null(Map *this, char *key) {
   return NULL;
 }
 
-void map_remove(Map *this, char *key) {
+void map_remove(Map *this, const char *key) {
   int ix = -1;
   EACH_IX(this, Kv, e, i)
     if (str_eq(e->key, key)) {
@@ -134,3 +134,44 @@ void map_sort_locale(Map *this) {
   varr_sort((Varr *)this, (FGREATER) greater);
 }
 
+Js *map_to_js_new(Map *this, Js *(*to_new)(void *e)) {
+  // Arr[Js]
+  Arr *a = arr_new(free);
+  Kv **p = (Kv **)this->es;
+  Kv **end = (Kv **)this->end;
+  while (p < end) {
+    Kv *kv = *p++;
+    // Arr[Js]
+    Arr *akv = arr_new(free);
+    arr_push(akv, js_ws_new(kv->key));
+    arr_push(akv, to_new(kv->value));
+    arr_push(a, js_wa_new(akv));
+    arr_free(akv);
+  }
+  Js *r = js_wa_new(a);
+  arr_free(a);
+  return r;
+}
+
+Map *map_from_js_new(
+  Js *js,
+  void *(*from_new)(Js *jse),
+  void (*ffree)(void *e)
+) {
+  Map *this = map_new(ffree);
+  // Arr[Js]
+  Arr *a = js_ra_new(js);
+  Js **p = (Js **)arr_start(a);
+  Js **end = (Js **)arr_end(a);
+  while (p < end) {
+    // Arr[Js]
+    Arr *akv = js_ra_new(*p++);
+    char *key = js_rs_new(arr_get(akv, 0));
+    void *value = from_new(arr_get(akv, 1));
+    map_put(this, key, value);
+    free(key);
+    arr_free(akv);
+  }
+  arr_free(a);
+  return this;
+}

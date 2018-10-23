@@ -95,7 +95,7 @@ void cryp_key (char **key, int lg) {
   bytes_free(rbs2);
 }
 
-void cryp_cryp (char **s, char *k) {
+void cryp_cryp (char **s, const char *k) {
   if (!*k) {
     FAIL("cryp_cryp: k is a blank string")
   }
@@ -122,7 +122,7 @@ void cryp_cryp (char **s, char *k) {
   bytes_free(rbs);
 }
 
-void cryp_decryp (char **c, char *k) {
+void cryp_decryp (char **c, const char *k) {
   if (!*k) {
     FAIL("cryp_cryp: k is a blank string")
   }
@@ -177,12 +177,12 @@ void cryp_auto_decryp (char **b64) {
   free(key);
 }
 
-void cryp_encode (char **s, int nk, char *k) {
+void cryp_encode (char **s, int nk, const char *k) {
   cryp_auto_cryp(s, nk);
   cryp_cryp(s, k);
 }
 
-void cryp_decode (char **b64, char *k) {
+void cryp_decode (char **b64, const char *k) {
   cryp_decryp(b64, k);
   cryp_auto_decryp(b64);
 }

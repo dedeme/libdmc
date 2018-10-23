@@ -5,7 +5,7 @@
 #include "dmc/std.h"
 
 
-char *ext_wget_new(char *url) {
+char *ext_wget_new(const char *url) {
   char *cmd = str_f_new("wget -q --no-cache -O - %s", url);
   char *r = sys_cmd_new_null(cmd);
   free(cmd);
@@ -15,7 +15,7 @@ char *ext_wget_new(char *url) {
   return r;
 }
 
-char *ext_zenity_entry_new(char *title, char *prompt) {
+char *ext_zenity_entry_new(const char *title, const char *prompt) {
   char *cmd = str_f_new(
     "zenity --entry --title=\"%s\" --text=\"%s\"", title, prompt
   );
@@ -39,7 +39,7 @@ char *ext_zenity_entry_new(char *title, char *prompt) {
   return r;
 }
 
-void ext_zenity_msg(char *icon, char *text) {
+void ext_zenity_msg(const char *icon, const char *text) {
   char *cmd = str_f_new(
     "zenity --info --icon-name=\"%s\" --text=\"%s\"", icon, text
   );
@@ -51,7 +51,11 @@ void ext_zenity_msg(char *icon, char *text) {
   free(rt);
 }
 
-void ext_pdf(char *tx_source, char *file_target, char *options) {
+void ext_pdf(
+  const char *tx_source,
+  const char *file_target,
+  const char *options
+) {
   char *tsource0 = str_new("libdm");
   file_tmp(&tsource0);
   char *tsource = str_f_new("%s.html", tsource0);
@@ -88,13 +92,13 @@ void ext_pdf(char *tx_source, char *file_target, char *options) {
   free(ttarget);
 }
 
-void ext_zip(char *source, char *target) {
+void ext_zip(const char *source, const char *target) {
   char *cd = file_cwd_new();
-  target = str_new(target);
-  if (*target != '/') {
-    char *t = path_cat_new(cd, target, NULL);
-    free(target);
-    target = t;
+  char *tg = str_new(target);
+  if (*tg != '/') {
+    char *t = path_cat_new(cd, tg, NULL);
+    free(tg);
+    tg = t;
   }
   char *parent = str_new(source);
   path_parent(&parent);
@@ -102,10 +106,10 @@ void ext_zip(char *source, char *target) {
   path_name(&name);
   file_cd(parent);
 
-  char *cmd = str_f_new("zip -q %s %s 2>&1", target, name);
+  char *cmd = str_f_new("zip -q %s %s 2>&1", tg, name);
   if (file_is_directory(name)) {
     free(cmd);
-    cmd = str_f_new("zip -q -r %s %s 2>&1", target, name);
+    cmd = str_f_new("zip -q -r %s %s 2>&1", tg, name);
   }
 
   char *rt = sys_cmd_new_null(cmd);
@@ -113,7 +117,7 @@ void ext_zip(char *source, char *target) {
   if (!rt) {
     free(parent);
     free(name);
-    free(target);
+    free(tg);
     free(cd);
     FAIL("Fail running zip.")
   }
@@ -123,7 +127,7 @@ void ext_zip(char *source, char *target) {
   free(name);
   free(cd);
 
-  if (!file_exists(target)) {
+  if (!file_exists(tg)) {
     if (!*rt) {
       free(rt);
       rt = str_new("Unknown error");
@@ -131,10 +135,10 @@ void ext_zip(char *source, char *target) {
     FAIL(rt)
   }
   free(rt);
-  free(target);
+  free(tg);
 }
 
-void ext_unzip(char *source, char *target) {
+void ext_unzip(const char *source, const char *target) {
   if (!file_is_directory(target)) {
     FAIL(str_f_new("'%s' is not a directory", target))
   }

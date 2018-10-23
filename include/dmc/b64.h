@@ -9,13 +9,13 @@
 #include "dmc/Bytes.h"
 
 ///
-char *b64_decode_new(char *b64);
+char *b64_decode_new(const char *b64);
 
 ///
-Bytes *b64_decode_bytes_new(char *b64);
+Bytes *b64_decode_bytes_new(const char *b64);
 
 ///
-char *b64_encode_new(char *s);
+char *b64_encode_new(const char *s);
 
 ///
 char *b64_encode_bytes_new(Bytes *bs);

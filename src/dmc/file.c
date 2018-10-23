@@ -43,7 +43,7 @@ char *file_cwd_new (void) {
   return d;
 }
 
-void file_cd (char *path) {
+void file_cd (const char *path) {
   if (chdir(path)) {
     FAIL(str_f_new(
       "Fail changing the working directory to %s: %s",
@@ -52,7 +52,7 @@ void file_cd (char *path) {
   }
 }
 
-void file_mkdir (char *path) {
+void file_mkdir (const char *path) {
   if (!*path) {
     return;
   }
@@ -75,7 +75,7 @@ void file_mkdir (char *path) {
 }
 
 // Arr[char]
-Arr *file_dir_new (char *path) {
+Arr *file_dir_new (const char *path) {
   DIR *d = opendir(path);
   if (!d) {
     FAIL(str_f_new("Fail reading directory %s: %s", path, strerror(errno)))
@@ -94,7 +94,7 @@ Arr *file_dir_new (char *path) {
   return a;
 }
 
-void file_del (char *path) {
+void file_del (const char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno != ENOENT) {
@@ -121,7 +121,7 @@ void file_del (char *path) {
   }
 }
 
-void file_rename (char *oldname, char *newname) {
+void file_rename (const char *oldname, const char *newname) {
   if (rename(oldname, newname) == -1) {
     FAIL(str_f_new(
       "Fail renaming '%s' to '%s: %s", oldname, newname, strerror(errno)
@@ -129,7 +129,7 @@ void file_rename (char *oldname, char *newname) {
   }
 }
 
-void file_link (char *oldpath, char *newpath) {
+void file_link (const char *oldpath, const char *newpath) {
   if (symlink(oldpath, newpath) == -1) {
     FAIL(str_f_new(
       "Fail linking '%s' to '%s: %s", newpath, oldpath, strerror(errno)
@@ -137,7 +137,7 @@ void file_link (char *oldpath, char *newpath) {
   }
 }
 
-int file_exists (char *path) {
+int file_exists (const char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno == ENOENT) {
@@ -148,7 +148,7 @@ int file_exists (char *path) {
   return 1;
 }
 
-int file_is_directory (char *path) {
+int file_is_directory (const char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno == ENOENT) {
@@ -161,7 +161,7 @@ int file_is_directory (char *path) {
   return 0;
 }
 
-struct stat *file_info_new (char *path) {
+struct stat *file_info_new (const char *path) {
   struct stat *r = malloc(sizeof(struct stat));
   if (stat(path, r)) {
     FAIL(str_f_new("Fail reading %s: %s", path, strerror(errno)))
@@ -169,21 +169,21 @@ struct stat *file_info_new (char *path) {
   return r;
 }
 
-int file_size(char *path) {
+int file_size(const char *path) {
   struct stat *i = file_info_new (path);
   int r = i->st_size;
   free(i);
   return r;
 }
 
-time_t file_modified(char *path) {
+time_t file_modified(const char *path) {
   struct stat *i = file_info_new (path);
   time_t r = i->st_mtime;
   free(i);
   return r;
 }
 
-char *file_read_new (char *path) {
+char *file_read_new (const char *path) {
   FILE *fl;
   size_t len = 0;
   struct flock lck = {
@@ -218,7 +218,7 @@ char *file_read_new (char *path) {
   return r;
 }
 
-void file_write (char *path, char *text) {
+void file_write (const char *path, const char *text) {
   FILE *fl;
   int error;
   struct flock lck = {
@@ -247,7 +247,7 @@ void file_write (char *path, char *text) {
   fclose(fl);
 }
 
-void file_append (char *path, char *text) {
+void file_append (const char *path, const char *text) {
   FILE *fl;
   int error;
   struct flock lck = {
@@ -276,7 +276,7 @@ void file_append (char *path, char *text) {
   fclose(fl);
 }
 
-void file_copy (char *source_path, char *target_path) {
+void file_copy (const char *source_path, const char *target_path) {
   if (!strcmp(source_path, target_path)) {
     return;
   }
@@ -312,7 +312,7 @@ static LckFile *lck_new(FILE *file) {
   return lckFile_new(lck, file);
 }
 
-LckFile *file_ropen (char *path) {
+LckFile *file_ropen (const char *path) {
   FILE *file = fopen(path, "r");
   if (!file) {
     FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
@@ -324,7 +324,7 @@ LckFile *file_ropen (char *path) {
   return r;
 }
 
-LckFile *file_wopen (char *path) {
+LckFile *file_wopen (const char *path) {
   FILE *file = fopen(path, "w");
   if (!file) {
     FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
@@ -336,7 +336,7 @@ LckFile *file_wopen (char *path) {
   return r;
 }
 
-LckFile *file_aopen (char *path) {
+LckFile *file_aopen (const char *path) {
   FILE *file = fopen(path, "a");
   if (!file) {
     FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
@@ -365,7 +365,7 @@ char *file_read_line_new (LckFile *lck) {
   return str_new("");
 }
 
-void file_write_text (LckFile *lck, char *text) {
+void file_write_text (LckFile *lck, const char *text) {
   int error = fputs(text, lck->f);
   if (error == EOF || error < 0) {
     file_close(lck);

@@ -9,6 +9,8 @@
 
 #include "DEFS.h"
 
+typedef struct js_Js Js;
+
 ///
 typedef struct arr_Arr Arr;
 
@@ -92,7 +94,18 @@ void arr_shuffle(Arr *this);
 /// with 'pred', or -1 if such element does not exist.
 int arr_index(Arr *this, int (*pred)(void *e));
 
-/// varr_filter removes every element which returns 'false' with 'pred'.
+/// arr_filter removes every element which returns 'false' with 'pred'.
 void arr_filter(Arr *this, int (*pred)(void *e));
+
+/// 'to_new' returns a Js from an element of 'this'
+Js *arr_to_js_new(Arr *this, Js *(*to_new)(void *e));
+
+/// 'from_new' parse a Js to an element of 'this'.<br>
+/// 'free' frees an element of 'this'
+Arr *arr_from_js_new(
+  Js *js,
+  void *(*from_new)(Js *jse),
+  void (*ffree)(void *e)
+);
 
 #endif

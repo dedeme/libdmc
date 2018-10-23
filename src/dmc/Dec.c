@@ -65,7 +65,7 @@ int dec_eqf_gap(float d1, float d2, float gap) {
   return d1 < d2 + gap && d1 > d2 - gap;
 }
 
-int dec_digits(char *s) {
+int dec_digits(const char *s) {
   char ch;
   ch = *s++;
   while (ch) {
@@ -85,7 +85,7 @@ void dec_regularize_us(char **s) {
   str_replace(s, ",", "");
 }
 
-int dec_number(char *s) {
+int dec_number(const char *s) {
   char ch;
   ch = *s++;
   if (ch == '-')

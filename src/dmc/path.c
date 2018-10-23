@@ -38,7 +38,7 @@ void path_only_name (char **path) {
   }
 }
 
-char *path_cat_new (char *s, char *more, ...) {
+char *path_cat_new (const char *s, const char *more, ...) {
   va_list args;
   char *tmp;
 

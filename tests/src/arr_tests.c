@@ -105,11 +105,26 @@ void arr_tests(void) {
   assert(*(double *)arr_get(ia, 3) == 2);
   assert(*(double *)arr_get(ia, 4) == 1);
 
-  assert(*(double *)arr_get(ia, -1) == 1);
-  assert(*(double *)arr_get(ia, -2) == 2);
-  assert(*(double *)arr_get(ia, -3) == 3);
-  assert(*(double *)arr_get(ia, -4) == 101);
-  assert(*(double *)arr_get(ia, -5) == 101);
+  Js *double_to_js_new(double *d) {
+    return js_wd_new(*d, 0);
+  }
+  double *double_from_js_new(Js *js) {
+    double *this = malloc(sizeof(double));
+    *this = js_rd(js);
+    return this;
+  }
+  Js *js = arr_to_js_new(ia, (FTO)double_to_js_new);
+  // Arr[double]
+  Arr *ia3 = arr_from_js_new(js, (FFROM)double_from_js_new, free);
+  assert(arr_size(ia3) == 5);
+  assert(*(double *)arr_get(ia3, 0) == 101);
+  assert(*(double *)arr_get(ia3, 1) == 101);
+  assert(*(double *)arr_get(ia3, 2) == 3);
+  assert(*(double *)arr_get(ia3, 3) == 2);
+  assert(*(double *)arr_get(ia3, 4) == 1);
+  free(js);
+  arr_free(ia3);
+
 
   arr_free(ia);
   ia = arr_new(free);

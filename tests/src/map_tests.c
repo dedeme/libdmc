@@ -49,6 +49,15 @@ void map_tests(void) {
   assert(str_eq("1", map_get_null(m, "uno")));
   assert(!map_get_null(m, "dos"));
 
+  Js *js = map_to_js_new(m, (FTO)js_ws_new);
+  // Map[char]
+  Map *m2 = map_from_js_new(js, (FFROM)js_rs_new, free);
+  assert(map_size(m) == 2);
+  assert(str_eq("3", map_get_null(m, "tres")));
+  assert(str_eq("1", map_get_null(m, "uno")));
+  free(js);
+  map_free(m2);
+
   // Varr[char]
   Varr *keys = map_keys_new(m);
   char *r = keys_to_s_new(keys);

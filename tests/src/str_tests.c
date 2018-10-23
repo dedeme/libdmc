@@ -414,7 +414,7 @@ void str_tests(void) {
 
   char *s3 = "cañón | a\tb €\n";
   r = str_new("");
-  char *tmp = str_next_rune(&r, s3);
+  const char *tmp = str_next_rune(&r, s3);
   Buf *bf = buf_new();
   while (*r) {
     buf_add(bf, r);

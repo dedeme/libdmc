@@ -63,7 +63,7 @@ static char *base64_encode_new(
 
 // Only for positive input_length
 static Bytes *base64_decode_new(
-  char *data,
+  const char *data,
   size_t input_length,
   size_t *output_length
 ) {
@@ -110,7 +110,7 @@ static Bytes *base64_decode_new(
   return bs;
 }
 
-char *b64_decode_new(char *b64) {
+char *b64_decode_new(const char *b64) {
   Bytes *bs = b64_decode_bytes_new(b64);
   int len = bytes_len(bs);
   char *s = malloc(len + 1);
@@ -120,7 +120,7 @@ char *b64_decode_new(char *b64) {
   return s;
 }
 
-Bytes *b64_decode_bytes_new(char *b64) {
+Bytes *b64_decode_bytes_new(const char *b64) {
   if (*b64) {
     size_t len;
     return base64_decode_new(b64, strlen(b64), &len);
@@ -129,7 +129,7 @@ Bytes *b64_decode_bytes_new(char *b64) {
   }
 }
 
-char *b64_encode_new(char *s) {
+char *b64_encode_new(const char *s) {
   size_t len;
   return base64_encode_new((unsigned char *)s, strlen(s), &len);
 }

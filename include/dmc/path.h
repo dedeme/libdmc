@@ -24,6 +24,6 @@ void path_extension (char **path);
 void path_only_name (char **path);
 
 /// path_cat concatenates paths. Variable argumens must finish with NULL.
-char *path_cat_new (char *s, char *more, ...);
+char *path_cat_new (const char *s, const char *more, ...);
 
 #endif

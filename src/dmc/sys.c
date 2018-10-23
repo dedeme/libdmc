@@ -14,7 +14,7 @@ static struct {
   char *uname;
 } sys;
 
-void sys_init (char *path) {
+void sys_init (const char *path) {
   rnd_init();
 
   uid_t uid = getuid();
@@ -37,11 +37,11 @@ char *sys_uname (void) {
   return sys.uname;
 }
 
-void sys_locale (char *language) {
+void sys_locale (const char *language) {
   setlocale (LC_ALL, language);
 }
 
-char *sys_cmd_new_null(char *command) {
+char *sys_cmd_new_null(const char *command) {
   char *c = str_f_new("%s 2>&1", command);
   FILE *fp = popen(c, "r");
   free(c);
@@ -64,7 +64,12 @@ char *sys_cmd_new_null(char *command) {
   return r;
 }
 
-void sys_fail(char *message, char *file, char *func, int line) {
+void sys_fail(
+  const char *message,
+  const char *file,
+  const char *func,
+  int line
+) {
   void *array[25];
   size_t size;
   char **strings;

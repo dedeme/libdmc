@@ -27,7 +27,7 @@ Bytes *bytes_new2(int length);
 Bytes *bytes_from_bytes_new(unsigned char *bs, int length);
 
 /// Returns a 'Bytes' whitch is copy of 's' without the ending zero.
-Bytes *bytes_from_str_new(char *s);
+Bytes *bytes_from_str_new(const char *s);
 
 ///
 void bytes_free(Bytes *this);
@@ -45,7 +45,7 @@ void bytes_add_bytes(Bytes *this, unsigned char *bs, int length);
 void bytes_add(Bytes *this, Bytes *another);
 
 /// Adds to 'this' a copy of 's' without the ending zero
-void bytes_add_str(Bytes *this, char *s);
+void bytes_add_str(Bytes *this, const char *s);
 
 ///
 Js *bytes_to_js_new(Bytes *this);

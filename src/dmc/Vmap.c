@@ -9,7 +9,7 @@ struct vmap_Kv {
   void *value;
 };
 
-static Vkv *vkv_new(char *key, void *value) {
+static Vkv *vkv_new(const char *key, void *value) {
   Vkv *this = malloc(sizeof(Vkv));
   this->key = str_new(key);
   this->value = value;
@@ -33,7 +33,7 @@ int vmap_size(Vmap *this) {
   return arr_size((Arr *) this);
 }
 
-void vmap_put(Vmap *this, char *key, void *value) {
+void vmap_put(Vmap *this, const char *key, void *value) {
   int no_added = 1;
   EACH(this, Vkv, e)
     if (str_eq(e->key, key)) {
@@ -47,7 +47,7 @@ void vmap_put(Vmap *this, char *key, void *value) {
   }
 }
 
-void *vmap_get_null(Vmap *this, char *key) {
+void *vmap_get_null(Vmap *this, const char *key) {
   EACH(this, Vkv, e)
     if (str_eq(e->key, key)) {
       return e->value;
@@ -56,7 +56,7 @@ void *vmap_get_null(Vmap *this, char *key) {
   return NULL;
 }
 
-void vmap_remove(Vmap *this, char *key) {
+void vmap_remove(Vmap *this, const char *key) {
   int ix = -1;
   EACH_IX(this, Vkv, e, i)
     if (str_eq(e->key, key)) {

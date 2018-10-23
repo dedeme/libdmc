@@ -37,7 +37,7 @@ char *buf_str(Buf *this) {
   return this->str;
 }
 
-void buf_add_buf (Buf *this, char *data, int length) {
+void buf_add_buf (Buf *this, const char *data, int length) {
   int ixend = this->length + length;
   if (this->size < ixend) {
       while (this->size < ixend) {
@@ -54,7 +54,7 @@ void buf_add_buf (Buf *this, char *data, int length) {
   this->length = ixend;
 }
 
-void buf_add (Buf *this, char *data) {
+void buf_add (Buf *this, const char *data) {
   buf_add_buf(this, data, strlen(data));
 }
 

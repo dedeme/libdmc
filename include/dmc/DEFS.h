@@ -6,6 +6,8 @@
 #ifndef DMC_DEFS_H
   #define DMC_DEFS_H
 
+typedef struct js_Js Js;
+
 ///
 #define REPEAT(n) { \
   int __i = (n) + 1; \
@@ -71,18 +73,18 @@
 
 ///
 #define EACH(a, type, e) { \
-  Arr *__a = (Arr *)a; \
-  void **__p = arr_start(__a); \
-  void **__pend = arr_end(__a); \
+  Varr *__a = (Varr *)a; \
+  void **__p = varr_start(__a); \
+  void **__pend = varr_end(__a); \
   type *e; \
   while(__p < __pend) { \
     e = *__p++;
 
 ///
 #define EACH_IX(a, type, e, i) { \
-  Arr *__a = (Arr *)a; \
-  void **__p = arr_start(__a); \
-  void **__pend = arr_end(__a); \
+  Varr *__a = (Varr *)a; \
+  void **__p = varr_start(__a); \
+  void **__pend = varr_end(__a); \
   type *e; \
   int i = -1; \
   while(__p < __pend) { \
@@ -106,5 +108,11 @@ typedef void (*FPROC)(void *);
 
 ///
 typedef int (*FPRED)(void *);
+
+///
+typedef Js *(*FTO)(void *);
+
+///
+typedef void *(*FFROM)(Js *);
 
 #endif

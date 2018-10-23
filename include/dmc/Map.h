@@ -34,15 +34,15 @@ int map_size(Map *this);
 ///   this  : The map
 ///   key   : Entry key. It must not be NULL.
 ///   value : New value
-void map_put(Map *this, char *key, void *value);
+void map_put(Map *this, const char *key, void *value);
 
 /// map_get_null returns the value pointed by key or NULL if 'key' does
 /// not exist
-void *map_get_null(Map *this, char *key);
+void *map_get_null(Map *this, const char *key);
 
 /// map_remove removes value with key 'key' or does nothing if 'key' does
 /// not exist
-void map_remove(Map *this, char *key);
+void map_remove(Map *this, const char *key);
 
 /// map_keys_new returns keys of this in a Varr[char]
 Varr *map_keys_new(Map *this);
@@ -62,5 +62,17 @@ void map_sort(Map *this);
 
 /// map_sort_locale sorts 'this' in locale from keys
 void map_sort_locale(Map *this);
+
+/// 'to_new' returns a Js from a value of 'this'
+Js *map_to_js_new(Map *this, Js *(*to_new)(void *e));
+
+/// 'from_new' parse a Js to a value of 'this'.<br>
+/// 'free' frees a value of 'this'
+Map *map_from_js_new(
+  Js *js,
+  void *(*from_new)(Js *jse),
+  void (*ffree)(void *e)
+);
+
 
 #endif

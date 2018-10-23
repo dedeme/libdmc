@@ -406,7 +406,7 @@ Js *js_wd_new(double n, int scale) {
   return (Js *)ns;
 }
 
-Js *js_ws_new(char *s) {
+Js *js_ws_new(const char *s) {
   Buf *bf = buf_new();
 
   char tmp;

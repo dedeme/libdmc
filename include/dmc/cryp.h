@@ -17,12 +17,12 @@ void cryp_key (char **k, int lg);
 /// Encodes 's' with key 'k'.
 ///   s   : Message to encode
 ///   k   : Key for encoding
-void cryp_cryp (char **s, char *k);
+void cryp_cryp (char **s, const char *k);
 
 /// Decodes 'b64' using key 'k'. 'b64' was codified with cryp()
 ///   b64: Text codified with cryp()
 ///   k   : Key for decoding
-void cryp_decryp (char **b64, char *k);
+void cryp_decryp (char **b64, const char *k);
 
 /// Encodes automatically 's' with a random key of 'nk' digits.
 ///   nK  : Number of digits for random key (1 to 64 both inclusive)
@@ -37,11 +37,11 @@ void cryp_auto_decryp (char **b64);
 ///   k   : Key for encoding
 ///   nk  : Digits to generate autoKey (1 to 40 both inclusive)
 ///   s   : Message to encode
-void cryp_encode (char **s, int nk, char *k);
+void cryp_encode (char **s, int nk, const char *k);
 
 /// Decodes a string codified with encode()
 ///   b64: Message encoded with encode()
 ///   k   : Key for encoding
-void cryp_decode (char **b64, char *k);
+void cryp_decode (char **b64, const char *k);
 
 #endif

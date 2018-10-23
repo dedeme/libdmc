@@ -38,9 +38,6 @@ Arr *arr_bf_new(int buffer, void(*ffree)(void *)) {
 
 
 Arr *arr_left_new(Arr *this, int ix, void *(*copy_new)(void *)) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Arr *tmp = malloc(sizeof(Arr));
   tmp->es = this->es;
   tmp->end = this->es + ix;
@@ -52,9 +49,6 @@ Arr *arr_left_new(Arr *this, int ix, void *(*copy_new)(void *)) {
 
 
 Arr *arr_right_new(Arr *this, int ix, void *(*copy_new)(void *)) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Arr *tmp = malloc(sizeof(Arr));
   tmp->es = this->es + ix;
   tmp->end = this->end;
@@ -65,12 +59,6 @@ Arr *arr_right_new(Arr *this, int ix, void *(*copy_new)(void *)) {
 }
 
 Arr *arr_sub_new(Arr *this, int begin, int end, void *(*copy_new)(void *)) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
   Arr *r = arr_new(this->ffree);
   if (end > begin) {
     Arr *tmp = malloc(sizeof(Arr));
@@ -92,9 +80,6 @@ int arr_size(Arr *this) {
 }
 
 void *arr_get(Arr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   return *(this->es + ix);
 }
 
@@ -131,18 +116,12 @@ void *arr_peek(Arr *this) {
 }
 
 void arr_set(Arr *this, int ix, void *e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   void **p = this->es + ix;
   this->ffree(*p);
   *p = e;
 }
 
 void arr_insert(Arr *this, int ix, void *e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Arr *new = arr_bf_new((this->endbf - this->es) + 1, this->ffree);
   void **p = this->es;
   void **p_end = this->end;
@@ -173,9 +152,6 @@ void arr_insert(Arr *this, int ix, void *e) {
 
 ///
 void arr_remove(Arr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Arr *new = arr_bf_new((this->endbf - this->es) - 1, this->ffree);
   void **p = this->es;
   void **p_end = this->end;
@@ -222,9 +198,6 @@ void arr_cat(Arr *this, Arr *other, void *(*copy_new)(void *)) {
 }
 
 void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy_new)(void *)) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Arr *other_new = arr_new(this->ffree);
   arr_cat(other_new, other, copy_new);
   Varr *left = varr_left_new((Varr *)this, ix);
@@ -243,13 +216,6 @@ void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy_new)(void *)) {
 }
 
 void arr_remove_range(Arr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
-
   void **p = this->es + begin;
   void (*ffree)(void *) = this->ffree;
   REPEAT(end - begin)
@@ -298,4 +264,34 @@ void arr_filter(Arr *this, int (*pred)(void *e)) {
     ++p;
   }
   this->end = new_end;
+}
+
+Js *arr_to_js_new(Arr *this, Js *(*to_new)(void *e)) {
+  // Arr[Js]
+  Arr *a = arr_new(free);
+  void **p = this->es;
+  void **end = this->end;
+  while (p < end) {
+    arr_push(a, to_new(*p++));
+  }
+  Js *r = js_wa_new(a);
+  arr_free(a);
+  return r;
+}
+
+Arr *arr_from_js_new(
+  Js *js,
+  void *(*from_new)(Js *jse),
+  void (*ffree)(void *e)
+) {
+  Arr *this = arr_new(ffree);
+  // Arr[Js]
+  Arr *a = js_ra_new(js);
+  void **p = a->es;
+  void **end = a->end;
+  while (p < end) {
+    arr_push(this, from_new(*p++));
+  }
+  arr_free(a);
+  return this;
 }

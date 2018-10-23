@@ -45,7 +45,7 @@ Js *js_wi_new(int n);
 Js *js_wd_new(double n, int scale);
 
 /// Write a string
-Js *js_ws_new(char *s);
+Js *js_ws_new(const char *s);
 
 /// Write an Arr[Js]
 Js *js_wa_new(Arr *a);

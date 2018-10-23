@@ -31,7 +31,7 @@ Bytes *bytes_from_bytes_new(unsigned char *bs, int length) {
   return this;
 }
 
-Bytes *bytes_from_str_new (char *s) {
+Bytes *bytes_from_str_new (const char *s) {
   return bytes_from_bytes_new((unsigned char *)s, strlen(s));
 }
 
@@ -61,7 +61,7 @@ void bytes_add (Bytes *this, Bytes *another) {
   bytes_add_bytes(this, another->bs, another->length);
 }
 
-void bytes_add_str (Bytes *this, char *s) {
+void bytes_add_str (Bytes *this, const char *s) {
   bytes_add_bytes(this, (unsigned char *)s, strlen(s));
 }
 

@@ -28,12 +28,12 @@ static Cgi *cgi_null = NULL;
 
 // users is Arr[char]
 static void write_users(Arr *users);
-static void put_user(char *user, char *key, char *level);
+static void put_user(const char *user, const char *key, const char *level);
 // sessions is Arr[Js]
 static void write_sessions(Arr *sessions);
 
 
-void cgi_init(char *home, time_t t_expiration) {
+void cgi_init(const char *home, time_t t_expiration) {
   rnd_init();
 
   cgi_null = malloc(sizeof(Cgi));
@@ -107,7 +107,7 @@ static Arr *read_users_new(void) {
 }
 
 // Users is Arr[char]
-static void remove_user(Arr *users, char *user) {
+static void remove_user(Arr *users, const char *user) {
   int pred(char *row) {
     // Arr[char]
     Arr *parts = str_csplit_new(row, ':');
@@ -122,7 +122,7 @@ static void remove_user(Arr *users, char *user) {
   }
 }
 
-static void del_user(char *user) {
+static void del_user(const char *user) {
   // Arr[char]
   Arr *users = read_users_new();
   remove_user(users, user);
@@ -131,7 +131,7 @@ static void del_user(char *user) {
 }
 
 
-static void put_user(char *user, char *key, char *level) {
+static void put_user(const char *user, const char *key, const char *level) {
   // Arr[char]
   Arr *users = read_users_new();
   remove_user(users, user);
@@ -147,7 +147,7 @@ static void put_user(char *user, char *key, char *level) {
 }
 
 // Returns level of "id" or NULL
-static char *check_user_new_null(char *id, char *key) {
+static char *check_user_new_null(const char *id, const char *key) {
   char *kkey = str_new(key);
   cryp_key(&kkey, klen);
 
@@ -174,7 +174,7 @@ static char *check_user_new_null(char *id, char *key) {
   return r;
 }
 
-static int change_level(char *user, char *level) {
+static int change_level(const char *user, const char *level) {
   int pred(char *row) {
     // Arr[char]
     Arr *parts = str_csplit_new(row, ':');
@@ -207,7 +207,9 @@ static int change_level(char *user, char *level) {
   return 1;
 }
 
-static int change_pass(char *user, char *old_pass, char *new_pass) {
+static int change_pass(
+  const char *user, const char *old_pass, const char *new_pass
+) {
   int pred(char *row) {
     char *kold = str_new(old_pass);
     cryp_key(&kold, klen);
@@ -272,7 +274,7 @@ static Arr *read_sessions_new(void) {
 
 // If expiration is 0 tNoExpiration is used
 static void add_session(
-  char *session_id, char *user, char *key, time_t expiration
+  const char *session_id, const char *user, const char *key, time_t expiration
 ) {
   // row is a Js array
   int pred(Js *jsrow) {
@@ -315,7 +317,7 @@ static void add_session(
 // Fields are: sessionId:key:time:lapse
 // If identification fails returns ""
 static void read_session(
-  char **key_new, char** con_id_new, char *session_id
+  char **key_new, char** con_id_new, const char *session_id
 ) {
   time_t now = date_now();
 
@@ -361,7 +363,7 @@ static void read_session(
   arr_free(sessions);
 }
 
-static void del_session(char *session_id) {
+static void del_session(const char *session_id) {
   // row is a Js array
   int pred(Js *jsrow) {
     // Arr[js]
@@ -385,7 +387,7 @@ static void del_session(char *session_id) {
   arr_free(sessions);
 }
 
-static void set_connection_id(char *session_id, char *con_id) {
+static void set_connection_id(const char *session_id, const char *con_id) {
   // row is a Js array
   int pred(Js *jsrow) {
     // Arr[js]
@@ -426,7 +428,7 @@ char *cgi_home(void) {
   return cgi_null->home;
 }
 
-void cgi_set_key(char *k) {
+void cgi_set_key(const char *k) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized")
   }
@@ -435,7 +437,7 @@ void cgi_set_key(char *k) {
 }
 
 void cgi_get_session_data(
-  char **key, char **connectionId, char *session_id
+  char **key, char **connectionId, const char *session_id
 ) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized")
@@ -444,7 +446,8 @@ void cgi_get_session_data(
 }
 
 void cgi_add_user(
-  char *admin, char *akey, char *user, char *ukey, char *level
+  const char *admin, const char *akey,
+  const char *user, const char *ukey, const char *level
 ){
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
@@ -463,7 +466,7 @@ void cgi_add_user(
   map_free(m);
 }
 
-void cgi_del_user(char *admin, char *akey, char *user) {
+void cgi_del_user(const char *admin, const char *akey, const char *user) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
   }
@@ -482,7 +485,7 @@ void cgi_del_user(char *admin, char *akey, char *user) {
 }
 
 void cgi_change_level(
-  char *admin, char *akey, char *user, char *level
+  const char *admin, const char *akey, const char *user, const char *level
 ) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
@@ -504,7 +507,7 @@ void cgi_change_level(
   map_free(m);
 }
 
-void cgi_change_pass(char *user, char *key, char *new_key) {
+void cgi_change_pass(const char *user, const char *key, const char *new_key) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
   }
@@ -519,7 +522,7 @@ void cgi_change_pass(char *user, char *key, char *new_key) {
   map_free(m);
 }
 
-void cgi_del_session(char *session_id) {
+void cgi_del_session(const char *session_id) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
   }
@@ -530,7 +533,7 @@ void cgi_del_session(char *session_id) {
   map_free(m);
 }
 
-void cgi_authentication(char *user, char *key, int expiration) {
+void cgi_authentication(const char *user, const char *key, int expiration) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
   }
@@ -561,7 +564,7 @@ void cgi_authentication(char *user, char *key, int expiration) {
   map_free(m);
 }
 
-void cgi_connect(char *session_id) {
+void cgi_connect(const char *session_id) {
   if (!cgi_null) {
     FAIL("'cgi' has not been intialized");
   }
@@ -605,7 +608,7 @@ void cgi_ok(Map *data) {
   free(msg);
 }
 
-void cgi_error(char *msg) {
+void cgi_error(const char *msg) {
   // Map[Js]
   Map *m = map_new(free);
   map_put(m, "error", js_ws_new(msg));
