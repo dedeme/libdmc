@@ -10,13 +10,13 @@
 #include "dmc/std.h"
 #include "dmc/cryp.h"
 
-struct file_LckFile {
+struct file_FileLck {
   struct flock *lock;
   FILE *f;
 };
 
-static LckFile *lckFile_new(struct flock *lock, FILE *f) {
-  LckFile *this = malloc(sizeof(LckFile));
+static FileLck *lckFile_new(struct flock *lock, FILE *f) {
+  FileLck *this = malloc(sizeof(FileLck));
   this->lock = lock;
   this->f = f;
   return this;
@@ -304,7 +304,7 @@ void file_copy (const char *source_path, const char *target_path) {
   fclose(f2);
 }
 
-static LckFile *lck_new(FILE *file) {
+static FileLck *lck_new(FILE *file) {
   struct flock *lck = malloc(sizeof(struct flock));
   lck->l_whence = SEEK_SET;
   lck->l_start = 0;
@@ -312,43 +312,43 @@ static LckFile *lck_new(FILE *file) {
   return lckFile_new(lck, file);
 }
 
-LckFile *file_ropen (const char *path) {
+FileLck *file_ropen (const char *path) {
   FILE *file = fopen(path, "r");
   if (!file) {
     FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
   }
 
-  LckFile *r = lck_new(file);
+  FileLck *r = lck_new(file);
   r->lock->l_type = F_RDLCK;
   fcntl (fileno(file), F_SETLKW, r->lock);
   return r;
 }
 
-LckFile *file_wopen (const char *path) {
+FileLck *file_wopen (const char *path) {
   FILE *file = fopen(path, "w");
   if (!file) {
     FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
   }
 
-  LckFile *r = lck_new(file);
+  FileLck *r = lck_new(file);
   r->lock->l_type = F_WRLCK;
   fcntl (fileno(file), F_SETLKW, r->lock);
   return r;
 }
 
-LckFile *file_aopen (const char *path) {
+FileLck *file_aopen (const char *path) {
   FILE *file = fopen(path, "a");
   if (!file) {
     FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
   }
 
-  LckFile *r = lck_new(file);
+  FileLck *r = lck_new(file);
   r->lock->l_type = F_WRLCK;
   fcntl (fileno(file), F_SETLKW, r->lock);
   return r;
 }
 
-char *file_read_line_new (LckFile *lck) {
+char *file_read_line_new (FileLck *lck) {
   size_t len = 0;
   errno = 0;
   char *line= NULL;
@@ -365,7 +365,7 @@ char *file_read_line_new (LckFile *lck) {
   return str_new("");
 }
 
-void file_write_text (LckFile *lck, const char *text) {
+void file_write_text (FileLck *lck, const char *text) {
   int error = fputs(text, lck->f);
   if (error == EOF || error < 0) {
     file_close(lck);
@@ -373,7 +373,7 @@ void file_write_text (LckFile *lck, const char *text) {
   }
 }
 
-Bytes *file_read_bin_buf_new (LckFile *lck, int buffer) {
+Bytes *file_read_bin_buf_new (FileLck *lck, int buffer) {
   unsigned char bs[buffer];
   int len = (int)fread(bs, 1, buffer, lck->f);
   if (len == -1) {
@@ -386,17 +386,17 @@ Bytes *file_read_bin_buf_new (LckFile *lck, int buffer) {
   return bytes_from_bytes_new(bs, len);
 }
 
-Bytes *file_read_bin_new (LckFile *lck) {
+Bytes *file_read_bin_new (FileLck *lck) {
   return file_read_bin_buf_new(lck, 8192);
 }
 
-void file_write_bin (LckFile *lck, Bytes *bs) {
+void file_write_bin (FileLck *lck, Bytes *bs) {
   if (fwrite(bytes_bs(bs), bytes_len(bs), 1, lck->f) == -1) {
     FAIL(str_f_new("Fail file_write_bin: %s", strerror(errno)))
   }
 }
 
-void file_close (LckFile *lck) {
+void file_close (FileLck *lck) {
   FILE *fl = lck->f;
   struct flock *lock = lck->lock;
 

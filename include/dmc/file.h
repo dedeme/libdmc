@@ -11,7 +11,7 @@
 #include "dmc/Bytes.h"
 
 ///
-typedef struct file_LckFile LckFile;
+typedef struct file_FileLck FileLck;
 
 /// file_tmp sets a new file path whose template is:
 /// /tmp/'prefix'/xxxxxxxxxx. Where xxxxxxxxxx is an aleatory sequence of
@@ -86,37 +86,37 @@ void file_append (const char *path, const char *text);
 void file_copy (const char *source_path, const char *target_path);
 
 /// file_ropen opens a file to read with file_read_line or file_read_bin.<br>
-/// It returns a LckFile object which will be freed when close is called.
-LckFile *file_ropen (const char *path);
+/// It returns a FileLck object which will be freed when close is called.
+FileLck *file_ropen (const char *path);
 
 /// file_wopen opens a file to write with file_write_line or file_write_bin.<br>
-/// It returns a LckFile object which will be freed when close is called.
-LckFile *file_wopen (const char *path);
+/// It returns a FileLck object which will be freed when close is called.
+FileLck *file_wopen (const char *path);
 
 /// file_aopen opens a file to append with file_write_line or file_write_bin.<br>
-/// It returns a LckFile object which will be freed when close is called..
-LckFile *file_aopen (const char *path);
+/// It returns a FileLck object which will be freed when close is called..
+FileLck *file_aopen (const char *path);
 
 /// file_read_line_new reads a text file opened with file_ropen.<br>
 /// It does not delete ends of line.<br>
 /// When reading is finished, returns a blank string.
-char *file_read_line_new (LckFile *lck);
+char *file_read_line_new (FileLck *lck);
 
 /// file_write_text writes a text file opened with file_wopen or file_aopen.
-void file_write_text (LckFile *lck, const char *text);
+void file_write_text (FileLck *lck, const char *text);
 
 /// file_read_bin_buf_new reads a binary file opened with file_ropen.<br>
 /// When reading is finished, returns an empty Bytes.
-Bytes *file_read_bin_buf_new (LckFile *lck, int buffer);
+Bytes *file_read_bin_buf_new (FileLck *lck, int buffer);
 
 /// file_read_bin_new is the same as 'file_read_bin_bf' using a buffer of 8192.
-Bytes *file_read_bin_new (LckFile *lck);
+Bytes *file_read_bin_new (FileLck *lck);
 
 /// file_write_bin writes a binary file opened with file_wopen.<br>
 /// Returns 0 if there is no error.
-void file_write_bin (LckFile *lck, Bytes *bs);
+void file_write_bin (FileLck *lck, Bytes *bs);
 
 /// file_clse closes a file open with file_ropen, file_wopen or file_aopen
-void file_close (LckFile *lck);
+void file_close (FileLck *lck);
 
 #endif

@@ -111,7 +111,7 @@ void file_tests(void) {
 
   free(text);
 
-  LckFile *binlk = file_ropen(path2);
+  FileLck *binlk = file_ropen(path2);
   Bytes *bss = file_read_bin_buf_new(binlk, 200);
   file_close(binlk);
 
@@ -173,12 +173,12 @@ void file_tests(void) {
   free(st2);
 
   char *dpath = str_f_new("%s/file", sys_home());
-  LckFile *lck;
+  FileLck *lck;
   file_mkdir(dpath);
 
   char *test_new (char *path) {
     Buf *bf = buf_new();
-    LckFile *lck = file_ropen(path);
+    FileLck *lck = file_ropen(path);
     char *rs;
     for(;;) {
       rs = file_read_line_new(lck);
