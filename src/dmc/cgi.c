@@ -605,7 +605,7 @@ void cgi_ok(Map *data) {
   fclose(tmp);
 */
 
-  fputs(msg, stdout);
+  printf("%s", msg);
   free(msg);
 }
 
