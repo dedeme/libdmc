@@ -97,6 +97,58 @@ typedef struct js_Js Js;
 ///
 #define FAIL(msg) sys_fail(msg, __FILE__, (char *)__func__, __LINE__);
 
+/// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a FAIL,
+/// otherwise returns its value in 'type var' using 'f'.
+/// <table><tr><td>
+///   type   : type of var_new
+///   var_new: name of new variable. It shuld be free.
+///   fun    : function to pass 'Js' to 'type'
+///   map    : A Map[Js]
+///   field  : field key. Its value must be const char *
+/// </table>
+/// Examples:
+/// <table><tr><td>
+///   CGI_GET(int, i, js_ri, m, "index")
+///   CGI_GET(Arr *, a, js_ra_new, m, "values")
+/// </table>
+#define CGI_GET(type, var_new, fun, map, field) \
+  type var_new; \
+  { \
+    char *field2 = str_new(field); \
+    Js *js = map_get_null(map, field2); \
+    if (!js) { \
+      char *msg = str_f_new("Field '%s' not found", field2); \
+      sys_fail(msg, __FILE__, (char *)__func__, __LINE__); \
+    } \
+    var_new = fun(js); \
+    free(field2); \
+    free(js); \
+  }
+
+/// Calls CGI_GET with 'var_new' as 'int'.
+#define CGI_GET_BOOL(var_new, map, field) \
+  CGI_GET(int, var_new, js_rb, map, field)
+
+/// Calls CGI_GET with 'var_new' as 'int'.
+#define CGI_GET_INT(var_new, map, field) \
+  CGI_GET(int, var_new, js_ri, map, field)
+
+/// Calls CGI_GET with 'var_new' as 'double'.
+#define CGI_GET_DOUBLE(var_new, map, field) \
+  CGI_GET(double, var_new, js_rd, map, field)
+
+/// Calls CGI_GET with 'var_new' as 'char *'.
+#define CGI_GET_STR(var_new, map, field) \
+  CGI_GET(char *, var_new, js_rs_new, map, field)
+
+/// Calls CGI_GET with 'var_new' as 'Arr[Js]'.
+#define CGI_GET_ARR(var_new, map, field) \
+  CGI_GET(char *, var_new, js_ra_new, map, field)
+
+/// Calls CGI_GET with 'var_new' as 'Map[Js]'.
+#define CGI_GET_MAP(var_new, map, field) \
+  CGI_GET(char *, var_new, js_ro_new, map, field)
+
 ///
 typedef void *(*FCOPY)(void *);
 
