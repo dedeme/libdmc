@@ -599,6 +599,7 @@ void cgi_ok(Map *data) {
   cryp_cryp(&msg, cgi_null->key_null);
 
 /*
+  // For debug
   FILE *tmp = fopen("data/tmp.txt", "w");
   fputs(msg, tmp);
   fclose(tmp);
@@ -606,6 +607,13 @@ void cgi_ok(Map *data) {
 
   fputs(msg, stdout);
   free(msg);
+}
+
+void cgi_empty(void) {
+  // Map[Js]
+  Map *m = map_new(free);
+  cgi_ok(m);
+  free(m);
 }
 
 void cgi_error(const char *msg) {

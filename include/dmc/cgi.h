@@ -98,6 +98,9 @@ void cgi_connect(const char  *session_id);
 /// 'data' is a Map[Js]
 void cgi_ok(Map *data);
 
+/// cgi_empty send an empty response.
+void cgi_empty(void);
+
 /// cgi_ok send an error response, setting {error:msg}.
 void cgi_error(const char *msg);
 
