@@ -599,13 +599,13 @@ void cgi_ok(Map *data) {
   cryp_cryp(&msg, cgi_null->key_null);
 
 /*
-  // For debug
+  // To debug
   FILE *tmp = fopen("data/tmp.txt", "w");
   fputs(msg, tmp);
   fclose(tmp);
 */
 
-  printf("%s", msg);
+  fputs(msg, stdout);
   free(msg);
 }
 

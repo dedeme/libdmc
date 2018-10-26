@@ -122,7 +122,6 @@ typedef struct js_Js Js;
     } \
     var_new = fun(js); \
     free(field2); \
-    free(js); \
   }
 
 /// Calls CGI_GET with 'var_new' as 'int'.
