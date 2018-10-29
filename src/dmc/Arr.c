@@ -152,7 +152,11 @@ void arr_insert(Arr *this, int ix, void *e) {
 
 ///
 void arr_remove(Arr *this, int ix) {
-  Arr *new = arr_bf_new((this->endbf - this->es) - 1, this->ffree);
+  int size = (this->endbf - this->es) - 1;
+  if (size < 5) {
+    size = 5;
+  }
+  Arr *new = arr_bf_new(size, this->ffree);
   void **p = this->es;
   void **p_end = this->end;
   void **t = new->es;
