@@ -100,6 +100,7 @@ void file_del (const char *path) {
     if (errno != ENOENT) {
       FAIL(str_f_new("Fail deleting %s: %s", path, strerror(errno)))
     }
+    return;
   }
 
   if (S_ISDIR(buf.st_mode)) {
