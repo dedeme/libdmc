@@ -29,9 +29,6 @@ Varr *varr_2_new(int buffer) {
 
 
 Varr *varr_left_new(Varr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Varr *tmp = malloc(sizeof(Varr));
   tmp->es = this->es;
   tmp->end = this->es + ix;
@@ -43,9 +40,6 @@ Varr *varr_left_new(Varr *this, int ix) {
 
 
 Varr *varr_right_new(Varr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Varr *tmp = malloc(sizeof(Varr));
   tmp->es = this->es + ix;
   tmp->end = this->end;
@@ -56,12 +50,6 @@ Varr *varr_right_new(Varr *this, int ix) {
 }
 
 Varr *varr_sub_new(Varr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
   Varr *r = varr_new();
   if (end > begin) {
     Varr *tmp = malloc(sizeof(Varr));
@@ -83,9 +71,6 @@ int varr_size(Varr *this) {
 }
 
 void *varr_get(Varr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   return *(this->es + ix);
 }
 
@@ -118,16 +103,10 @@ void *varr_peek(Varr *this) {
 }
 
 void varr_set(Varr *this, int ix, void *e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   *(this->es + ix) = e;
 }
 
 void varr_insert(Varr *this, int ix, void *e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Varr *new = varr_2_new((this->endbf - this->es) + 1);
   void **p = this->es;
   void **p_end = this->end;
@@ -158,9 +137,6 @@ void varr_insert(Varr *this, int ix, void *e) {
 
 ///
 void varr_remove(Varr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Varr *new = varr_2_new((this->endbf - this->es) - 1);
   void **p = this->es;
   void **p_end = this->end;
@@ -202,9 +178,6 @@ void varr_cat(Varr *this, Varr *other) {
 }
 
 void varr_insert_arr(Varr *this, int ix, Varr *other) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
   Varr *left = varr_left_new(this, ix);
   Varr *right = varr_right_new(this, ix);
   varr_cat(left, other);
@@ -218,12 +191,6 @@ void varr_insert_arr(Varr *this, int ix, Varr *other) {
 }
 
 void varr_remove_range(Varr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
   Varr *left = varr_left_new(this, begin);
   Varr *right = varr_right_new(this, end);
   varr_cat(left, right);

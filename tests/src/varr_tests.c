@@ -92,12 +92,6 @@ void varr_tests(void) {
   assert(*(double *)varr_get(ia, 3) == 2);
   assert(*(double *)varr_get(ia, 4) == 1);
 
-  assert(*(double *)varr_get(ia, -1) == 1);
-  assert(*(double *)varr_get(ia, -2) == 2);
-  assert(*(double *)varr_get(ia, -3) == 3);
-  assert(*(double *)varr_get(ia, -4) == 101);
-  assert(*(double *)varr_get(ia, -5) == 101);
-
   varr_free(ia);
   ia = varr_new();
   varr_sort(ia, (FGREATER) greater);

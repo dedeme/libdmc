@@ -17,13 +17,13 @@ Varr *varr_new(void);
 /// buffer must be > 0
 Varr *varr_2_new(int buffer);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+///  Returns elements placed in an index < ix
 Varr *varr_left_new(Varr *this, int ix);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+/// Returns elements placed in an index >= ix
 Varr *varr_right_new(Varr *this, int ix);
 
-/// If begin or end are < 0 then is changed to 'varr_size - itsValue'
+/// Returns elements placed between [begin-end)
 Varr *varr_sub_new(Varr *this, int begin, int end);
 
 ///
@@ -32,7 +32,7 @@ void varr_free(Varr *this);
 ///
 int varr_size(Varr *this);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+/// Resturn the element at position ix
 void *varr_get(Varr *this, int ix);
 
 /// Return a pointer to the first element of 'this'
@@ -51,22 +51,22 @@ void *varr_pop(Varr *this);
 /// Returns the las element.
 void *varr_peek(Varr *this);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+/// Sets the element at position ix.
 void varr_set(Varr *this, int ix, void *e);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+/// Inserts an element at position ix
 void varr_insert(Varr *this, int ix, void *e);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+/// Removes an element at position ix
 void varr_remove(Varr *this, int ix);
 
 /// Adds other to 'this'.
 void varr_cat(Varr *this, Varr *other);
 
-/// If ix is < 0 then is changed to 'varr_size - ix'
+/// Inserts an Arr in position ix
 void varr_insert_arr(Varr *this, int ix, Varr *other);
 
-/// If begin or end are < 0 then is changed to 'varr_size - itsValue'
+/// Removes elements between [begin-end)
 void varr_remove_range(Varr *this, int begin, int end);
 
 /// Reverses elements of 'this'

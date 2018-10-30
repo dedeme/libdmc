@@ -21,13 +21,13 @@ Arr *arr_new(void(*ffree)(void *));
 /// buffer must be > 0
 Arr *arr_bf_new(int buffer, void(*ffree)(void *));
 
-/// If ix is < 0 then is changed to 'arr_size - ix'
+/// Returns elements placed in an index < ix
 Arr *arr_left_new(Arr *this, int ix, void *(*copy_new)(void *));
 
-/// If ix is < 0 then is changed to 'arr_size - ix'
+/// Returns elements placed in an index >= ix
 Arr *arr_right_new(Arr *this, int ix, void *(*copy_new)(void *));
 
-/// If begin or end are < 0 then is changed to 'arr_size - itsValue'
+/// Returns elements placed between [begin-end)
 Arr *arr_sub_new(Arr *this, int begin, int end, void *(*copy_new)(void *));
 
 ///
@@ -36,7 +36,7 @@ void arr_free(Arr *this);
 ///
 int arr_size(Arr *this);
 
-/// If ix is < 0 then is changed to 'arr_size - ix'
+/// Resturn the element at position ix
 void *arr_get(Arr *this, int ix);
 
 /// Return a pointer to the first element of 'this'
@@ -59,24 +59,22 @@ void *arr_pop_new(Arr *this);
 /// Returns the las element.
 void *arr_peek(Arr *this);
 
-/// If ix is < 0 then is changed to 'arr_size - ix'.<br>
-/// 'e' will be freed by 'this'.
+/// Sets the element at position ix.
 void arr_set(Arr *this, int ix, void *e);
 
-/// If ix is < 0 then is changed to 'arr_size - ix'.<br>
-/// 'e' will be freed by 'this'.
+/// Inserts an element at position ix
 void arr_insert(Arr *this, int ix, void *e);
 
-/// If ix is < 0 then is changed to 'arr_size - ix'
+/// Removes an element at position ix
 void arr_remove(Arr *this, int ix);
 
 /// Adds other to 'this' using the function 'copy_new'
 void arr_cat(Arr *this, Arr *other, void *(*copy_new)(void *));
 
-/// If ix is < 0 then is changed to 'arr_size - ix'
+/// Inserts an Arr in position ix
 void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy_new)(void *));
 
-/// If begin or end are < 0 then is changed to 'arr_size - itsValue'
+/// Removes elements between [begin-end)
 void arr_remove_range(Arr *this, int begin, int end);
 
 /// Reverses elements of 'this'
