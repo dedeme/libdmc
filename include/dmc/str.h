@@ -16,13 +16,13 @@ char *str_new(const char *s);
 /// str_new returns a string with the character 'ch'.
 char *str_c_new(char ch);
 
-/// str_cmp reuturns strcoll(s1, s2)
+/// str_cmp_locale reuturns strcoll(s1, s2)
 int str_cmp_locale(const char *s1, const char *s2);
 
-/// str_cmp returns strcmp(s1, s2) > 0
+/// str_greater returns strcmp(s1, s2) > 0
 int str_greater(const char *s1, const char *s2);
 
-/// str_cmp reuturns strcoll(s1, s2) > 0
+/// str_greater_locale reuturns strcoll(s1, s2) > 0
 int str_greater_locale(const char *s1, const char *s2);
 
 /// str_eq returns 'true' if str1 == str2

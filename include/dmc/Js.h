@@ -21,6 +21,9 @@ int js_rb (Js *json);
 /// Read int
 int js_ri (Js *json);
 
+/// Read long
+long js_rl (Js *json);
+
 /// Read double
 double js_rd (Js *json);
 
@@ -40,6 +43,9 @@ Js *js_wb_new(int value);
 
 /// Write an int value
 Js *js_wi_new(int n);
+
+/// Write an long value
+Js *js_wl_new(long n);
 
 /// Write a double value. 'scale' is forced between [0 - 9] inclusive
 Js *js_wd_new(double n, int scale);

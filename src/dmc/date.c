@@ -138,9 +138,9 @@ char *date_to_us_new(time_t this) {
 }
 
 Js *date_to_js_new(time_t this) {
-  return (Js *)str_f_new("%ld", this);
+  return (Js *)js_wl_new(this);
 }
 
 time_t date_from_js(Js *js) {
-  return js_ri(js);
+  return js_rl(js);
 }

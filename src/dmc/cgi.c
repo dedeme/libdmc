@@ -345,10 +345,8 @@ static void read_session(
   Arr *sessions = read_sessions_new();
 
   arr_filter(sessions, (FPRED)filter);
-  write_sessions(sessions);
 
   int ix = arr_index(sessions, (FPRED)pred);
-
   if (ix == -1) {
     *key_new = str_new("");
     *con_id_new = str_new("");
@@ -357,9 +355,16 @@ static void read_session(
     Arr *row = js_ra_new(arr_get(sessions, ix));
     *key_new = js_rs_new(arr_get(row, 2));
     *con_id_new = js_rs_new(arr_get(row, 3));
+
+    arr_set(row, 4, date_to_js_new(
+      date_from_js(arr_get(row, 4)) + date_from_js(arr_get(row, 5))
+    ));
+    arr_set(sessions, ix, js_wa_new(row));
+
     arr_free(row);
   }
 
+  write_sessions(sessions);
   arr_free(sessions);
 }
 

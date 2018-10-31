@@ -169,8 +169,11 @@ int js_rb (Js *json) {
   return r;
 }
 
-
 int js_ri (Js *json) {
+  return js_rl(json);
+}
+
+long js_rl (Js *json) {
   char *jsons = json_blanks((char *)json);
   char *j = jsons;
   if (*j != '-' && (*j < '0' || *j > '9')) {
@@ -188,7 +191,7 @@ int js_ri (Js *json) {
   }
   char *tail;
   errno = 0;
-  int r = strtol(n, &tail, 10);
+  long r = strtol(n, &tail, 10);
   if (errno) {
     FAIL(json_error_new(n, "Overflow"))
   }
@@ -391,6 +394,10 @@ Js *js_wb_new(int value) {
 
 Js *js_wi_new(int n) {
   return (Js *)str_f_new("%d", n);
+}
+
+Js *js_wl_new(long n) {
+  return (Js *)str_f_new("%ld", n);
 }
 
 Js *js_wd_new(double n, int scale) {
