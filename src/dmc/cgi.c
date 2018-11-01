@@ -357,7 +357,7 @@ static void read_session(
     *con_id_new = js_rs_new(arr_get(row, 3));
 
     arr_set(row, 4, date_to_js_new(
-      date_from_js(arr_get(row, 4)) + date_from_js(arr_get(row, 5))
+      date_now() + date_from_js(arr_get(row, 5))
     ));
     arr_set(sessions, ix, js_wa_new(row));
 
