@@ -8,7 +8,7 @@
 
 void iarr_tests(void) {
   puts("Iarr tests");
-  Iarr *ia = iarr_2_new(1);
+  Iarr *ia = iarr_bf_new(1);
 
   assert(iarr_size(ia) == 0);
   iarr_push(ia, 1);

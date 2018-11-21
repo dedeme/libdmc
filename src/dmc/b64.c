@@ -75,7 +75,7 @@ static Bytes *base64_decode_new(
   if (data[input_length - 1] == '=') (*output_length)--;
   if (data[input_length - 2] == '=') (*output_length)--;
 
-  Bytes *bs = bytes_new2(*output_length);
+  Bytes *bs = bytes_bf_new(*output_length);
   unsigned char *decoded_data = bytes_bs(bs);
 
   for (int i = 0, j = 0; i < input_length;) {
@@ -125,7 +125,7 @@ Bytes *b64_decode_bytes_new(const char *b64) {
     size_t len;
     return base64_decode_new(b64, strlen(b64), &len);
   } else {
-    return bytes_new2(0);
+    return bytes_bf_new(0);
   }
 }
 

@@ -13,10 +13,10 @@ struct bytes_Bytes {
 
 inline
 Bytes *bytes_new() {
-  return bytes_new2(0);
+  return bytes_bf_new(0);
 }
 
-Bytes *bytes_new2(int length) {
+Bytes *bytes_bf_new(int length) {
   Bytes *this = malloc(sizeof(Bytes));
   this->bs = malloc(length);
   this->length = length;

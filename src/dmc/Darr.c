@@ -13,11 +13,11 @@ struct darr_Darr {
 };
 
 Darr *darr_new(void) {
-  return darr_2_new(15);
+  return darr_bf_new(15);
 }
 
 ///
-Darr *darr_2_new(int buffer) {
+Darr *darr_bf_new(int buffer) {
   Darr *this = malloc(sizeof(Darr));
   double *es = malloc(buffer * sizeof(double));
   this->es = es;
@@ -118,7 +118,7 @@ void darr_insert(Darr *this, int ix, double e) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Darr *new = darr_2_new((this->endbf - this->es) + 1);
+  Darr *new = darr_bf_new((this->endbf - this->es) + 1);
   double *p = this->es;
   double *p_end = this->end;
   double *t = new->es;
@@ -151,7 +151,7 @@ void darr_remove(Darr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Darr *new = darr_2_new((this->endbf - this->es) - 1);
+  Darr *new = darr_bf_new((this->endbf - this->es) - 1);
   double *p = this->es;
   double *p_end = this->end;
   double *t = new->es;

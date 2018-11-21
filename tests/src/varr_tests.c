@@ -12,7 +12,7 @@ static int greater(double *e1, double *e2) {
 void varr_tests(void) {
   puts("Varr tests");
   // Varr[double]
-  Varr *ia = varr_2_new(1);
+  Varr *ia = varr_bf_new(1);
 
   double d1 = 1;
   double d2 = 2;

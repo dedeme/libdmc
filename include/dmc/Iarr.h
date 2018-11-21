@@ -13,7 +13,7 @@ typedef struct iarr_Iarr Iarr;
 Iarr *iarr_new(void);
 
 /// buffer must be > 0
-Iarr *iarr_2_new(int buffer);
+Iarr *iarr_bf_new(int buffer);
 
 /// If ix is < 0 then is changed to 'iarr_size - ix'
 Iarr *iarr_left_new(Iarr *this, int ix);

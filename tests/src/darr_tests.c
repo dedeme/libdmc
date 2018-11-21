@@ -7,7 +7,7 @@
 
 void darr_tests(void) {
   puts("Darr tests");
-  Darr *ia = darr_2_new(1);
+  Darr *ia = darr_bf_new(1);
 
   assert(darr_size(ia) == 0);
   darr_push(ia, 1);

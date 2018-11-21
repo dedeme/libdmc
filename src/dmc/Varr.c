@@ -14,11 +14,11 @@ struct varr_Varr {
 };
 
 Varr *varr_new(void) {
-  return varr_2_new(15);
+  return varr_bf_new(15);
 }
 
 ///
-Varr *varr_2_new(int buffer) {
+Varr *varr_bf_new(int buffer) {
   Varr *this = malloc(sizeof(Varr));
   void **es = malloc(buffer * sizeof(double));
   this->es = es;
@@ -107,7 +107,7 @@ void varr_set(Varr *this, int ix, void *e) {
 }
 
 void varr_insert(Varr *this, int ix, void *e) {
-  Varr *new = varr_2_new((this->endbf - this->es) + 1);
+  Varr *new = varr_bf_new((this->endbf - this->es) + 1);
   void **p = this->es;
   void **p_end = this->end;
   void **t = new->es;
@@ -137,7 +137,7 @@ void varr_insert(Varr *this, int ix, void *e) {
 
 ///
 void varr_remove(Varr *this, int ix) {
-  Varr *new = varr_2_new((this->endbf - this->es) - 1);
+  Varr *new = varr_bf_new((this->endbf - this->es) - 1);
   void **p = this->es;
   void **p_end = this->end;
   void **t = new->es;

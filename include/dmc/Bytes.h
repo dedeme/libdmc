@@ -21,7 +21,7 @@ typedef struct bytes_Bytes Bytes;
 Bytes *bytes_new(void);
 
 ///
-Bytes *bytes_new2(int length);
+Bytes *bytes_bf_new(int length);
 
 /// Returns a new allocated 'Bytes' whitch is copy of 'bs'
 Bytes *bytes_from_bytes_new(unsigned char *bs, int length);

@@ -13,7 +13,7 @@ typedef struct darr_Darr Darr;
 Darr *darr_new(void);
 
 /// buffer must be > 0
-Darr *darr_2_new(int buffer);
+Darr *darr_bf_new(int buffer);
 
 /// If ix is < 0 then is changed to 'darr_size - ix'
 Darr *darr_left_new(Darr *this, int ix);

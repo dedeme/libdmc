@@ -51,11 +51,11 @@ void cryp_key (char **key, int lg) {
   }_REPEAT
 
   size_t lg2 = lg + lenk;
-  Bytes *rbs = bytes_new2(lg2);
+  Bytes *rbs = bytes_bf_new(lg2);
   unsigned char *ra = bytes_bs(rbs);
-  Bytes *rbs1 = bytes_new2(lg2);
+  Bytes *rbs1 = bytes_bf_new(lg2);
   unsigned char *ra1 = bytes_bs(rbs1);
-  Bytes *rbs2 = bytes_new2(lg2);
+  Bytes *rbs2 = bytes_bf_new(lg2);
   unsigned char *ra2 = bytes_bs(rbs2);
 
   size_t ik = 0;
@@ -106,7 +106,7 @@ void cryp_cryp (char **s, const char *k) {
   char *k2 = str_new(k);
   cryp_key(&k2, lg);
 
-  Bytes *rbs = bytes_new2(lg);
+  Bytes *rbs = bytes_bf_new(lg);
 
   unsigned char *prbs = bytes_bs(rbs);
   unsigned char *pk2 = (unsigned char *)k2;

@@ -15,7 +15,7 @@ typedef struct varr_Varr Varr;
 Varr *varr_new(void);
 
 /// buffer must be > 0
-Varr *varr_2_new(int buffer);
+Varr *varr_bf_new(int buffer);
 
 ///  Returns elements placed in an index < ix
 Varr *varr_left_new(Varr *this, int ix);

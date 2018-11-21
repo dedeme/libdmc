@@ -13,11 +13,11 @@ struct iarr_Iarr {
 };
 
 Iarr *iarr_new(void) {
-  return iarr_2_new(15);
+  return iarr_bf_new(15);
 }
 
 ///
-Iarr *iarr_2_new(int buffer) {
+Iarr *iarr_bf_new(int buffer) {
   Iarr *this = malloc(sizeof(Iarr));
   int *es = malloc(buffer * sizeof(int));
   this->es = es;
@@ -118,7 +118,7 @@ void iarr_insert(Iarr *this, int ix, int e) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Iarr *new = iarr_2_new((this->endbf - this->es) + 1);
+  Iarr *new = iarr_bf_new((this->endbf - this->es) + 1);
   int *p = this->es;
   int *p_end = this->end;
   int *t = new->es;
@@ -151,7 +151,7 @@ void iarr_remove(Iarr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Iarr *new = iarr_2_new((this->endbf - this->es) - 1);
+  Iarr *new = iarr_bf_new((this->endbf - this->es) - 1);
   int *p = this->es;
   int *p_end = this->end;
   int *t = new->es;

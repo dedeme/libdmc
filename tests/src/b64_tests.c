@@ -27,7 +27,7 @@ void b64_tests(void) {
   free(b64); free(s);
 
   for (int len = 120; len < 130; ++len) {
-    Bytes *bs = bytes_new2(len);
+    Bytes *bs = bytes_bf_new(len);
     unsigned char *bss = bytes_bs(bs);
     for (int i = 0; i < len; ++i) {
       bss[i] = (unsigned char)i +  10;

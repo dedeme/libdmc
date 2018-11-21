@@ -14,7 +14,7 @@
 typedef struct file_FileLck FileLck;
 
 /// file_tmp sets a new file path whose template is:
-/// /tmp/'prefix'/xxxxxxxxxx. Where xxxxxxxxxx is an aleatory sequence of
+/// /tmp/'prefix'xxxxxxxxxx. Where xxxxxxxxxx is an aleatory sequence of
 /// digits.
 void file_tmp (char **prefix);
 
