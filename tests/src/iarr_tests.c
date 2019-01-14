@@ -11,13 +11,30 @@ void iarr_tests(void) {
   Iarr *ia = iarr_bf_new(1);
 
   assert(iarr_size(ia) == 0);
+
+  Js *js = iarr_to_js_new(ia);
+  Iarr *ia2 = iarr_from_js_new(js);
+  free(js);
+  IEACH_IX(ia, n, ix)
+    assert(n == iarr_get(ia2, ix));
+  _EACH
+  iarr_free(ia2);
+
   iarr_push(ia, 1);
   iarr_push(ia, 2);
   assert(iarr_get(ia, 0) == 1);
   assert(iarr_get(ia, 1) == 2);
   assert(iarr_size(ia) == 2);
 
-  Iarr *ia2 = iarr_new();
+  js = iarr_to_js_new(ia);
+  ia2 = iarr_from_js_new(js);
+  free(js);
+  IEACH_IX(ia, n, ix)
+    assert(n == iarr_get(ia2, ix));
+  _EACH
+  iarr_free(ia2);
+
+  ia2 = iarr_new();
   iarr_cat(ia, ia2);
   assert(iarr_get(ia, 0) == 1);
   assert(iarr_get(ia, 1) == 2);

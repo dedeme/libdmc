@@ -6,6 +6,8 @@
 #ifndef DMC_DARR_H
   #define DMC_DARR_H
 
+#include "Js.h"
+
 ///
 typedef struct darr_Darr Darr;
 
@@ -65,5 +67,11 @@ void darr_reverse(Darr *this);
 
 ///
 void darr_sort(Darr *this);
+
+///
+Js *darr_to_js_new(Darr *this);
+
+///
+Darr *darr_from_js_new(Js *js);
 
 #endif

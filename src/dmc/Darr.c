@@ -295,3 +295,36 @@ void darr_sort(Darr *this) {
   }
   sort(this->es, this->end - this->es);
 }
+
+Js *darr_to_js_new(Darr *this) {
+  // Arr[Js]
+  Arr *a = arr_new(free);
+  double *p = this->es;
+  double *end = this->end;
+  while (p < end) {
+    char *str = (char *)js_wd_new(*p++, 9);
+    if (str_cindex(str, '.') != -1) {
+      char *s = str;
+      char *p = s + (strlen(s) - 1);
+      while (p >= s && *p == '0') {
+        --p;
+      }
+      str_left(&str, (p - s) + 1);
+    }
+    arr_push(a, str);
+  }
+  Js *r = js_wa_new(a);
+  arr_free(a);
+  return r;
+}
+
+Darr *darr_from_js_new(Js *js) {
+  Darr *this = darr_new();
+  // Arr[Js]
+  Arr *a = js_ra_new(js);
+  EACH(a, Js, js)
+    darr_push(this, js_rd(js));
+  _EACH
+  arr_free(a);
+  return this;
+}

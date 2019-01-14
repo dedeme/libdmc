@@ -6,6 +6,8 @@
 #ifndef DMC_IARR_H
   #define DMC_IARR_H
 
+#include "Js.h"
+
 ///
 typedef struct iarr_Iarr Iarr;
 
@@ -65,5 +67,11 @@ void iarr_reverse(Iarr *this);
 
 ///
 void iarr_sort(Iarr *this);
+
+///
+Js *iarr_to_js_new(Iarr *this);
+
+///
+Iarr *iarr_from_js_new(Js *js);
 
 #endif

@@ -10,13 +10,30 @@ void darr_tests(void) {
   Darr *ia = darr_bf_new(1);
 
   assert(darr_size(ia) == 0);
-  darr_push(ia, 1);
+
+  Js *js = darr_to_js_new(ia);
+  Darr *ia2 = darr_from_js_new(js);
+  free(js);
+  DEACH_IX(ia, n, ix)
+    assert(n == darr_get(ia2, ix));
+  _EACH
+  darr_free(ia2);
+
+  darr_push(ia, 1.);
   darr_push(ia, 2);
   assert(darr_get(ia, 0) == 1);
   assert(darr_get(ia, 1) == 2);
   assert(darr_size(ia) == 2);
 
-  Darr *ia2 = darr_new();
+  js = darr_to_js_new(ia);
+  ia2 = darr_from_js_new(js);
+  free(js);
+  DEACH_IX(ia, n, ix)
+    assert(n == darr_get(ia2, ix));
+  _EACH
+  darr_free(ia2);
+
+  ia2 = darr_new();
   darr_cat(ia, ia2);
   assert(darr_get(ia, 0) == 1);
   assert(darr_get(ia, 1) == 2);

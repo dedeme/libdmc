@@ -295,3 +295,27 @@ void iarr_sort(Iarr *this) {
   }
   sort(this->es, this->end - this->es);
 }
+
+Js *iarr_to_js_new(Iarr *this) {
+  // Arr[Js]
+  Arr *a = arr_new(free);
+  int *p = this->es;
+  int *end = this->end;
+  while (p < end) {
+    arr_push(a, js_wi_new(*p++));
+  }
+  Js *r = js_wa_new(a);
+  arr_free(a);
+  return r;
+}
+
+Iarr *iarr_from_js_new(Js *js) {
+  Iarr *this = iarr_new();
+  // Arr[Js]
+  Arr *a = js_ra_new(js);
+  EACH(a, Js, js)
+    iarr_push(this, js_ri(js));
+  _EACH
+  arr_free(a);
+  return this;
+}
