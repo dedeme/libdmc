@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 
   iarr_tests();
   darr_tests();
-/*  bytes_tests();
+  bytes_tests();
   varr_tests();
   arr_tests();
   buf_tests();
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
   js_tests();
   dec_tests();
   date_tests();
-  ext_tests();*/
+  ext_tests();
 //  cgi_tests();
 
   sys_end();
