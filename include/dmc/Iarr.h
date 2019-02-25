@@ -27,10 +27,16 @@ Iarr *iarr_right_new(Iarr *this, int ix);
 Iarr *iarr_sub_new(Iarr *this, int begin, int end);
 
 ///
+Iarr *iarr_copy_new(Iarr *this);
+
+///
 void iarr_free(Iarr *this);
 
 ///
 int iarr_size(Iarr *this);
+
+///
+int iarr_eq(Iarr *this, Iarr *other);
 
 /// If ix is < 0 then is changed to 'iarr_size - ix'
 int iarr_get(Iarr *this, int ix);

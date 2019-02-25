@@ -27,7 +27,13 @@ Darr *darr_right_new(Darr *this, int ix);
 Darr *darr_sub_new(Darr *this, int begin, int end);
 
 ///
+Darr *darr_copy_new(Darr *this);
+
+///
 void darr_free(Darr *this);
+
+///
+int darr_eq(Darr *this, Darr *other, double gap);
 
 ///
 int darr_size(Darr *this);

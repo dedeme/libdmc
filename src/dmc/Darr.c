@@ -5,6 +5,7 @@
 #include "string.h"
 
 #include "dmc/std.h"
+#include "dmc/Dec.h"
 
 struct darr_Darr {
   double *es;
@@ -31,12 +32,14 @@ Darr *darr_left_new(Darr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Darr *tmp = malloc(sizeof(Darr));
-  tmp->es = this->es;
-  tmp->end = this->es + ix;
-  Darr *r = darr_new();
-  darr_cat(r, tmp);
-  free(tmp);
+  double *source = this->es;
+  Darr *r = darr_bf_new(ix);
+  double *target = r->es;
+  double *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
+  }
   return r;
 }
 
@@ -45,12 +48,14 @@ Darr *darr_right_new(Darr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Darr *tmp = malloc(sizeof(Darr));
-  tmp->es = this->es + ix;
-  tmp->end = this->end;
-  Darr *r = darr_new();
-  darr_cat(r, tmp);
-  free(tmp);
+  double *source = this->es + ix;
+  Darr *r = darr_bf_new(this->end - source);
+  double *target = r->es;
+  double *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
+  }
   return r;
 }
 
@@ -61,13 +66,25 @@ Darr *darr_sub_new(Darr *this, int begin, int end) {
   if (end < 0) {
     end = (this->end - this->es) + end;
   }
-  Darr *r = darr_new();
-  if (end > begin) {
-    Darr *tmp = malloc(sizeof(Darr));
-    tmp->es = this->es + begin;
-    tmp->end = this->es + end;
-    darr_cat(r, tmp);
-    free(tmp);
+  double *source = this->es + begin;
+  Darr *r = darr_bf_new((this->es + end) - source);
+  double *target = r->es;
+  double *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
+  }
+  return r;
+}
+
+Darr *darr_copy_new(Darr *this) {
+  double *source = this->es;
+  Darr *r = darr_bf_new(this->end - source);
+  double *target = r->es;
+  double *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
   }
   return r;
 }
@@ -79,6 +96,21 @@ void darr_free(Darr *this) {
 
 int darr_size(Darr *this) {
   return this->end - this->es;
+}
+
+int darr_eq(Darr *this, Darr *other, double gap) {
+  double *p1 = this->es;
+  double len = this->end - p1;
+  double *p2 = other->es;
+  if (len == other->end - p2) {
+    REPEAT(len)
+      if (!dec_eq_gap(*p1++, *p2++, gap)) {
+        return 0;
+      }
+    _REPEAT
+    return 1;
+  }
+  return 0;
 }
 
 double darr_get(Darr *this, int ix) {

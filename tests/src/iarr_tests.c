@@ -15,9 +15,23 @@ void iarr_tests(void) {
   Js *js = iarr_to_js_new(ia);
   Iarr *ia2 = iarr_from_js_new(js);
   free(js);
-  IEACH_IX(ia, n, ix)
-    assert(n == iarr_get(ia2, ix));
-  _EACH
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_copy_new(ia);
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_left_new(ia, 0);
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_right_new(ia, 0);
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_sub_new(ia, 0, 0);
+  assert(iarr_eq(ia, ia2));
   iarr_free(ia2);
 
   iarr_push(ia, 1);
@@ -29,9 +43,35 @@ void iarr_tests(void) {
   js = iarr_to_js_new(ia);
   ia2 = iarr_from_js_new(js);
   free(js);
-  IEACH_IX(ia, n, ix)
-    assert(n == iarr_get(ia2, ix));
-  _EACH
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_copy_new(ia);
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_left_new(ia, 1);
+  assert(iarr_get(ia2, 0) == 1);
+  assert(iarr_size(ia2) == 1);
+  iarr_free(ia2);
+
+  ia2 = iarr_right_new(ia, 1);
+  assert(iarr_get(ia2, 0) == 2);
+  assert(iarr_size(ia2) == 1);
+  iarr_free(ia2);
+
+  ia2 = iarr_sub_new(ia, 0, 2);
+  assert(iarr_eq(ia, ia2));
+  iarr_free(ia2);
+
+  ia2 = iarr_sub_new(ia, 0, 1);
+  assert(iarr_get(ia2, 0) == 1);
+  assert(iarr_size(ia2) == 1);
+  iarr_free(ia2);
+
+  ia2 = iarr_sub_new(ia, 1, 2);
+  assert(iarr_get(ia2, 0) == 2);
+  assert(iarr_size(ia2) == 1);
   iarr_free(ia2);
 
   ia2 = iarr_new();

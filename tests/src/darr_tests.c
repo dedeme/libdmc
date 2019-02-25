@@ -14,9 +14,23 @@ void darr_tests(void) {
   Js *js = darr_to_js_new(ia);
   Darr *ia2 = darr_from_js_new(js);
   free(js);
-  DEACH_IX(ia, n, ix)
-    assert(n == darr_get(ia2, ix));
-  _EACH
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_copy_new(ia);
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_left_new(ia, 0);
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_right_new(ia, 0);
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_sub_new(ia, 0, 0);
+  assert(darr_eq(ia, ia2, 0.0001));
   darr_free(ia2);
 
   darr_push(ia, 1.);
@@ -28,9 +42,35 @@ void darr_tests(void) {
   js = darr_to_js_new(ia);
   ia2 = darr_from_js_new(js);
   free(js);
-  DEACH_IX(ia, n, ix)
-    assert(n == darr_get(ia2, ix));
-  _EACH
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_copy_new(ia);
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_left_new(ia, 1);
+  assert(darr_get(ia2, 0) == 1);
+  assert(darr_size(ia2) == 1);
+  darr_free(ia2);
+
+  ia2 = darr_right_new(ia, 1);
+  assert(darr_get(ia2, 0) == 2);
+  assert(darr_size(ia2) == 1);
+  darr_free(ia2);
+
+  ia2 = darr_sub_new(ia, 0, 2);
+  assert(darr_eq(ia, ia2, 0.0001));
+  darr_free(ia2);
+
+  ia2 = darr_sub_new(ia, 0, 1);
+  assert(darr_get(ia2, 0) == 1);
+  assert(darr_size(ia2) == 1);
+  darr_free(ia2);
+
+  ia2 = darr_sub_new(ia, 1, 2);
+  assert(darr_get(ia2, 0) == 2);
+  assert(darr_size(ia2) == 1);
   darr_free(ia2);
 
   ia2 = darr_new();

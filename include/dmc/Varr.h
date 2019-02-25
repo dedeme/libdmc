@@ -72,8 +72,8 @@ void varr_remove_range(Varr *this, int begin, int end);
 /// Reverses elements of 'this'
 void varr_reverse(Varr *this);
 
-/// Sorts 'this' using the function 'greater' that returns 'true' if
-/// 'e1' > 'e2'
+/// Sorts 'this' ascendantly using the function 'greater' that returns 'true'
+/// if 'e1' > 'e2'
 void varr_sort(Varr *this, int (*greater)(void *, void *));
 
 /// varr_shuflle remix 'this' elements. It should be used after calling

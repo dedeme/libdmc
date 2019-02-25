@@ -31,12 +31,14 @@ Iarr *iarr_left_new(Iarr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Iarr *tmp = malloc(sizeof(Iarr));
-  tmp->es = this->es;
-  tmp->end = this->es + ix;
-  Iarr *r = iarr_new();
-  iarr_cat(r, tmp);
-  free(tmp);
+  int *source = this->es;
+  Iarr *r = iarr_bf_new(ix);
+  int *target = r->es;
+  int *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
+  }
   return r;
 }
 
@@ -45,12 +47,14 @@ Iarr *iarr_right_new(Iarr *this, int ix) {
   if (ix < 0) {
     ix = (this->end - this->es) + ix;
   }
-  Iarr *tmp = malloc(sizeof(Iarr));
-  tmp->es = this->es + ix;
-  tmp->end = this->end;
-  Iarr *r = iarr_new();
-  iarr_cat(r, tmp);
-  free(tmp);
+  int *source = this->es + ix;
+  Iarr *r = iarr_bf_new(this->end - source);
+  int *target = r->es;
+  int *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
+  }
   return r;
 }
 
@@ -61,13 +65,25 @@ Iarr *iarr_sub_new(Iarr *this, int begin, int end) {
   if (end < 0) {
     end = (this->end - this->es) + end;
   }
-  Iarr *r = iarr_new();
-  if (end > begin) {
-    Iarr *tmp = malloc(sizeof(Iarr));
-    tmp->es = this->es + begin;
-    tmp->end = this->es + end;
-    iarr_cat(r, tmp);
-    free(tmp);
+  int *source = this->es + begin;
+  Iarr *r = iarr_bf_new((this->es + end) - source);
+  int *target = r->es;
+  int *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
+  }
+  return r;
+}
+
+Iarr *iarr_copy_new(Iarr *this) {
+  int *source = this->es;
+  Iarr *r = iarr_bf_new(this->end - source);
+  int *target = r->es;
+  int *end_target = r->endbf;
+  r->end = end_target;
+  while (target < end_target) {
+    *target++ = *source++;
   }
   return r;
 }
@@ -79,6 +95,21 @@ void iarr_free(Iarr *this) {
 
 int iarr_size(Iarr *this) {
   return this->end - this->es;
+}
+
+int iarr_eq(Iarr *this, Iarr *other) {
+  int *p1 = this->es;
+  int len = this->end - p1;
+  int *p2 = other->es;
+  if (len == other->end - p2) {
+    REPEAT(len)
+      if (*p1++ != *p2++) {
+        return 0;
+      }
+    _REPEAT
+    return 1;
+  }
+  return 0;
 }
 
 int iarr_get(Iarr *this, int ix) {

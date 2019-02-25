@@ -80,7 +80,7 @@ void arr_remove_range(Arr *this, int begin, int end);
 /// Reverses elements of 'this'
 void arr_reverse(Arr *this);
 
-/// Ascendent sort of 'this', using the function 'greater' that returns 'true'
+/// Sorts 'this' ascendantly using the function 'greater' that returns 'true'
 /// if 'e1' > 'e2'
 void arr_sort(Arr *this, int (*greater)(void *e1, void *e2));
 
