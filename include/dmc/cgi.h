@@ -104,7 +104,7 @@ void cgi_empty(void);
 /// cgi_ok send an error response, setting {error:msg}.
 void cgi_error(const char *msg);
 
-/// cgi_expired and expired response, setting {expired:true, error:""}
+/// cgi_expired and expired response, setting {expired:1}
 void cgi_expired(void);
 
 #endif

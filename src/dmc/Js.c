@@ -407,7 +407,9 @@ Js *js_wd_new(double n, int scale) {
   format[2] = '0' + scale;
   char *ns = str_f_new(format, n);
   int ix = str_cindex(ns, *lc->decimal_point);
-  if (ix != -1) {
+  if (ix == strlen(ns - 1)) {
+    str_sub(&ns, 0, -1);
+  } else if (ix != -1) {
     ns[ix] = '.';
   }
   return (Js *)ns;
