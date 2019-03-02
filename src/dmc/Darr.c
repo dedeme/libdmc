@@ -341,7 +341,7 @@ Js *darr_to_js_new(Darr *this) {
       while (p >= s && *p == '0') {
         --p;
       }
-      str_left(&str, p - s);
+      str_left(&str, p - s + *p == '.' ? 0 : 1);
     }
     arr_push(a, str);
   }
