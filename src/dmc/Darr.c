@@ -90,8 +90,10 @@ Darr *darr_copy_new(Darr *this) {
 }
 
 void darr_free(Darr *this) {
-  free(this->es);
-  free(this);
+  if (this) {
+    free(this->es);
+    free(this);
+  }
 }
 
 int darr_size(Darr *this) {

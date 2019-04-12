@@ -62,8 +62,10 @@ Varr *varr_sub_new(Varr *this, int begin, int end) {
 }
 
 void varr_free(Varr *this) {
-  free(this->es);
-  free(this);
+  if (this) {
+    free(this->es);
+    free(this);
+  }
 }
 
 int varr_size(Varr *this) {

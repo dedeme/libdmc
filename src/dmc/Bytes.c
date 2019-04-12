@@ -36,8 +36,10 @@ Bytes *bytes_from_str_new (const char *s) {
 }
 
 void bytes_free(Bytes *this) {
-  free(this->bs);
-  free(this);
+  if (this) {
+    free(this->bs);
+    free(this);
+  }
 }
 
 unsigned char *bytes_bs(Bytes *this) {

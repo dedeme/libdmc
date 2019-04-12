@@ -20,9 +20,11 @@ static Kv *kv_new(const char *key, void *value, void (*ffree)(void *)) {
 }
 
 static void kv_free(Kv *this) {
-  free(this->key);
-  this->ffree(this->value);
-  free(this);
+  if (this) {
+    free(this->key);
+    this->ffree(this->value);
+    free(this);
+  }
 }
 
 static void free_es(void **es, int len, void(*ffree)(void *)) {
@@ -53,8 +55,10 @@ Map *map_new(void (*ffree)(void *)) {
 }
 
 void map_free(Map *this) {
-  free_es(this->es, this->end - this->es, this->ffree);
-  free(this);
+  if (this) {
+    free_es(this->es, this->end - this->es, this->ffree);
+    free(this);
+  }
 }
 
 int map_size(Map *this) {

@@ -25,8 +25,10 @@ Buf *buf_bf_new(int buffer_size) {
 }
 
 void buf_free(Buf *this) {
-  free(this->str);
-  free(this);
+  if (this) {
+    free(this->str);
+    free(this);
+  }
 }
 
 int buf_len(Buf *this) {

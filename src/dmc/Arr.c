@@ -71,8 +71,10 @@ Arr *arr_sub_new(Arr *this, int begin, int end, void *(*copy_new)(void *)) {
 }
 
 void arr_free(Arr *this) {
-  free_es(this->es, this->end - this->es, this->ffree);
-  free(this);
+  if (this) {
+    free_es(this->es, this->end - this->es, this->ffree);
+    free(this);
+  }
 }
 
 int arr_size(Arr *this) {

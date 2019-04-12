@@ -89,8 +89,10 @@ Iarr *iarr_copy_new(Iarr *this) {
 }
 
 void iarr_free(Iarr *this) {
-  free(this->es);
-  free(this);
+  if (this) {
+    free(this->es);
+    free(this);
+  }
 }
 
 int iarr_size(Iarr *this) {
