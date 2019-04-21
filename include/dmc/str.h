@@ -57,38 +57,35 @@ int str_last_cindex(const char *str, char ch);
 /// is missing.
 int str_last_index(const char *str, const char *substr);
 
-/// str_cat is a string concatenation.<br>
+/// str_cat_new is a string concatenation.<br>
 /// Variable argumens must finish with NULL.<br>
 char *str_cat_new(const char *s, ...);
 
-/// str_cat set s1 as 's1 + s2'.
-void str_cat(char **s1, const char *s2);
-
-/// str_sub set str as a substring of itself.<br>
-/// If 'begin' or 'end' are negatives they are subtracted from 'strlen(s)'.
+/// str_sub_new returns a substring of itself.<br>
+/// If 'begin' or 'end' are negatives, they are subtracted from 'strlen(s)'.
 /// <br>
-/// If 'begin' or 'end' are out of bounds function returns "".
-void str_sub(char **str, int begin, int end);
+/// If 'begin' or 'end' are out of bounds, function returns "".
+char *str_sub_new(const char *str, int begin, int end);
 
-/// str_left is equals to str_sub(str, 0, end);
-void str_left(char **str, int end);
+/// str_left_new is equals to str_sub_new(str, 0, end);
+char *str_left_new(const char *str, int end);
 
-/// str_right is equals to str_sub(str, begin, strlen(s))
-void str_right(char **str, int begin);
+/// str_right_new is equals to str_sub_new(str, begin, strlen(s))
+char *str_right_new(const char *str, int begin);
 
-/// str_ltrim sets 'str' as a new string removing spaces (' ', '\\f', '\\n',
+/// str_ltrim_new returns a new string removing spaces (' ', '\\f', '\\n',
 /// '\\r', '\\t' and '\\v') at left.
-void str_ltrim(char **str);
+char *str_ltrim_new(const char *str);
 
-/// str_rtrim sets 'str' as a new string removing spaces (' ', '\\f', '\\n',
+/// str_rtrim_new returns a new string removing spaces (' ', '\\f', '\\n',
 /// '\\r', '\\t' and '\\v') at right.
-void str_rtrim(char **str);
+char *str_rtrim_new(const char *str);
 
-/// str_trim sets 'str' as a new string removing spaces (' ', '\\f',
+/// str_trim_new returns a new string removing spaces (' ', '\\f',
 /// '\\n', '\\r', '\\t' and '\\v') at left and right.
-void str_trim(char **str);
+char *str_trim_new(const char *str);
 
-/// str_csplit splits 'str' in an Arr[char].<br>
+/// str_csplit_new splits 'str' in an Arr[char].<br>
 /// For example (using ';' as separator):
 ///   "" -> []
 ///   ";" -> [""]
@@ -97,7 +94,7 @@ void str_trim(char **str);
 /// Returns an Arr[char]
 Arr *str_csplit_new(const char *str, char sep);
 
-/// str_csplit is similar to <tt>str_csplit</tt> but trimming elements<br>
+/// str_csplit_trim_new is similar to <tt>str_csplit</tt> but trimming elements<br>
 /// Returns an Arr[char]
 Arr *str_csplit_trim_new(const char *str, char sep);
 
@@ -111,7 +108,8 @@ Arr *str_csplit_trim_new(const char *str, char sep);
 /// Returns an Arr[char]
 Arr *str_split_new(const char *str, const char *sep);
 
-/// str_split_trim is similar to <tt>str_split</tt> but trimming elements<br>
+/// str_split_trim_new is similar to <tt>str_split</tt> but trimming
+/// elements<br>
 /// Returns an Arr[char]
 Arr *str_split_trim_new(const char *str, const char *sep);
 
@@ -126,9 +124,9 @@ char *str_join_new(Arr *a, const char *sep);
 /// str_creplace replace 'old' by 'new' in 's'.
 void str_creplace(char **s, char old, char new);
 
-/// str_replace replace 'old' by 'new' in 's'.<br>
+/// str_replace_new replace 'old' by 'new' in 's'.<br>
 /// If 'old' is "", it does nothing.
-void str_replace(char **s, const char *old, const char *new);
+char *str_replace_new(const char *s, const char *old, const char *new);
 
 /// str_vf_new returns a string with format similar to 'vprintf'
 char *str_vf_new(const char *format, va_list args);
@@ -165,34 +163,32 @@ char *str_from_unicode_new_null(unsigned *u);
 /// str_from_iso decodifies a string from ISO-8859-1
 char *str_from_iso_new(const char *s);
 
-/// str_to_upper returns 's' converted to uppercase. It is necessary set
+/// str_to_upper_new returns 's' converted to uppercase. It is necessary set
 /// language previously.
 /// For example:
 ///   sys_locale("es_ES.utf8");
-///   char *s = str_new("cañón");
-///   str_to_upper(&s);
+///   char *s = str_to_upper_new("cañón");
 ///   puts(s);
 ///   free(s);
 /// This function can fail if s is not a valid utf-8 string.
-void str_to_upper (char **s);
+char *str_to_upper_new (const char *s);
 
 /// str_to_lower returns 's' converted to lowercase. It is necessary set
 /// language previously.
 /// For example:
 ///   sys_locale("es_ES.utf8");
-///   char *s = str_new("cañón");
-///   str_to_lower(&s);
+///   char *s = str_to_lower_new("cañón");
 ///   puts(s);
 ///   free(s);
 /// This function can fail if s is not a valid utf-8 string.
-void str_to_lower (char **s);
+char *str_to_lower_new (const char *s);
 
-/// str_to_escape replaces " by \" and \ by \\ and insert the result inside
+/// str_to_escape_new replaces " by \" and \ by \\ and insert the result inside
 /// quotes.
-void str_to_escape (char **s);
+char *str_to_escape_new (const char *s);
 
-/// str_from_escape restores the string escaped with 'escape'. If 's' does not
-/// come from 'escape' the result is indefined.
-void str_from_escape (char **s);
+/// str_from_escape_new restores the string escaped with 'escape'. If 's' does
+/// not come from 'escape' the result is indefined.
+char *str_from_escape_new (const char *s);
 
 #endif

@@ -9,7 +9,9 @@
 void path_name (char **path) {
   int ix = str_last_cindex(*path, '/');
   if (ix != -1) {
-    str_right(path, ix + 1);
+    char *tmp = *path;
+    *path = str_right_new(tmp, ix + 1);
+    free(tmp);
   }
 }
 
@@ -18,7 +20,9 @@ void path_parent (char **path) {
   if (ix == -1) {
     ix = 0;
   }
-  str_left(path, ix);
+  char *tmp = *path;
+  *path = str_left_new(*path, ix);
+  free(tmp);
 }
 
 void path_extension (char **path) {
@@ -27,14 +31,18 @@ void path_extension (char **path) {
   if (ix == -1) {
     ix = strlen(*path);
   }
-  str_right(path, ix);
+  char *tmp = *path;
+  *path = str_right_new(tmp, ix);
+  free(tmp);
 }
 
 void path_only_name (char **path) {
   path_name(path);
   int ix = str_last_cindex(*path, '.');
   if (ix != -1) {
-    str_left(path, ix);
+    char *tmp = *path;
+    *path = str_left_new(tmp, ix);
+    free(tmp);
   }
 }
 

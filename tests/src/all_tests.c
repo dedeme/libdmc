@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   dec_tests();
   date_tests();
   ext_tests();
-//  cgi_tests();
+  cgi_tests();
 
   sys_end();
 }

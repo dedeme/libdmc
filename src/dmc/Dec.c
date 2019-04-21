@@ -45,7 +45,9 @@ char *dec_to_str_new(Dec *this) {
   free(scale);
   free(tpl);
   if (*r == '-' && dec_eq(n, 0.0)) {
-    str_right(&r, 1);
+    char *tmp = r;
+    r = str_right_new(tmp, 1);
+    free(tmp);
   }
   return r;
 }
@@ -77,12 +79,16 @@ int dec_digits(const char *s) {
 }
 
 void dec_regularize_iso(char **s) {
-  str_replace(s, ".", "");
+  char *tmp = *s;
+  *s = str_replace_new(tmp, ".", "");
+  free(tmp);
   str_creplace(s, ',', '.');
 }
 
 void dec_regularize_us(char **s) {
-  str_replace(s, ",", "");
+  char *tmp = *s;
+  *s = str_replace_new(tmp, ",", "");
+  free(tmp);
 }
 
 int dec_number(const char *s) {

@@ -168,18 +168,8 @@ char *str_cat_new(const char *s, ...) {
   return r;
 }
 
-void str_cat(char **s1, const char *s2) {
-  char *s = *s1;
-  int len1 = strlen(s);
-  char *r = malloc(len1 + strlen(s2) + 1);
-  strcpy(r, s);
-  strcpy(r + len1, s2);
-  free(*s1);
-  *s1 = r;
-}
-
-void str_sub(char **str, int begin, int end) {
-  int l = strlen(*str);
+char *str_sub_new(const char *str, int begin, int end) {
+  int l = strlen(str);
   int df = -1;
   if (begin < 0) {
     begin = l + begin;
@@ -194,46 +184,40 @@ void str_sub(char **str, int begin, int end) {
 
   char *r;
   if (df < 0) {
-    free(*str);
-    *str = malloc(1);
-    **str = 0;
-    return;
+    char *r = malloc(1);
+    *r = 0;
+    return r;
   }
   r = malloc(df + 1);
   r[df] = 0;
-  memcpy(r, (*str) + begin, df);
-  free(*str);
-  *str = r;
+  memcpy(r, str + begin, df);
+  return r;
 }
 
-void str_left(char **str, int end) {
-  str_sub(str, 0, end);
+char *str_left_new(const char *str, int end) {
+  return str_sub_new(str, 0, end);
 }
 
-void str_right(char **str, int begin) {
-  str_sub(str, begin, strlen(*str));
+char *str_right_new(const char *str, int begin) {
+  return str_sub_new(str, begin, strlen(str));
 }
 
-void str_ltrim(char **str) {
-  char *p = *str;
-  while (isspace(*p)) ++p;
-  char *r = str_new(p);
-  free(*str);
-  *str = r;
+char *str_ltrim_new(const char *str) {
+  while (isspace(*str)) ++str;
+  return str_new(str);
 }
 
-void str_rtrim(char **str) {
-  char *s = *str;
-  char *p = s + (strlen(s) - 1);
-  while (p >= s && isspace(*p)) {
+char *str_rtrim_new(const char *str) {
+  const char *p = str + (strlen(str) - 1);
+  while (p >= str && isspace(*p)) {
     --p;
   }
-  str_left(str, (p - s) + 1);
+  return str_left_new(str, (p - str) + 1);
 }
 
-void str_trim(char **str) {
-  str_rtrim(str);
-  str_ltrim(str);
+char *str_trim_new(const char *str) {
+  while (isspace(*str)) ++str;
+  return str_rtrim_new(str);
 }
 
 Arr *str_csplit_new(const char *s, char sep) {
@@ -255,8 +239,11 @@ Arr *str_csplit_trim_new(const char *str, char sep) {
   Arr *r = str_csplit_new(str, sep);
   char **p = (char **)arr_start(r);
   char **p_end = (char **)arr_end(r);
+  char *tmp;
   while (p < p_end) {
-    str_trim(p++);
+    tmp = *p;
+    *p++ = str_trim_new(tmp);
+    free(tmp);
   }
   return r;
 }
@@ -285,8 +272,11 @@ Arr *str_split_trim_new(const char *str, const char *sep) {
   Arr *r = str_split_new(str, sep);
   char **p = (char **)arr_start(r);
   char **p_end = (char **)arr_end(r);
+  char *tmp;
   while (p < p_end) {
-    str_trim(p++);
+    tmp = *p;
+    *p++ = str_trim_new(tmp);
+    free(tmp);
   }
   return r;
 }
@@ -332,12 +322,11 @@ void str_creplace(char **s, char old, char new) {
   }
 }
 
-void str_replace(char **str, const char *old, const char *new) {
-  if (!*old) return;
+char *str_replace_new(const char *s, const char *old, const char *new) {
+  if (!*old) return str_new(s);
 
   Buf *bf = buf_new();
   int len = strlen(old);
-  char *s = *str;
   int i = str_index(s, old);
   while (i != -1) {
     buf_add_buf(bf, s, i);
@@ -348,8 +337,7 @@ void str_replace(char **str, const char *old, const char *new) {
   buf_add_buf(bf, s, strlen(s));
   char *r = buf_to_str_new(bf);
   buf_free(bf);
-  free(*str);
-  *str = r;
+  return r;
 }
 
 char *str_vf_new(const char *format, va_list args) {
@@ -548,8 +536,8 @@ char *str_from_iso_new(const char *s) {
   return r;
 }
 
-void str_to_upper(char **s) {
-  unsigned *ws = str_to_unicode_new_null(*s);
+char *str_to_upper_new (const char *s) {
+  unsigned *ws = str_to_unicode_new_null(s);
   if (!ws) {
     FAIL("str_to_upper: 's' is not a valid utf8 string")
   }
@@ -565,12 +553,11 @@ void str_to_upper(char **s) {
   if (!r) {
     FAIL("str_to_upper: 'ws' is not a valid unicode string")
   }
-  free(*s);
-  *s = r;
+  return r;
 }
 
-void str_to_lower(char **s) {
-  unsigned *ws = str_to_unicode_new_null(*s);
+char *str_to_lower_new (const char *s) {
+  unsigned *ws = str_to_unicode_new_null(s);
   if (!ws) {
     FAIL("str_to_lower: 's' is not a valid utf8 string")
   }
@@ -586,14 +573,12 @@ void str_to_lower(char **s) {
   if (!r) {
     FAIL("str_to_lower: 'ws' is not a valid unicode string")
   }
-  free(*s);
-  *s = r;
+  return r;
 }
 
-void str_to_escape(char **str) {
+char *str_to_escape_new (const char *s) {
   Buf *bf = buf_new();
   buf_cadd(bf, '"');
-  char *s = *str;
   while (*s) {
     char ch = *s++;
     if (ch == '"' || ch == '\\') {
@@ -602,19 +587,18 @@ void str_to_escape(char **str) {
     buf_cadd(bf, ch);
   }
   buf_cadd(bf, '"');
-  free(*str);
-  *str = buf_to_str_new(bf);
+
+  char *r = buf_to_str_new(bf);
   buf_free(bf);
+  return r;
 }
 
-void str_from_escape(char **str) {
-  char *s = *str;
+char *str_from_escape_new (const char *s) {
   int len = strlen(s);
   if (len < 2) {
-    return;
+    return str_new(s);
   }
 
-  s[len - 1] = 0;
   ++s;
   Buf *bf = buf_new();
   while (*s) {
@@ -626,7 +610,7 @@ void str_from_escape(char **str) {
     }
   }
 
-  free(*str);
-  *str = buf_to_str_new(bf);
+  char *r = str_left_new(buf_str(bf), buf_len(bf) - 1);
   buf_free(bf);
+  return r;
 }

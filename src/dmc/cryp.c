@@ -85,7 +85,9 @@ void cryp_key (char **key, int lg) {
   }
 
   char *r = b64_encode_bytes_new(rbs);
-  str_left(&r, lg);
+  char *tmp = r;
+  r = str_left_new(tmp, lg);
+  free(tmp);
   free(*key);
   *key = r;
 
@@ -170,7 +172,9 @@ void cryp_auto_decryp (char **b64) {
   Buf *bf = buf_new();
   buf_add_buf(bf, s + 1, nk);
   char *key = buf_to_str_new(bf);
-  str_right(b64, nk + 1);
+  char *tmp = *b64;
+  *b64 = str_right_new(tmp, nk + 1);
+  free(tmp);
   cryp_decryp(b64, key);
 
   buf_free(bf);
