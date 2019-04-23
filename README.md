@@ -35,7 +35,7 @@ make
 ### Create a 'test.c' file
 
 ```c
-// Contents of file cv.c
+// Contents of file test.c
 
 #include "dmc/std.h"
 
