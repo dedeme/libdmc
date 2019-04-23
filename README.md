@@ -56,7 +56,6 @@ void main () {
 ```sh
 gcc test.c -o test -I./include -L./lib -ldmc -lgc
 ./test
-make
 ```
 And console will show:
 
