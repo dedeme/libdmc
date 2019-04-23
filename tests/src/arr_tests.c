@@ -10,7 +10,7 @@ static int greater(double *e1, double *e2) {
 }
 
 static double *double_new(double n) {
-  double *this = malloc(sizeof(double));
+  double *this = ATOMIC(sizeof(double));
   *this = n;
   return this;
 }
@@ -22,7 +22,7 @@ static double *double_copy_new(double *n) {
 void arr_tests(void) {
   puts("Arr tests");
   // Arr[double]
-  Arr *ia = arr_bf_new(1, free);
+  Arr *ia = arr_bf_new(1);
 
   assert(arr_size(ia) == 0);
   arr_push(ia, double_new(1));
@@ -32,7 +32,7 @@ void arr_tests(void) {
   assert(arr_size(ia) == 2);
 
   // Arr[double]
-  Arr *ia2 = arr_new(free);
+  Arr *ia2 = arr_new();
   arr_cat(ia, ia2, (FCOPY) double_copy_new);
   assert(*(double *)arr_get(ia, 0) == 1);
   assert(*(double *)arr_get(ia, 1) == 2);
@@ -57,12 +57,11 @@ void arr_tests(void) {
   double **p_end = (double **)arr_end(ia);
   while(p < p_end) {
     double *tmp = double_new(**p * 2);
-    free(*p);
     *p = tmp;
     ++p;
   }
 
-  double *sum = malloc(sizeof(double));
+  double *sum = ATOMIC(sizeof(double));
   *sum = 0;
   EACH(ia, double, n)
     *sum += *n;
@@ -95,7 +94,7 @@ void arr_tests(void) {
   assert(*sum = 511);
 
   arr_remove_range(ia, 5, 8);
-  arr_sort(ia, (FGREATER) greater);
+  arr_sort(ia, (FCMP) greater);
   arr_reverse(ia);
 
   assert(arr_size(ia) == 5);
@@ -106,34 +105,28 @@ void arr_tests(void) {
   assert(*(double *)arr_get(ia, 4) == 1);
 
   Js *double_to_js_new(double *d) {
-    return js_wd_new(*d, 0);
+    return js_wd(*d, 0);
   }
   double *double_from_js_new(Js *js) {
     double *this = malloc(sizeof(double));
     *this = js_rd(js);
     return this;
   }
-  Js *js = arr_to_js_new(ia, (FTO)double_to_js_new);
+  Js *js = arr_to_js(ia, (FTO)double_to_js_new);
   // Arr[double]
-  Arr *ia3 = arr_from_js_new(js, (FFROM)double_from_js_new, free);
+  Arr *ia3 = arr_from_js(js, (FFROM)double_from_js_new);
   assert(arr_size(ia3) == 5);
   assert(*(double *)arr_get(ia3, 0) == 101);
   assert(*(double *)arr_get(ia3, 1) == 101);
   assert(*(double *)arr_get(ia3, 2) == 3);
   assert(*(double *)arr_get(ia3, 3) == 2);
   assert(*(double *)arr_get(ia3, 4) == 1);
-  free(js);
-  arr_free(ia3);
 
 
-  arr_free(ia);
-  ia = arr_new(free);
-  arr_sort(ia, (FGREATER) greater);
+  ia = arr_new();
+  arr_sort(ia, (FCMP) greater);
   arr_reverse(ia);
   assert(arr_size(ia) == 0);
 
-  free(sum);
-  arr_free(ia2);
-  arr_free(ia);
   puts("    Finished");
 }

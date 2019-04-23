@@ -5,94 +5,59 @@
 
 #include "dmc/std.h"
 
-struct map_Kv {
-  char *key;
-  void *value;
-  void (*ffree)(void *);
-};
-
-static Kv *kv_new(const char *key, void *value, void (*ffree)(void *)) {
-  Kv *this = malloc(sizeof(Kv));
-  this->key = str_new(key);
-  this->value = value;
-  this->ffree = ffree;
-  return this;
-}
-
-static void kv_free(Kv *this) {
-  if (this) {
-    free(this->key);
-    this->ffree(this->value);
-    free(this);
-  }
-}
-
-static void free_es(void **es, int len, void(*ffree)(void *)) {
-  void **p = es;
-  REPEAT(len)
-    ffree(*p++);
-  _REPEAT
-  free(es);
-}
-
 struct map_Map {
   void **es;
   void **end;
   void **endbf;
-  void (*ffree)(void *);
-  void (*vfree)(void *);
 };
 
-Map *map_new(void (*ffree)(void *)) {
-  Map *this = malloc(sizeof(Map));
-  void **es = malloc(15 * sizeof(void *));
+Map *map_new(void) {
+  Map *this = MALLOC(Map);
+  void **es = GC_MALLOC(15 * sizeof(void *));
   this->es = es;
   this->end = es;
   this->endbf = es + 15;
-  this->ffree = (FPROC)kv_free;
-  this->vfree = ffree;
   return this;
-}
-
-void map_free(Map *this) {
-  if (this) {
-    free_es(this->es, this->end - this->es, this->ffree);
-    free(this);
-  }
 }
 
 int map_size(Map *this) {
   return arr_size((Arr *) this);
 }
 
-void map_put(Map *this, const char *key, void *value) {
+void map_put(Map *this, char *key, void *value) {
   int no_added = 1;
-  EACH(this, Kv, e)
-    if (str_eq(e->key, key)) {
-      this->vfree(e->value);
-      e->value = value;
+  EACH_IX(this, Kv, e, i)
+    if (str_eq(kv_key(e), key)) {
+      this->es[i] = kv_new(key, value);
       no_added = 0;
       break;
     }
   _EACH
   if (no_added) {
-    arr_push((Arr *)this, kv_new(key, value, this->vfree));
+    arr_push((Arr *)this, kv_new(key, value));
   }
 }
 
-void *map_get_null(Map *this, const char *key) {
+int map_has_key(Map *this, char *key) {
   EACH(this, Kv, e)
-    if (str_eq(e->key, key)) {
-      return e->value;
-    }
+    if (str_eq(kv_key(e), key)) return 1;
   _EACH
-  return NULL;
+  return 0;
 }
 
-void map_remove(Map *this, const char *key) {
+Opt *map_get(Map *this, char *key) {
+  EACH(this, Kv, e)
+    if (str_eq(kv_key(e), key)) {
+      return opt_new(kv_value(e));
+    }
+  _EACH
+  return opt_empty();
+}
+
+void map_remove(Map *this, char *key) {
   int ix = -1;
   EACH_IX(this, Kv, e, i)
-    if (str_eq(e->key, key)) {
+    if (str_eq(kv_key(e), key)) {
       ix = i;
       break;
     }
@@ -102,12 +67,12 @@ void map_remove(Map *this, const char *key) {
   }
 }
 
-// Varr[char]
-Varr *map_keys_new(Map *this) {
-  // Varr[char]
-  Varr *r = varr_new();
+// Arr[char]
+Arr *map_keys(Map *this) {
+  // Arr[char]
+  Arr *r = arr_new();
   EACH(this, Kv, e)
-    varr_push(r, e->key);
+    arr_push(r, kv_key(e));
   _EACH
   return r;
 }
@@ -116,66 +81,56 @@ Arr *map_kvs(Map *this) {
   return (Arr *)this;
 }
 
-char *map_key(Kv *entry) {
-  return entry->key;
-}
-
-void *map_value(Kv *entry) {
-  return entry->value;
-}
-
 void map_sort(Map *this) {
   int greater(Kv *e1, Kv *e2) {
-    return str_greater(e1->key, e2->key);
+    return str_greater(kv_key(e1), kv_key(e2));
   }
-  varr_sort((Varr *)this, (FGREATER) greater);
+  arr_sort((Arr *)this, (FCMP) greater);
 }
 
 void map_sort_locale(Map *this) {
   int greater(Kv *e1, Kv *e2) {
-    return str_greater_locale(e1->key, e2->key);
+    return str_greater_locale(kv_key(e1), kv_key(e2));
   }
-  varr_sort((Varr *)this, (FGREATER) greater);
+  arr_sort((Arr *)this, (FCMP) greater);
 }
 
-Js *map_to_js_new(Map *this, Js *(*to_new)(void *e)) {
+It *map_to_it(Map *this) {
+  return arr_to_it((Arr *) this);
+}
+
+Map *map_from_it(It *it) {
+  return (Map *)arr_from_it(it);
+}
+
+Js *map_to_js(Map *this, Js *(*to)(void *e)) {
   // Arr[Js]
-  Arr *a = arr_new(free);
+  Arr *a = arr_new();
   Kv **p = (Kv **)this->es;
   Kv **end = (Kv **)this->end;
   while (p < end) {
     Kv *kv = *p++;
     // Arr[Js]
-    Arr *akv = arr_new(free);
-    arr_push(akv, js_ws_new(kv->key));
-    arr_push(akv, to_new(kv->value));
-    arr_push(a, js_wa_new(akv));
-    arr_free(akv);
+    Arr *akv = arr_new();
+    arr_push(akv, js_ws(kv_key(kv)));
+    arr_push(akv, to(kv_value(kv)));
+    arr_push(a, js_wa(akv));
   }
-  Js *r = js_wa_new(a);
-  arr_free(a);
-  return r;
+  return js_wa(a);
 }
 
-Map *map_from_js_new(
-  Js *js,
-  void *(*from_new)(Js *jse),
-  void (*ffree)(void *e)
-) {
-  Map *this = map_new(ffree);
+Map *map_from_js(Js *js, void *(*from)(Js *jse)) {
+  Arr *this = arr_new();
   // Arr[Js]
-  Arr *a = js_ra_new(js);
+  Arr *a = js_ra(js);
   Js **p = (Js **)arr_start(a);
   Js **end = (Js **)arr_end(a);
   while (p < end) {
     // Arr[Js]
-    Arr *akv = js_ra_new(*p++);
-    char *key = js_rs_new(arr_get(akv, 0));
-    void *value = from_new(arr_get(akv, 1));
-    map_put(this, key, value);
-    free(key);
-    arr_free(akv);
+    Arr *akv = js_ra(*p++);
+    char *key = js_rs(arr_get(akv, 0));
+    void *value = from(arr_get(akv, 1));
+    arr_push(this, kv_new(key, value));
   }
-  arr_free(a);
-  return this;
+  return (Map *)this;
 }

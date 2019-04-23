@@ -13,10 +13,10 @@ void rnd_tests(void) {
   assert(rnd_i(3) < 3);
   assert(rnd_i(3) >= 0);
 
-  Varr *a = varr_new();
-  varr_push(a, "0");
-  varr_push(a, "1");
-  varr_push(a, "2");
+  Arr *a = arr_new();
+  arr_push(a, "0");
+  arr_push(a, "1");
+  arr_push(a, "2");
 
   Box *box = rnd_box_new(a);
   REPEAT(7)
@@ -24,9 +24,6 @@ void rnd_tests(void) {
 //    puts(s);
     assert(str_eq(s, "0") ||str_eq(s, "1") || str_eq(s, "2"));
   _REPEAT
-
-  varr_free(a);
-  rnd_box_free(box);
 
   puts("    Finished");
 }

@@ -11,27 +11,21 @@ void darr_tests(void) {
 
   assert(darr_size(ia) == 0);
 
-  Js *js = darr_to_js_new(ia);
-  Darr *ia2 = darr_from_js_new(js);
-  free(js);
+  Js *js = darr_to_js(ia);
+  Darr *ia2 = darr_from_js(js);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_copy_new(ia);
+  ia2 = darr_copy(ia);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_left_new(ia, 0);
+  ia2 = darr_left(ia, 0);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_right_new(ia, 0);
+  ia2 = darr_right(ia, 0);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_sub_new(ia, 0, 0);
+  ia2 = darr_sub(ia, 0, 0);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
   darr_push(ia, 1.);
   darr_push(ia, 2);
@@ -39,39 +33,31 @@ void darr_tests(void) {
   assert(darr_get(ia, 1) == 2);
   assert(darr_size(ia) == 2);
 
-  js = darr_to_js_new(ia);
-  ia2 = darr_from_js_new(js);
-  free(js);
+  js = darr_to_js(ia);
+  ia2 = darr_from_js(js);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_copy_new(ia);
+  ia2 = darr_copy(ia);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_left_new(ia, 1);
+  ia2 = darr_left(ia, 1);
   assert(darr_get(ia2, 0) == 1);
   assert(darr_size(ia2) == 1);
-  darr_free(ia2);
 
-  ia2 = darr_right_new(ia, 1);
+  ia2 = darr_right(ia, 1);
   assert(darr_get(ia2, 0) == 2);
   assert(darr_size(ia2) == 1);
-  darr_free(ia2);
 
-  ia2 = darr_sub_new(ia, 0, 2);
+  ia2 = darr_sub(ia, 0, 2);
   assert(darr_eq(ia, ia2, 0.0001));
-  darr_free(ia2);
 
-  ia2 = darr_sub_new(ia, 0, 1);
+  ia2 = darr_sub(ia, 0, 1);
   assert(darr_get(ia2, 0) == 1);
   assert(darr_size(ia2) == 1);
-  darr_free(ia2);
 
-  ia2 = darr_sub_new(ia, 1, 2);
+  ia2 = darr_sub(ia, 1, 2);
   assert(darr_get(ia2, 0) == 2);
   assert(darr_size(ia2) == 1);
-  darr_free(ia2);
 
   ia2 = darr_new();
   darr_cat(ia, ia2);
@@ -143,19 +129,16 @@ void darr_tests(void) {
   assert(darr_get(ia, 3) == 2);
   assert(darr_get(ia, 4) == 1);
 
-  assert(darr_get(ia, -1) == 1);
-  assert(darr_get(ia, -2) == 2);
-  assert(darr_get(ia, -3) == 3);
-  assert(darr_get(ia, -4) == 101);
-  assert(darr_get(ia, -5) == 101);
+  assert(darr_get(ia, darr_size(ia) - 1) == 1);
+  assert(darr_get(ia, darr_size(ia) - 2) == 2);
+  assert(darr_get(ia, darr_size(ia) - 3) == 3);
+  assert(darr_get(ia, darr_size(ia) - 4) == 101);
+  assert(darr_get(ia, darr_size(ia) - 5) == 101);
 
-  darr_free(ia);
   ia = darr_new();
   darr_sort(ia);
   darr_reverse(ia);
   assert(darr_size(ia) == 0);
 
-  darr_free(ia2);
-  darr_free(ia);
   puts("    Finished");
 }

@@ -6,47 +6,41 @@
 #include "dmc/str.h"
 #include "dmc/Buf.h"
 
-void path_name (char **path) {
-  int ix = str_last_cindex(*path, '/');
+char *path_name (char *path) {
+  int ix = str_last_cindex(path, '/');
   if (ix != -1) {
-    char *tmp = *path;
-    *path = str_right_new(tmp, ix + 1);
-    free(tmp);
+    return str_right(path, ix + 1);
   }
+  return path;
 }
 
-void path_parent (char **path) {
-  int ix = str_last_cindex(*path, '/');
+char *path_parent (char *path) {
+  int ix = str_last_cindex(path, '/');
   if (ix == -1) {
     ix = 0;
   }
-  char *tmp = *path;
-  *path = str_left_new(*path, ix);
-  free(tmp);
+  return str_left(path, ix);
 }
 
-void path_extension (char **path) {
-  path_name(path);
-  int ix = str_last_cindex(*path, '.');
+char *path_extension (char *path) {
+  path = path_name(path);
+  int ix = str_last_cindex(path, '.');
   if (ix == -1) {
-    ix = strlen(*path);
+    ix = strlen(path);
   }
-  char *tmp = *path;
-  *path = str_right_new(tmp, ix);
-  free(tmp);
+  return str_right(path, ix);
 }
 
-void path_only_name (char **path) {
-  path_name(path);
-  int ix = str_last_cindex(*path, '.');
+char *path_only_name (char *path) {
+  path = path_name(path);
+  int ix = str_last_cindex(path, '.');
   if (ix != -1) {
-    char *tmp = *path;
-    *path = str_left_new(tmp, ix);
-    free(tmp);
+    return str_left(path, ix);
   }
+  return path;
 }
 
-char *path_cat_new (const char *s, const char *more, ...) {
+char *path_cat (char *s, char *more, ...) {
   va_list args;
   char *tmp;
 
@@ -68,7 +62,5 @@ char *path_cat_new (const char *s, const char *more, ...) {
   }
   va_end(args);
 
-  char *r = buf_to_str_new(bf);
-  buf_free(bf);
-  return r;
+  return buf_to_str(bf);
 }

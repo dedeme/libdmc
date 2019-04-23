@@ -20,7 +20,7 @@ time_t date_now() {
   return time(NULL);
 }
 
-time_t date_from_str(const char *date) {
+time_t date_from_str(char *date) {
   char tpl[5];
   memset (tpl, 0, 5);
   memcpy(tpl, date + 6, 2);
@@ -32,11 +32,11 @@ time_t date_from_str(const char *date) {
   return date_new(d, m, y);
 }
 
-time_t date_from_iso(const char *date) {
+time_t date_from_iso(char *date) {
   return date_from_iso_sep(date, '/');
 }
 
-time_t date_from_us(const char *date) {
+time_t date_from_us(char *date) {
   return date_from_us_sep(date, '/');
 }
 
@@ -51,31 +51,27 @@ static time_t _date_from_sep (char *d, char *m, char *y) {
   return date_new(atoi(d), atoi(m), year);
 }
 
-time_t date_from_iso_sep (const char *date, char sep) {
+time_t date_from_iso_sep (char *date, char sep) {
   // Arr[char]
-  Arr *parts = str_csplit_new(date, sep);
+  Arr *parts = str_csplit(date, sep);
   if (arr_size(parts) != 3) {
-    arr_free(parts);
     return 0;
   }
   time_t r = _date_from_sep(
     arr_get(parts, 0), arr_get(parts, 1), arr_get(parts, 2)
   );
-  arr_free(parts);
   return r;
 }
 
-time_t date_from_us_sep (const char *date, char sep) {
+time_t date_from_us_sep (char *date, char sep) {
   // Arr[char]
-  Arr *parts = str_csplit_new(date, sep);
+  Arr *parts = str_csplit(date, sep);
   if (arr_size(parts) != 3) {
-    arr_free(parts);
     return 0;
   }
   time_t r = _date_from_sep(
     arr_get(parts, 1), arr_get(parts, 0), arr_get(parts, 2)
   );
-  arr_free(parts);
   return r;
 }
 
@@ -108,37 +104,37 @@ int date_year(time_t this) {
   return localtime(&this)->tm_year + 1900;
 }
 
-char *date_f_new(time_t this, const char *template) {
+char *date_f(time_t this, char *template) {
   char *s, *rs;
   struct tm *t = localtime(&this);
   int size = 126;
   while (1) {
-    rs = (char *)calloc(size, 1);
+    rs = (char *)calloc(size, 1); // calloc ok
     if (strftime (rs, size, template, t)) {
       s = str_new(rs);
-      free(rs);
+      free(rs); // free ok
       break;
     }
-    free(rs);
+    free(rs); // free ok
     size += size;
   }
   return s;
 }
 
-char *date_to_str_new(time_t this) {
-  return date_f_new(this, "%Y%m%d");
+char *date_to_str(time_t this) {
+  return date_f(this, "%Y%m%d");
 }
 
-char *date_to_iso_new(time_t this) {
-  return date_f_new(this, "%d/%m/%Y");
+char *date_to_iso(time_t this) {
+  return date_f(this, "%d/%m/%Y");
 }
 
-char *date_to_us_new(time_t this) {
-  return date_f_new(this, "%m/%d/%Y");
+char *date_to_us(time_t this) {
+  return date_f(this, "%m/%d/%Y");
 }
 
-Js *date_to_js_new(time_t this) {
-  return (Js *)js_wl_new(this);
+Js *date_to_js(time_t this) {
+  return (Js *)js_wl(this);
 }
 
 time_t date_from_js(Js *js) {

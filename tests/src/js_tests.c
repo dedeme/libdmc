@@ -15,21 +15,18 @@ void js_tests(void) {
   assert(js_is_null((Js*)"  null   "));
   assert(!js_is_null((Js*)""));
   assert(!js_is_null((Js*)"nuln"));
-  s = js_wn_new();
+  s = js_wn();
   assert(str_eq((char *)s, "null"));
-  free(s);
   assert(js_rb((Js*)" true "));
   assert(js_rb((Js*)" false") == 0);
 
 //  js_rb((Js*)"true and"); // error
 //  js_rb((Js*)"xx"); // error
 
-  s = js_wb_new(1);
+  s = js_wb(1);
   assert(js_rb(s));
-  free(s);
-  s = js_wb_new(0);
+  s = js_wb(0);
   assert(!js_rb(s));
-  free(s);
 
   assert(js_ri((Js*)" 0 ") == 0);
   assert(js_rd((Js*)" 0.23 ") == 0.23);
@@ -44,101 +41,79 @@ void js_tests(void) {
 //  js_rd((Js*)" .12"); // error
 //  js_rd((Js*)" z.12"); // error
 
-  s = js_wi_new(0);
+  s = js_wi(0);
   assert(js_ri(s) == 0);
-  free(s);
-  s = js_wi_new(254);
+  s = js_wi(254);
   assert(js_ri(s) == 254);
-  free(s);
-  s = js_wi_new(-1100);
+  s = js_wi(-1100);
   assert(js_ri(s) == -1100);
-  free(s);
-  s = js_wd_new(0.0, 5);
+  s = js_wd(0.0, 5);
   assert(js_rd(s) == 0);
-  free(s);
-  s = js_wd_new(-0.0, 0);
+  s = js_wd(-0.0, 0);
   assert(js_rd(s) == 0);
-  free(s);
-  s = js_wd_new(-.0, 2);
+  s = js_wd(-.0, 2);
   assert(js_rd(s) == 0);
-  free(s);
-  s = js_wd_new(1.045, 3);
+  s = js_wd(1.045, 3);
   assert(js_rd(s) == 1.045);
-  free(s);
-  s = js_wd_new(-21.045, 3);
+  s = js_wd(-21.045, 3);
   assert(js_rd(s) == -21.045);
-  free(s);
-  s = js_wd_new(-21.045, 2);
+  s = js_wd(-21.045, 2);
   assert(js_rd(s) == -21.05);
-  free(s);
 
-  str = js_rs_new((Js*)"  \"\" ");
+  str = js_rs((Js*)"  \"\" ");
   assert(str_eq("", str));
-  free(str);
-  str = js_rs_new((Js*)"  \"a\\u0030\" ");
+  str = js_rs((Js*)"  \"a\\u0030\" ");
   assert(str_eq("a0", str));
-  free(str);
-  str = js_rs_new((Js*)"  \"a\\t\\n\\\"\" ");
+  str = js_rs((Js*)"  \"a\\t\\n\\\"\" ");
   assert(str_eq("a\t\n\"", str));
-  free(str);
 
-//  js_rs_new((Js*)" \""); // Error
-//  js_rs_new((Js*)" \"a\" l"); // Error
-//  js_rs_new((Js*)" \" \\ \" "); // Error
-//  js_rs_new((Js*)" \" \\@ \" "); // Error
-//  js_rs_new((Js*)" \" \\u30 \" "); // Error
+//  js_rs((Js*)" \""); // Error
+//  js_rs((Js*)" \"a\" l"); // Error
+//  js_rs((Js*)" \" \\ \" "); // Error
+//  js_rs((Js*)" \" \\@ \" "); // Error
+//  js_rs((Js*)" \" \\u30 \" "); // Error
 
   // Arr[Js]
   Arr *a, *a2;
-  a = js_ra_new((Js*)"[]");
+  a = js_ra((Js*)"[]");
   assert(arr_size(a) == 0);
-  arr_free(a);
-  a = js_ra_new((Js*)"[123]");
+  a = js_ra((Js*)"[123]");
   assert(arr_size(a) == 1);
   double rsd = js_rd(arr_get(a, 0));
   assert(rsd == 123);
-  arr_free(a);
-  a = js_ra_new((Js*)"[-123.56, true]");
+  a = js_ra((Js*)"[-123.56, true]");
   assert(arr_size(a) == 2);
   rsd = js_rd(arr_get(a, 0));
   assert(rsd == -123.56);
   int rs = js_rb(arr_get(a, 1));
   assert(rs == 1);
-  arr_free(a);
-  a = js_ra_new((Js*)"[-123.56, true, \"a\"]");
+  a = js_ra((Js*)"[-123.56, true, \"a\"]");
   assert(arr_size(a) == 3);
-  str = js_rs_new(arr_get(a, 2));
+  str = js_rs(arr_get(a, 2));
   assert(str_eq("a", str));
-  free(str);
-  arr_free(a);
 
-  a = js_ra_new((Js*)"[-123.56, true, [], 56]");
+  a = js_ra((Js*)"[-123.56, true, [], 56]");
   assert(arr_size(a) == 4);
   rsd = js_rd(arr_get(a, 3));
   assert(rsd == 56);
-  a2 = js_ra_new(arr_get(a, 2));
+  a2 = js_ra(arr_get(a, 2));
   assert(arr_size(a2) == 0);
-  arr_free(a2);
-  arr_free(a);
 
-  a = js_ra_new((Js*)" [-123.56, true, [\"azf\", false], 56]  ");
+  a = js_ra((Js*)" [-123.56, true, [\"azf\", false], 56]  ");
   assert(arr_size(a) == 4);
   rsd = js_rd(arr_get(a, 3));
   assert(rsd == 56);
-  a2 = js_ra_new(arr_get(a, 2));
+  a2 = js_ra(arr_get(a, 2));
   assert(arr_size(a2) == 2);
   rs = js_rb(arr_get(a2, 1));
   assert(rs == 0);
-  str = js_rs_new(arr_get(a2, 0));
+  str = js_rs(arr_get(a2, 0));
   assert(str_eq("azf", str));
-  free(str);
-  arr_free(a);
-  arr_free(a2);
 
-//  js_ra_new((Js*)"[-123.56, true, [], 56] h"); // Error
-//  js_ra_new((Js*)"[s123.56, true, [], 56] "); // Error
-//  js_ra_new((Js*)" "); // Error
-//  js_ra_new((Js*)"[-123.56, true, [], true   "); // Error
+//  js_ra((Js*)"[-123.56, true, [], 56] h"); // Error
+//  js_ra((Js*)"[s123.56, true, [], 56] "); // Error
+//  js_ra((Js*)" "); // Error
+//  js_ra((Js*)"[-123.56, true, [], true   "); // Error
 
   // a1 and a2 are Arr[Js]
   int arr_eq_str(Arr *a1, Arr *a2) {
@@ -156,82 +131,61 @@ void js_tests(void) {
 
   // Arr[Js]
   Arr *a3;
-  a = arr_new(free);
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  a = arr_new();
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
 
-  arr_push(a, js_wb_new(1));
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  arr_push(a, js_wb(1));
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
 
-  arr_push(a, js_wi_new(-16));
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  arr_push(a, js_wi(-16));
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
 
-  arr_push(a, js_wd_new(1, 2));
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  arr_push(a, js_wd(1, 2));
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
 
-  arr_push(a, js_ws_new("caf"));
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  arr_push(a, js_ws("caf"));
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
 
-  a2 = arr_new(free);
-  arr_push(a, js_wa_new(a2));
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  a2 = arr_new();
+  arr_push(a, js_wa(a2));
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
 
-  arr_push(a2, js_ws_new("a\n\tzzð"));
-  arr_push(a, js_wa_new(a2));
-  s = js_wa_new(a);
-  a3 = js_ra_new(s);
+  arr_push(a2, js_ws("a\n\tzzð"));
+  arr_push(a, js_wa(a2));
+  s = js_wa(a);
+  a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
-  free(s);
-  arr_free(a3);
-
-  arr_free(a);
-  arr_free(a2);
 
   Map *m;
-  m = js_ro_new((Js*)"{}");
+  m = js_ro((Js*)"{}");
   assert(map_size(m) == 0);
-  map_free(m);
 
-  m = js_ro_new((Js*)" {\"a\":123 } ");
+  m = js_ro((Js*)" {\"a\":123 } ");
   assert(map_size(m) == 1);
-  rsd = js_rd(map_get_null(m, "a"));
+  rsd = js_rd(opt_get(map_get(m, "a")));
   assert(rsd == 123);
-  map_free(m);
 
-  m = js_ro_new((Js*)" {\"a\":123, \"b\":true } ");
+  m = js_ro((Js*)" {\"a\":123, \"b\":true } ");
   assert(map_size(m) == 2);
-  rs = js_rb(map_get_null(m, "b"));
+  rs = js_rb(opt_get(map_get(m, "b")));
   assert(rs);
-  map_free(m);
 
-  m = js_ro_new((Js*)" {\"a\":123, \"a\":true } ");
+  m = js_ro((Js*)" {\"a\":123, \"a\":true } ");
   assert(map_size(m) == 1);
-  rs =js_rb(map_get_null(m, "a"));
+  rs =js_rb(opt_get(map_get(m, "a")));
   assert(rs);
-  map_free(m);
 
 
   // m1 and m2 are Map[Js]
@@ -244,8 +198,8 @@ void js_tests(void) {
       Kv *kv1 = arr_get((Arr *)m1, i);
       Kv *kv2 = arr_get((Arr *)m2, i);
       if (
-        !str_eq(map_key(kv1), map_key(kv2)) ||
-        !str_eq(map_value(kv1), map_value(kv2))
+        !str_eq(kv_key(kv1), kv_key(kv2)) ||
+        !str_eq(kv_value(kv1), kv_value(kv2))
       ) {
         return 0;
       }
@@ -255,49 +209,40 @@ void js_tests(void) {
 
   // Map[Js]
   Map *m2;
-  m = map_new(free);
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  m = map_new();
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
 
-  map_put(m, "A", js_wb_new(0));
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  map_put(m, "A", js_wb(0));
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
 
-  map_put(m, "A", js_wb_new(0));
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  map_put(m, "A", js_wb(0));
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
 
-  map_put(m, "B", js_wi_new(-34516));
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  map_put(m, "B", js_wi(-34516));
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
 
-  map_put(m, "C", js_wd_new(321.189, 2));
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  map_put(m, "C", js_wd(321.189, 2));
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
 
-  map_put(m, "D", js_ws_new("caf"));
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  map_put(m, "D", js_ws("caf"));
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
 
-  map_put(m, "F", js_wo_new(m));
-  s = js_wo_new(m);
-  m2 = js_ro_new(s);
+  map_put(m, "F", js_wo(m));
+  s = js_wo(m);
+  m2 = js_ro(s);
   assert(map_eq_str(m, m2));
-  free(s); map_free(m2);
-
-  map_free(m);
 
   puts("    Finished");
 }

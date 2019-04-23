@@ -2,9 +2,9 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Iarr.h"
-#include "string.h"
-
 #include "dmc/std.h"
+#include "string.h"
+#include "dmc/exc.h"
 
 struct iarr_Iarr {
   int *es;
@@ -18,8 +18,8 @@ Iarr *iarr_new(void) {
 
 ///
 Iarr *iarr_bf_new(int buffer) {
-  Iarr *this = malloc(sizeof(Iarr));
-  int *es = malloc(buffer * sizeof(int));
+  Iarr *this = MALLOC(Iarr);
+  int *es = ATOMIC(buffer * sizeof(int));
   this->es = es;
   this->end = es;
   this->endbf = es + buffer;
@@ -27,10 +27,9 @@ Iarr *iarr_bf_new(int buffer) {
 }
 
 
-Iarr *iarr_left_new(Iarr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+Iarr *iarr_left(Iarr *this, int ix) {
+  EXC_RANGE(ix, 0, iarr_size(this))
+
   int *source = this->es;
   Iarr *r = iarr_bf_new(ix);
   int *target = r->es;
@@ -43,10 +42,9 @@ Iarr *iarr_left_new(Iarr *this, int ix) {
 }
 
 
-Iarr *iarr_right_new(Iarr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+Iarr *iarr_right(Iarr *this, int ix) {
+  EXC_RANGE(ix, 0, iarr_size(this))
+
   int *source = this->es + ix;
   Iarr *r = iarr_bf_new(this->end - source);
   int *target = r->es;
@@ -58,13 +56,11 @@ Iarr *iarr_right_new(Iarr *this, int ix) {
   return r;
 }
 
-Iarr *iarr_sub_new(Iarr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
+Iarr *iarr_sub(Iarr *this, int begin, int end) {
+  int size = iarr_size(this);
+  EXC_RANGE(begin, 0, size);
+  EXC_RANGE(end, begin, size);
+
   int *source = this->es + begin;
   Iarr *r = iarr_bf_new((this->es + end) - source);
   int *target = r->es;
@@ -76,7 +72,7 @@ Iarr *iarr_sub_new(Iarr *this, int begin, int end) {
   return r;
 }
 
-Iarr *iarr_copy_new(Iarr *this) {
+Iarr *iarr_copy(Iarr *this) {
   int *source = this->es;
   Iarr *r = iarr_bf_new(this->end - source);
   int *target = r->es;
@@ -86,13 +82,6 @@ Iarr *iarr_copy_new(Iarr *this) {
     *target++ = *source++;
   }
   return r;
-}
-
-void iarr_free(Iarr *this) {
-  if (this) {
-    free(this->es);
-    free(this);
-  }
 }
 
 int iarr_size(Iarr *this) {
@@ -115,9 +104,8 @@ int iarr_eq(Iarr *this, Iarr *other) {
 }
 
 int iarr_get(Iarr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, iarr_size(this) - 1)
+
   return *(this->es + ix);
 }
 
@@ -133,7 +121,7 @@ void iarr_push(Iarr *this, int e) {
   if (this->end == this->endbf) {
     int size = this->endbf - this->es;
     int new_size = size + size;
-    this->es = realloc(this->es, new_size * sizeof(int));
+    this->es = GC_REALLOC(this->es, new_size * sizeof(int));
     this->end = this->es + size;
     this->endbf = this->es + new_size;
   }
@@ -141,16 +129,14 @@ void iarr_push(Iarr *this, int e) {
 }
 
 void iarr_set(Iarr *this, int ix, int e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, iarr_size(this) - 1)
+
   *(this->es + ix) = e;
 }
 
 void iarr_insert(Iarr *this, int ix, int e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, iarr_size(this))
+
   Iarr *new = iarr_bf_new((this->endbf - this->es) + 1);
   int *p = this->es;
   int *p_end = this->end;
@@ -172,18 +158,15 @@ void iarr_insert(Iarr *this, int ix, int e) {
     *t++ = e;
   }
 
-  free(this->es);
   this->es = new->es;
   this->end = t;
   this->endbf = new->endbf;
-  free(new);
 }
 
 ///
 void iarr_remove(Iarr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, iarr_size(this) - 1)
+
   Iarr *new = iarr_bf_new((this->endbf - this->es) - 1);
   int *p = this->es;
   int *p_end = this->end;
@@ -201,11 +184,9 @@ void iarr_remove(Iarr *this, int ix) {
     *t++ = *p++;
   }
 
-  free(this->es);
   this->es = new->es;
   this->end = t;
   this->endbf = new->endbf;
-  free(new);
 }
 
 void iarr_cat(Iarr *this, Iarr *other) {
@@ -215,7 +196,7 @@ void iarr_cat(Iarr *this, Iarr *other) {
     int this_size = this->endbf - this->es;
     if (this_len + other_len >= this_size){
       int new_size = this_size + other_len;
-      this->es = realloc(this->es, new_size * sizeof(int));
+      this->es = GC_REALLOC(this->es, new_size * sizeof(int));
       this->end = this->es + this_len;
       this->endbf = this->es + new_size;
     }
@@ -225,37 +206,28 @@ void iarr_cat(Iarr *this, Iarr *other) {
 }
 
 void iarr_insert_arr(Iarr *this, int ix, Iarr *other) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
-  Iarr *left = iarr_left_new(this, ix);
-  Iarr *right = iarr_right_new(this, ix);
+  EXC_RANGE(ix, 0, iarr_size(this))
+
+  Iarr *left = iarr_left(this, ix);
+  Iarr *right = iarr_right(this, ix);
   iarr_cat(left, other);
   iarr_cat(left, right);
-  iarr_free(right);
-  free(this->es);
   this->es = left->es;
   this->end = left->end;
   this->endbf = left->endbf;
-  free(left);
 }
 
 void iarr_remove_range(Iarr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
-  Iarr *left = iarr_left_new(this, begin);
-  Iarr *right = iarr_right_new(this, end);
+  int size = iarr_size(this);
+  EXC_RANGE(begin, 0, size)
+  EXC_RANGE(end, begin, size)
+
+  Iarr *left = iarr_left(this, begin);
+  Iarr *right = iarr_right(this, end);
   iarr_cat(left, right);
-  iarr_free(right);
-  free(this->es);
   this->es = left->es;
   this->end = left->end;
   this->endbf = left->endbf;
-  free(left);
 }
 
 void iarr_reverse(Iarr *this) {
@@ -276,8 +248,8 @@ void iarr_sort(Iarr *this) {
     }
     int mid1 = size / 2;
     int mid2 = size - mid1;
-    int *a1 = malloc(mid1 * sizeof(int));
-    int *a2 = malloc(mid2 * sizeof(int));
+    int *a1 = ATOMIC(mid1 * sizeof(int));
+    int *a2 = ATOMIC(mid2 * sizeof(int));
     int *pa = a;
     int *pa1 = a1;
     int *pa2 = a2;
@@ -323,32 +295,28 @@ void iarr_sort(Iarr *this) {
         ++ia1;
       }
     }
-    free(a1);
-    free(a2);
   }
   sort(this->es, this->end - this->es);
 }
 
-Js *iarr_to_js_new(Iarr *this) {
+Js *iarr_to_js(Iarr *this) {
   // Arr[Js]
-  Arr *a = arr_new(free);
+  Arr *a = arr_new();
   int *p = this->es;
   int *end = this->end;
   while (p < end) {
-    arr_push(a, js_wi_new(*p++));
+    arr_push(a, js_wi(*p++));
   }
-  Js *r = js_wa_new(a);
-  arr_free(a);
+  Js *r = js_wa(a);
   return r;
 }
 
-Iarr *iarr_from_js_new(Js *js) {
+Iarr *iarr_from_js(Js *js) {
   Iarr *this = iarr_new();
   // Arr[Js]
-  Arr *a = js_ra_new(js);
+  Arr *a = js_ra(js);
   EACH(a, Js, js)
     iarr_push(this, js_ri(js));
   _EACH
-  arr_free(a);
   return this;
 }

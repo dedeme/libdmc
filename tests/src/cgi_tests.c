@@ -13,12 +13,10 @@
 
 // Map [Js]
 Map *rp_new(char *key) {
-  char *r = file_read_new("data/tmp.txt");
-  cryp_decryp(&r, key);
+  char *r = file_read("data/tmp.txt");
+  r = cryp_decryp(r, key);
   // Map[Js]
-  Map *rp = js_ro_new((Js *)r);
-  free(r);
-  return rp;
+  return js_ro((Js *)r);
 }
 
 void cgi_tests(void) {
@@ -26,130 +24,94 @@ void cgi_tests(void) {
 
   cgi_init("data", 10);
 
-  char *key = str_new("cgi_tests");
-  cryp_key(&key, cgi_klen());
+  char *key = cryp_key("cgi_tests", cgi_klen());
 
   cgi_set_key(key);
   cgi_authentication("admin", "deme", 10);
 
   // Map[Js]
   Map *rp = rp_new(key);
-  char *level = js_rs_new(map_get_null(rp, "level"));
+  char *level = js_rs(opt_get(map_get(rp, "level")));
   assert(str_eq(level, ""));
-  map_free(rp);
-  free(level);
 
-  char *pass = str_new("deme");
-  cryp_key(&pass, cgi_klen());
+  char *pass = cryp_key("deme", cgi_klen());
 
   cgi_set_key(key);
   cgi_authentication("admin", pass, 10);
   rp = rp_new(key);
 
-  level = js_rs_new(map_get_null(rp, "level"));
-  char *session_id = js_rs_new(map_get_null(rp, "sessionId"));
+  level = js_rs(opt_get(map_get(rp, "level")));
+  char *session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(str_eq(level, "0"));
-  map_free(rp);
-  free(level);
 
-  char *key2;
-  char *con_id;
-  cgi_get_session_data(&key2, &con_id, session_id);
+  CgiSession *cgiss = opt_get(cgi_get_session(session_id));
+  char *key2 = cgiSession_key(cgiss);
+  char *con_id = cgiSession_id(cgiss);
   assert(*key2);
   assert(!*con_id);
-  free(key2);
-  free(con_id);
 
   cgi_connect(session_id);
   rp = rp_new(key);
-  char *key2b = js_rs_new(map_get_null(rp, "key"));
-  char *con_idb = js_rs_new(map_get_null(rp, "connectionId"));
-  map_free(rp);
+  char *key2b = js_rs(opt_get(map_get(rp, "key")));
+  char *con_idb = js_rs(opt_get(map_get(rp, "connectionId")));
 
-  cgi_get_session_data(&key2, &con_id, session_id);
+  cgiss = opt_get(cgi_get_session(session_id));
+  key2 = cgiSession_key(cgiss);
+  con_id = cgiSession_id(cgiss);
   assert(*key2);
   assert(*con_id);
 
   assert(str_eq(key2b, key2));
   assert(str_eq(con_idb, con_id));
 
-  free(key2b);
-  free(con_idb);
-  free(key2);
-  free(con_id);
-
   cgi_del_session(session_id);
   rp = rp_new(key);
   assert(!map_size(rp));
-  map_free(rp);
 
   cgi_connect(session_id);
-  free(session_id);
   rp = rp_new(key);
-  key2b = js_rs_new(map_get_null(rp, "key"));
-  con_idb = js_rs_new(map_get_null(rp, "connectionId"));
-  map_free(rp);
+  key2b = js_rs(opt_get(map_get(rp, "key")));
+  con_idb = js_rs(opt_get(map_get(rp, "connectionId")));
 
   assert(str_eq(key2b, ""));
   assert(str_eq(con_idb, ""));
 
-  free(key2b);
-  free(con_idb);
-
   cgi_add_user("admin", pass, "u1", "passu1", "1");
   rp = rp_new(key);
-  assert(js_rb(map_get_null(rp, "ok")));
-  map_free(rp);
+  assert(js_rb(opt_get(map_get(rp, "ok"))));
 
   cgi_authentication("u1", "passu1", 10);
   rp = rp_new(key);
-  level = js_rs_new(map_get_null(rp, "level"));
-  session_id = js_rs_new(map_get_null(rp, "sessionId"));
-  map_free(rp);
+  level = js_rs(opt_get(map_get(rp, "level")));
+  session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(str_eq(level, "1"));
   assert(*session_id);
-  free(level);
-  free(session_id);
 
   cgi_change_pass("u1", "passu1", "newpassu1");
   rp = rp_new(key);
-  assert(js_rb(map_get_null(rp, "ok")));
-  map_free(rp);
+  assert(js_rb(opt_get(map_get(rp, "ok"))));
 
   cgi_change_level("admin", pass, "u1", "2");
   rp = rp_new(key);
-  assert(js_rb(map_get_null(rp, "ok")));
-  map_free(rp);
+  assert(js_rb(opt_get(map_get(rp, "ok"))));
 
   cgi_authentication("u1", "newpassu1", 10);
   rp = rp_new(key);
-  level = js_rs_new(map_get_null(rp, "level"));
-  session_id = js_rs_new(map_get_null(rp, "sessionId"));
-  map_free(rp);
+  level = js_rs(opt_get(map_get(rp, "level")));
+  session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(str_eq(level, "2"));
   assert(*session_id);
-  free(level);
-  free(session_id);
 
   cgi_del_user("admin", pass, "u1");
   rp = rp_new(key);
-  assert(js_rb(map_get_null(rp, "ok")));
-  map_free(rp);
+  assert(js_rb(opt_get(map_get(rp, "ok"))));
 
   cgi_authentication("u1", "newpassu1", 10);
   rp = rp_new(key);
-  level = js_rs_new(map_get_null(rp, "level"));
-  session_id = js_rs_new(map_get_null(rp, "sessionId"));
-  map_free(rp);
+  level = js_rs(opt_get(map_get(rp, "level")));
+  session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(!*level);
   assert(!*session_id);
-  free(level);
-  free(session_id);
-
-  free(key);
-  free(pass);
-
-  cgi_end();
 
   puts("    Finished");
 }

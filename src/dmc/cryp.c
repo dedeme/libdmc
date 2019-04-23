@@ -5,23 +5,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dmc/str.h"
+#include "dmc/std.h"
 #include "dmc/b64.h"
-#include "dmc/DEFS.h"
-#include "dmc/Buf.h"
 #include "dmc/rnd.h"
-#include "dmc/sys.h"
 
 static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-char *cryp_genk_new (int lg) {
-  if (lg <= 0) {
-    FAIL("cryp_genk_new: lg < 0")
-  }
+char *cryp_genk (int lg) {
+  if (lg <= 0)
+    EXC_ILLEGAL_ARGUMENT("lg", "> 0", str_f("%d", lg))
 
   int len = strlen(b64_base);
-  char *r = malloc(lg + 1);
+  char *r = ATOMIC(lg + 1);
   char *p = r + lg;
   *p-- = 0;
   while (lg--) {
@@ -30,17 +26,14 @@ char *cryp_genk_new (int lg) {
   return r;
 }
 
-void cryp_key (char **key, int lg) {
-  if (!*key) {
-    FAIL("cryp_key: keys is a blank string")
-  }
+char *cryp_key (char *key, int lg) {
+  if (!*key)
+    EXC_ILLEGAL_ARGUMENT("key", "No blank", "blank")
 
-  char *k0 = str_f_new(
-    "%scodified in irreversibleDeme is good, very good!\n\r8@@", *key);
-  char *b64 = b64_encode_new(k0);
-  Bytes *k = b64_decode_bytes_new(b64);
-  free(k0);
-  free(b64);
+  char *k0 = str_f(
+    "%scodified in irreversibleDeme is good, very good!\n\r8@@", key);
+  char *b64 = b64_encode(k0);
+  Bytes *k = b64_decode_bytes(b64);
 
   unsigned char *ka = bytes_bs(k);
   size_t lenk = bytes_len(k);
@@ -84,29 +77,17 @@ void cryp_key (char **key, int lg) {
     ra[i] = sum + ra1[i];
   }
 
-  char *r = b64_encode_bytes_new(rbs);
-  char *tmp = r;
-  r = str_left_new(tmp, lg);
-  free(tmp);
-  free(*key);
-  *key = r;
-
-  bytes_free(k);
-  bytes_free(rbs);
-  bytes_free(rbs1);
-  bytes_free(rbs2);
+  return str_left(b64_encode_bytes(rbs), lg);
 }
 
-void cryp_cryp (char **s, const char *k) {
-  if (!*k) {
-    FAIL("cryp_cryp: k is a blank string")
-  }
+char *cryp_cryp (char *s, char *k) {
+  if (!*k)
+    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank")
 
-  char *b64 = b64_encode_new(*s);
+  char *b64 = b64_encode(s);
 
   size_t lg = strlen(b64);
-  char *k2 = str_new(k);
-  cryp_key(&k2, lg);
+  char *k2 = cryp_key(k, lg);
 
   Bytes *rbs = bytes_bf_new(lg);
 
@@ -117,25 +98,19 @@ void cryp_cryp (char **s, const char *k) {
     *prbs++ = (*pk2++) + (*pb64++);
   }_REPEAT
 
-  free(*s);
-  *s = b64_encode_bytes_new(rbs);
-  free(b64);
-  free(k2);
-  bytes_free(rbs);
+  return b64_encode_bytes(rbs);
 }
 
-void cryp_decryp (char **c, const char *k) {
-  if (!*k) {
-    FAIL("cryp_cryp: k is a blank string")
-  }
+char *cryp_decryp (char *c, char *k) {
+  if (!*k)
+    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank")
 
-  Bytes *bs = b64_decode_bytes_new(*c);
+  Bytes *bs = b64_decode_bytes(c);
 
   size_t lg = bytes_len(bs);
-  char *k2 = str_new(k);
-  cryp_key(&k2, lg);
+  char *k2 = cryp_key(k, lg);
 
-  char *b64 = malloc(lg + 1);
+  char *b64 = ATOMIC(lg + 1);
 
   unsigned char *pbs = bytes_bs(bs);
   unsigned char *pk2 = (unsigned char *)k2;
@@ -145,48 +120,30 @@ void cryp_decryp (char **c, const char *k) {
   }_REPEAT
   *pb64 = 0;
 
-  free(*c);
-  *c = b64_decode_new(b64);
-
-  free(k2);
-  free(b64);
-  bytes_free(bs);
+  return b64_decode(b64);
 }
 
-void cryp_auto_cryp (char **s, int nk) {
+char *cryp_auto_cryp (char *s, int nk) {
   nk = nk < 1 ? 0 : nk > 64 ? 63 : nk - 1;
-  char *n = str_c_new(b64_base[nk]);
-  char *k = cryp_genk_new(nk + 1);
-  cryp_cryp(s, k);
-  char *r = str_cat_new(n, k, *s, NULL);
-  free(*s);
-  *s = r;
-
-  free(n);
-  free(k);
+  char *n = str_c(b64_base[nk]);
+  char *k = cryp_genk(nk + 1);
+  s = cryp_cryp(s, k);
+  return str_cat(n, k, s, NULL);
 }
 
-void cryp_auto_decryp (char **b64) {
-  char *s = *b64;
+char *cryp_auto_decryp (char *b64) {
+  char *s = b64;
   int nk = str_cindex(b64_base, *s) + 1;
   Buf *bf = buf_new();
   buf_add_buf(bf, s + 1, nk);
-  char *key = buf_to_str_new(bf);
-  char *tmp = *b64;
-  *b64 = str_right_new(tmp, nk + 1);
-  free(tmp);
-  cryp_decryp(b64, key);
-
-  buf_free(bf);
-  free(key);
+  char *key = buf_to_str(bf);
+  return cryp_decryp(str_right(b64, nk + 1), key);
 }
 
-void cryp_encode (char **s, int nk, const char *k) {
-  cryp_auto_cryp(s, nk);
-  cryp_cryp(s, k);
+char *cryp_encode (char *s, int nk, char *k) {
+  return cryp_cryp(cryp_auto_cryp(s, nk), k);
 }
 
-void cryp_decode (char **b64, const char *k) {
-  cryp_decryp(b64, k);
-  cryp_auto_decryp(b64);
+char *cryp_decode (char *b64, char *k) {
+  return cryp_auto_decryp(cryp_decryp(b64, k));
 }

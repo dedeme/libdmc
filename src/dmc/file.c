@@ -16,72 +16,68 @@ struct file_FileLck {
 };
 
 static FileLck *lckFile_new(struct flock *lock, FILE *f) {
-  FileLck *this = malloc(sizeof(FileLck));
+  FileLck *this = MALLOC(FileLck);
   this->lock = lock;
   this->f = f;
   return this;
 }
 
-void file_tmp (char **prefix) {
-  char *k = cryp_genk_new(10);
-  str_creplace(&k, '/', '_');
-  char *r = str_f_new("/tmp/%s%s", *prefix, k);
-  free(k);
+char *file_tmp (char *prefix) {
+  char *r = cryp_genk(10);
+  r = str_creplace(r, '/', '_');
+  r = str_f("/tmp/%s%s", prefix, r);
   if (file_exists(r)) {
-    free(r);
-    file_tmp(prefix);
+    return file_tmp(prefix);
   }
-  free(*prefix);
-  *prefix = r;
+  return r;
 }
 
-char *file_cwd_new (void) {
+char *file_cwd (void) {
   char *d = getcwd(NULL, 0);
-  if (!d) {
-    FAIL(str_f_new("Working directory can no be find: %s", strerror(errno)))
-  }
-  return d;
+  if (!d)
+    EXC_IO(str_f("Working directory can no be find: %s", strerror(errno)))
+
+  char *r = str_new(d);
+  free(d);  // free is ok
+  return r;
 }
 
-void file_cd (const char *path) {
+void file_cd (char *path) {
   if (chdir(path)) {
-    FAIL(str_f_new(
+    EXC_IO(str_f(
       "Fail changing the working directory to %s: %s",
       path, strerror(errno)
     ))
   }
 }
 
-void file_mkdir (const char *path) {
+void file_mkdir (char *path) {
   if (!*path) {
     return;
   }
 
   char *p;
   if (*path != '/') {
-    char *cwd = file_cwd_new();
-    p = path_cat_new(cwd, path, NULL);
-    free(cwd);
+    char *cwd = file_cwd();
+    p = path_cat(cwd, path, NULL);
   } else {
     p = str_new(path);
   }
-  path_parent(&p);
+  p = path_parent(p);
   file_mkdir(p);
-  free(p);
 
-  if (mkdir(path, 0755) && errno != EEXIST) {
-    FAIL(str_f_new("Fail making directory %s: %s" , path, strerror(errno)))
-  }
+  if (mkdir(path, 0755) && errno != EEXIST)
+    EXC_IO(str_f("Fail making directory %s: %s" , path, strerror(errno)))
 }
 
 // Arr[char]
-Arr *file_dir_new (const char *path) {
+Arr *file_dir (char *path) {
   DIR *d = opendir(path);
-  if (!d) {
-    FAIL(str_f_new("Fail reading directory %s: %s", path, strerror(errno)))
-  }
+  if (!d)
+    EXC_IO(str_f("Fail reading directory %s: %s", path, strerror(errno)))
+
   // Arr[char]
-  Arr *a = arr_new(free);
+  Arr *a = arr_new();
   struct dirent *res;
   while ((res = readdir(d))) {
     char *name = res->d_name;
@@ -94,97 +90,88 @@ Arr *file_dir_new (const char *path) {
   return a;
 }
 
-void file_del (const char *path) {
+void file_del (char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno != ENOENT) {
-      FAIL(str_f_new("Fail deleting %s: %s", path, strerror(errno)))
+      EXC_IO(str_f("Fail deleting %s: %s", path, strerror(errno)))
     }
     return;
   }
 
   if (S_ISDIR(buf.st_mode)) {
     // Arr[char]
-    Arr *a = file_dir_new(path);
+    Arr *a = file_dir(path);
     EACH(a, char, f) {
-      char *p = path_cat_new(path, f, NULL);
-      file_del(p);
-      free(p);
+      file_del(path_cat(path, f, NULL));
     }_EACH
-    arr_free(a);
-    if (rmdir(path) && errno != ENOENT) {
-      FAIL(str_f_new("Fail deleting %s: %s", path, strerror(errno)))
-    }
+    if (rmdir(path) && errno != ENOENT)
+      EXC_IO(str_f("Fail deleting %s: %s", path, strerror(errno)))
   } else {
-    if (unlink(path) && errno != ENOENT) {
-      FAIL(str_f_new("Fail deleting %s: %s", path, strerror(errno)))
-    }
+    if (unlink(path) && errno != ENOENT)
+      EXC_IO(str_f("Fail deleting %s: %s", path, strerror(errno)))
   }
 }
 
-void file_rename (const char *oldname, const char *newname) {
-  if (rename(oldname, newname) == -1) {
-    FAIL(str_f_new(
+void file_rename (char *oldname, char *newname) {
+  if (rename(oldname, newname) == -1)
+    EXC_IO(str_f(
       "Fail renaming '%s' to '%s: %s", oldname, newname, strerror(errno)
     ))
-  }
 }
 
-void file_link (const char *oldpath, const char *newpath) {
-  if (symlink(oldpath, newpath) == -1) {
-    FAIL(str_f_new(
+void file_link (char *oldpath, char *newpath) {
+  if (symlink(oldpath, newpath) == -1)
+    EXC_IO(str_f(
       "Fail linking '%s' to '%s: %s", newpath, oldpath, strerror(errno)
     ))
-  }
 }
 
-int file_exists (const char *path) {
+int file_exists (char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno == ENOENT) {
       return 0;
     }
-    FAIL(str_f_new("Fail reading %s: %s", path, strerror(errno)))
+    EXC_IO(str_f("Fail reading %s: %s", path, strerror(errno)))
   }
   return 1;
 }
 
-int file_is_directory (const char *path) {
+int file_is_directory (char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno == ENOENT) {
       return 1;
     }
-    FAIL(str_f_new("Fail reading %s: %s", path, strerror(errno)))
+    EXC_IO(str_f("Fail reading %s: %s", path, strerror(errno)))
   }
   if (S_ISDIR(buf.st_mode))
     return 1;
   return 0;
 }
 
-struct stat *file_info_new (const char *path) {
-  struct stat *r = malloc(sizeof(struct stat));
-  if (stat(path, r)) {
-    FAIL(str_f_new("Fail reading %s: %s", path, strerror(errno)))
-  }
+struct stat *file_info (char *path) {
+  struct stat *r = MALLOC(struct stat);
+  if (stat(path, r))
+    EXC_IO(str_f("Fail reading %s: %s", path, strerror(errno)))
+
   return r;
 }
 
-int file_size(const char *path) {
-  struct stat *i = file_info_new (path);
+int file_size(char *path) {
+  struct stat *i = file_info (path);
   int r = i->st_size;
-  free(i);
   return r;
 }
 
-time_t file_modified(const char *path) {
-  struct stat *i = file_info_new (path);
+time_t file_modified(char *path) {
+  struct stat *i = file_info (path);
   time_t r = i->st_mtime;
-  free(i);
   return r;
 }
 
-char *file_read_new (const char *path) {
+char *file_read (char *path) {
   FILE *fl;
   size_t len = 0;
   struct flock lck = {
@@ -194,9 +181,8 @@ char *file_read_new (const char *path) {
   };
 
   fl = fopen(path, "r");
-  if (!fl) {
-    FAIL(str_f_new("Fail openning %s: %s", path, strerror(errno)))
-  }
+  if (!fl)
+    EXC_IO(str_f("Fail openning %s: %s", path, strerror(errno)))
 
   lck.l_type = F_RDLCK;
   fcntl (fileno(fl), F_SETLKW, &lck);
@@ -205,21 +191,19 @@ char *file_read_new (const char *path) {
   char *line = NULL;
   while (getline(&line, &len, fl) != -1) {
     buf_add(bf, line);
-    free(line);
+    free(line); // free ok
     line = NULL;
   }
-  free(line);
+  free(line); // free ok
 
   lck.l_type = F_UNLCK;
   fcntl (fileno(fl), F_SETLK, &lck);
   fclose(fl);
 
-  char *r = buf_to_str_new(bf);
-  buf_free(bf);
-  return r;
+  return buf_to_str(bf);
 }
 
-void file_write (const char *path, const char *text) {
+void file_write (char *path, char *text) {
   FILE *fl;
   int error;
   struct flock lck = {
@@ -229,9 +213,8 @@ void file_write (const char *path, const char *text) {
   };
 
   fl = fopen(path, "w");
-  if (!fl) {
-    FAIL(str_f_new("Fail openning %s: %s", path, strerror(errno)))
-  }
+  if (!fl)
+    EXC_IO(str_f("Fail openning %s: %s", path, strerror(errno)))
 
   lck.l_type = F_WRLCK;
   fcntl (fileno(fl), F_SETLKW, &lck);
@@ -243,12 +226,12 @@ void file_write (const char *path, const char *text) {
 
   if (error == EOF || error < 0) {
     fclose(fl);
-    FAIL(str_f_new("Fail writing '%s': %s", path, strerror(error)))
+    EXC_IO(str_f("Fail writing '%s': %s", path, strerror(error)))
   }
   fclose(fl);
 }
 
-void file_append (const char *path, const char *text) {
+void file_append (char *path, char *text) {
   FILE *fl;
   int error;
   struct flock lck = {
@@ -258,9 +241,8 @@ void file_append (const char *path, const char *text) {
   };
 
   fl = fopen(path, "a");
-  if (!fl) {
-    FAIL(str_f_new("Fail openning %s: %s", path, strerror(errno)))
-  }
+  if (!fl)
+    EXC_IO(str_f("Fail openning %s: %s", path, strerror(errno)))
 
   lck.l_type = F_WRLCK;
   fcntl (fileno(fl), F_SETLKW, &lck);
@@ -272,12 +254,12 @@ void file_append (const char *path, const char *text) {
 
   if (error == EOF || error < 0) {
     fclose(fl);
-    FAIL(str_f_new("Fail writing '%s': %s", path, strerror(error)))
+    EXC_IO(str_f("Fail writing '%s': %s", path, strerror(error)))
   }
   fclose(fl);
 }
 
-void file_copy (const char *source_path, const char *target_path) {
+void file_copy (char *source_path, char *target_path) {
   if (!strcmp(source_path, target_path)) {
     return;
   }
@@ -288,17 +270,15 @@ void file_copy (const char *source_path, const char *target_path) {
   char  buffer[32678];
   size_t  n;
 
-  if ((f1 = fopen(source_path, "rb")) == 0) {
-    FAIL(str_f_new("Fail openning '%s': %s", source_path, strerror(errno)))
-  }
-  if ((f2 = fopen(target_path, "wb")) == 0) {
-    FAIL(str_f_new("Fail openning '%s': %s", target_path, strerror(errno)))
-  }
+  if ((f1 = fopen(source_path, "rb")) == 0)
+    EXC_IO(str_f("Fail openning '%s': %s", source_path, strerror(errno)))
+
+  if ((f2 = fopen(target_path, "wb")) == 0)
+    EXC_IO(str_f("Fail openning '%s': %s", target_path, strerror(errno)))
 
   while ((n = fread(buffer, sizeof(char), sizeof(buffer), f1)) > 0) {
-    if (fwrite(buffer, sizeof(char), n, f2) != n) {
-      FAIL(str_f_new("Fail writing '%s': %s", target_path, strerror(errno)))
-    }
+    if (fwrite(buffer, sizeof(char), n, f2) != n)
+      EXC_IO(str_f("Fail writing '%s': %s", target_path, strerror(errno)))
   }
 
   fclose(f1);
@@ -306,18 +286,17 @@ void file_copy (const char *source_path, const char *target_path) {
 }
 
 static FileLck *lck_new(FILE *file) {
-  struct flock *lck = malloc(sizeof(struct flock));
+  struct flock *lck = MALLOC(struct flock);
   lck->l_whence = SEEK_SET;
   lck->l_start = 0;
   lck->l_len = 0;
   return lckFile_new(lck, file);
 }
 
-FileLck *file_ropen (const char *path) {
+FileLck *file_ropen (char *path) {
   FILE *file = fopen(path, "r");
-  if (!file) {
-    FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
-  }
+  if (!file)
+    EXC_IO(str_f("Fail opening '%s': %s", path, strerror(errno)))
 
   FileLck *r = lck_new(file);
   r->lock->l_type = F_RDLCK;
@@ -325,11 +304,10 @@ FileLck *file_ropen (const char *path) {
   return r;
 }
 
-FileLck *file_wopen (const char *path) {
+FileLck *file_wopen (char *path) {
   FILE *file = fopen(path, "w");
-  if (!file) {
-    FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
-  }
+  if (!file)
+    EXC_IO(str_f("Fail opening '%s': %s", path, strerror(errno)))
 
   FileLck *r = lck_new(file);
   r->lock->l_type = F_WRLCK;
@@ -337,11 +315,10 @@ FileLck *file_wopen (const char *path) {
   return r;
 }
 
-FileLck *file_aopen (const char *path) {
+FileLck *file_aopen (char *path) {
   FILE *file = fopen(path, "a");
-  if (!file) {
-    FAIL(str_f_new("Fail opening '%s': %s", path, strerror(errno)))
-  }
+  if (!file)
+    EXC_IO(str_f("Fail opening '%s': %s", path, strerror(errno)))
 
   FileLck *r = lck_new(file);
   r->lock->l_type = F_WRLCK;
@@ -349,51 +326,51 @@ FileLck *file_aopen (const char *path) {
   return r;
 }
 
-char *file_read_line_new (FileLck *lck) {
+char *file_read_line (FileLck *lck) {
   size_t len = 0;
   errno = 0;
   char *line= NULL;
   if (getline(&line, &len, lck->f) != -1) {
     char *r = str_new(line);
-    free(line);
+    free(line); // free ok
     return r;
   }
-  free(line);
+  free(line); // free ok
   if (errno) {
     file_close(lck);
-    FAIL(str_f_new("Fail file_read_line: %s", strerror(errno)))
+    EXC_IO(str_f("Fail file_read_line: %s", strerror(errno)))
   }
-  return str_new("");
+  return "";
 }
 
-void file_write_text (FileLck *lck, const char *text) {
+void file_write_text (FileLck *lck, char *text) {
   int error = fputs(text, lck->f);
   if (error == EOF || error < 0) {
     file_close(lck);
-    FAIL(str_f_new("Fail file_write_line: %s", strerror(errno)))
+    EXC_IO(str_f("Fail file_write_line: %s", strerror(errno)))
   }
 }
 
-Bytes *file_read_bin_buf_new (FileLck *lck, int buffer) {
+Bytes *file_read_bin_buf (FileLck *lck, int buffer) {
   unsigned char bs[buffer];
   int len = (int)fread(bs, 1, buffer, lck->f);
   if (len == -1) {
     file_close(lck);
-    FAIL(str_f_new("Fail file_read_bin_buf: %s", strerror(errno)))
+    EXC_IO(str_f("Fail file_read_bin_buf: %s", strerror(errno)))
   }
   if (len == 0) {
     return bytes_new();
   }
-  return bytes_from_bytes_new(bs, len);
+  return bytes_from_bytes(bs, len);
 }
 
-Bytes *file_read_bin_new (FileLck *lck) {
-  return file_read_bin_buf_new(lck, 8192);
+Bytes *file_read_bin (FileLck *lck) {
+  return file_read_bin_buf(lck, 8192);
 }
 
 void file_write_bin (FileLck *lck, Bytes *bs) {
   if (fwrite(bytes_bs(bs), bytes_len(bs), 1, lck->f) == -1) {
-    FAIL(str_f_new("Fail file_write_bin: %s", strerror(errno)))
+    EXC_IO(str_f("Fail file_write_bin: %s", strerror(errno)))
   }
 }
 
@@ -404,7 +381,4 @@ void file_close (FileLck *lck) {
   lock->l_type = F_UNLCK;
   fcntl (fileno(fl), F_SETLK, &lock);
   fclose(fl);
-
-  free(lock);
-  free(lck);
 }

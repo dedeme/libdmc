@@ -4,29 +4,24 @@
 #include "dmc/ext.h"
 #include "dmc/std.h"
 
-
-char *ext_wget_new(const char *url) {
-  char *cmd = str_f_new("wget -q --no-cache -O - %s", url);
-  char *r = sys_cmd_new_null(cmd);
-  free(cmd);
-  if (!r) {
-    r = str_new("");
+char *ext_wget(char *url) {
+  char *cmd = str_f("wget -q --no-cache -O - %s", url);
+  // Opt[char]
+  Opt *r = sys_cmd(cmd);
+  if (opt_is_empty(r)) {
+    return "";
   }
-  return r;
+  return opt_get(r);
 }
 
-char *ext_zenity_entry_new(const char *title, const char *prompt) {
-  char *cmd = str_f_new(
+char *ext_zenity_entry(char *title, char *prompt) {
+  char *cmd = str_f(
     "zenity --entry --title=\"%s\" --text=\"%s\"", title, prompt
   );
-  char *rt = sys_cmd_new_null(cmd);
-  free(cmd);
-  if (!rt) {
-    FAIL("Fail running zenity.")
-  }
+  char *rt = opt_eget(sys_cmd(cmd), "Fail running zenity.");
+
   // Arr[char]
-  Arr *parts = str_csplit_trim_new(rt, '\n');
-  free(rt);
+  Arr *parts = str_csplit_trim(rt, '\n');
   char *s = "";
   EACH(parts, char, l) {
     if (!str_starts(l, "Gtk-")) {
@@ -34,125 +29,82 @@ char *ext_zenity_entry_new(const char *title, const char *prompt) {
       break;
     }
   }_EACH
-  char *r = str_new(s);
-  free(parts);
-  return r;
+  return s;
 }
 
-void ext_zenity_msg(const char *icon, const char *text) {
-  char *cmd = str_f_new(
+void ext_zenity_msg(char *icon, char *text) {
+  char *cmd = str_f(
     "zenity --info --icon-name=\"%s\" --text=\"%s\"", icon, text
   );
-  char *rt = sys_cmd_new_null(cmd);
-  free(cmd);
-  if (!rt) {
-    FAIL("Fail running zenity.")
-  }
-  free(rt);
+  opt_eget(sys_cmd(cmd), "Fail running zenity.");
 }
 
 void ext_pdf(
-  const char *tx_source,
-  const char *file_target,
-  const char *options
+  char *tx_source,
+  char *file_target,
+  char *options
 ) {
-  char *tsource0 = str_new("libdm");
-  file_tmp(&tsource0);
-  char *tsource = str_f_new("%s.html", tsource0);
+  char *tsource = str_f("%s.html", file_tmp("libdm"));
   file_write(tsource, tx_source);
-  free(tsource0);
 
+  char *ttarget = str_f("%s.pdf", file_tmp("libdm"));
 
-  char *ttarget0 = str_new("libdm");
-  file_tmp(&ttarget0);
-  char *ttarget = str_f_new("%s.pdf", ttarget0);
-  free(ttarget0);
-
-  char *cmd = str_f_new(
+  char *cmd = str_f(
     "pdfPrinter -s %s -t %s %s 2>&1", tsource, ttarget, options
   );
-  char *rt = sys_cmd_new_null(cmd);
-  free(cmd);
-  if (!rt) {
-    free(tsource);
-    free(ttarget);
-    FAIL("Fail running pdfPrinter.")
+
+  // Opt[char]
+  Opt *ort = sys_cmd(cmd);
+  if (opt_is_empty(ort)) {
+    file_del(tsource);
+    file_del(ttarget);
+    EXC_GENERIC("Fail running pdfPrinter.")
   }
+  char *rt = opt_get(ort);
 
   file_del(tsource);
-  free(tsource);
 
-  if (!file_exists(ttarget)) {
-    FAIL(rt)
-  }
-  free(rt);
+  if (!file_exists(ttarget))
+    EXC_IO(str_f("Target file '%s' not found\n%s", ttarget, rt))
 
   file_copy(ttarget, file_target);
   file_del(ttarget);
-  free(ttarget);
 }
 
-void ext_zip(const char *source, const char *target) {
-  char *cd = file_cwd_new();
+void ext_zip(char *source, char *target) {
+  char *cd = file_cwd();
   char *tg = str_new(target);
   if (*tg != '/') {
-    char *t = path_cat_new(cd, tg, NULL);
+    char *t = path_cat(cd, tg, NULL);
     free(tg);
     tg = t;
   }
-  char *parent = str_new(source);
-  path_parent(&parent);
-  char *name = str_new(source);
-  path_name(&name);
+  char *parent = path_parent(source);
+  char *name = path_name(source);
   file_cd(parent);
 
-  char *cmd = str_f_new("zip -q %s %s 2>&1", tg, name);
+  char *cmd = str_f("zip -q %s %s 2>&1", tg, name);
   if (file_is_directory(name)) {
     free(cmd);
-    cmd = str_f_new("zip -q -r %s %s 2>&1", tg, name);
+    cmd = str_f("zip -q -r %s %s 2>&1", tg, name);
   }
 
-  char *rt = sys_cmd_new_null(cmd);
-  free(cmd);
-  if (!rt) {
-    free(parent);
-    free(name);
-    free(tg);
-    free(cd);
-    FAIL("Fail running zip.")
-  }
+  char *rt = opt_eget(sys_cmd(cmd), "Fail running zip.");
 
   file_cd(cd);
-  free(parent);
-  free(name);
-  free(cd);
 
-  if (!file_exists(tg)) {
-    if (!*rt) {
-      free(rt);
-      rt = str_new("Unknown error");
-    }
-    FAIL(rt)
-  }
-  free(rt);
-  free(tg);
+  if (!file_exists(tg))
+    EXC_IO(str_f("Target file '%s' not found\n%s", tg, rt))
 }
 
-void ext_unzip(const char *source, const char *target) {
-  if (!file_is_directory(target)) {
-    FAIL(str_f_new("'%s' is not a directory", target))
-  }
+void ext_unzip(char *source, char *target) {
+  if (!file_is_directory(target))
+    EXC_IO(str_f("'%s' is not a directory", target))
 
-  char *cmd = str_f_new("unzip -q -o %s -d %s 2>&1", source, target);
-  char *rt = sys_cmd_new_null(cmd);
-  free(cmd);
-  if (!rt) {
-    FAIL("Fail running unzip.")
-  }
+  char *cmd = str_f("unzip -q -o %s -d %s 2>&1", source, target);
+  char *rt = opt_eget(sys_cmd(cmd), "Fail running unzip.");
 
-  if (*rt) {
-    FAIL(rt)
-  }
-  free(rt);
+  if (*rt)
+    EXC_IO(rt)
 }
 

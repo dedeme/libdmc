@@ -7,24 +7,13 @@
   #define DMC_MAP_H
 
 #include "dmc/Arr.h"
-#include "dmc/Varr.h"
-
-/// Map entries type.<br>
-/// For example:
-///   EACH(map, Kv, e)
-///   ...
-///   _EACH
-typedef struct map_Kv Kv;
+#include "dmc/Opt.h"
 
 ///
 typedef struct map_Map Map;
 
-/// map_new initializates a map. Map can be cast to Arr.<br>
-/// 'ffree' is the function to free values of Map.
-Map *map_new(void(*ffree)(void *));
-
-///
-void map_free(Map *this);
+/// map_new initializates a map. Map can be cast to Arr[Kv].<br>
+Map *map_new(void);
 
 ///
 int map_size(Map *this);
@@ -32,30 +21,27 @@ int map_size(Map *this);
 /// map_put puts 'value' with key 'key'. If key already exists its value
 /// is changed.
 ///   this  : The map
-///   key   : Entry key. It must not be NULL.
+///   key   : Entry key.
 ///   value : New value
-void map_put(Map *this, const char *key, void *value);
+void map_put(Map *this, char *key, void *value);
 
-/// map_get_null returns the value pointed by key or NULL if 'key' does
+/// map_has_key returns 1 if 'this' has key 'key'
+int map_has_key(Map *this, char *key);
+
+/// map_get returns the value pointed by key or 'opt_empty' if 'key' does
 /// not exist
-void *map_get_null(Map *this, const char *key);
+Opt *map_get(Map *this, char *key);
 
 /// map_remove removes value with key 'key' or does nothing if 'key' does
 /// not exist
-void map_remove(Map *this, const char *key);
+void map_remove(Map *this, char *key);
 
-/// map_keys_new returns keys of this in a Varr[char]
-Varr *map_keys_new(Map *this);
+/// map_keys returns keys of this in a Arr[char]
+Arr *map_keys(Map *this);
 
 /// Equals to (Arr *)this.<br>
 /// Returns an Arr[Kv]
 Arr *map_kvs(Map *this);
-
-/// map_key returns the key of entry
-char *map_key(Kv *entry);
-
-/// map_key returns the value of entry
-void *map_value(Kv *entry);
 
 /// map_sort sorts 'this' from keys
 void map_sort(Map *this);
@@ -63,16 +49,20 @@ void map_sort(Map *this);
 /// map_sort_locale sorts 'this' in locale from keys
 void map_sort_locale(Map *this);
 
-/// 'to_new' returns a Js from a value of 'this'
-Js *map_to_js_new(Map *this, Js *(*to_new)(void *e));
+/// Creates an iterator over 'this'
+///   return: It[Kv]
+It *map_to_it(Map *this);
 
-/// 'from_new' parse a Js to a value of 'this'.<br>
-/// 'free' frees a value of 'this'
-Map *map_from_js_new(
-  Js *js,
-  void *(*from_new)(Js *jse),
-  void (*ffree)(void *e)
-);
+/// Creates a Map from 'it'
+///   it: It[Kv]
+Map *map_from_it(It *it);
 
+/// Returns a Js from a value of 'this'
+///   to: Value converter
+Js *map_to_js(Map *this, Js *(*to)(void *e));
+
+/// ParseS a Js to a value of 'this'.<br>
+///   from: Value converter
+Map *map_from_js(Js *js, void *(*from)(Js *jse));
 
 #endif

@@ -18,13 +18,11 @@ void bytes_tests(void) {
 
   b1 = bytes_new();
   assert(bytes_len(b1) == 0);
-  js = bytes_to_js_new(b1);
-  bjs = bytes_from_js_new(js);
+  js = bytes_to_js(b1);
+  bjs = bytes_from_js(js);
   assert(bytes_len(bjs) == 0);
-  free(js);
-  bytes_free(bjs);
 
-  b2 = bytes_from_str_new(s2);
+  b2 = bytes_from_str(s2);
   assert(bytes_len(b2) == 1);
 
   bytes_add_str(b1, s1);
@@ -42,22 +40,16 @@ void bytes_tests(void) {
   assert(*bytes_bs(b1) == 'a');
   assert(bytes_bs(b1)[1] == 'b');
   assert(bytes_bs(b1)[2] == 'c');
-  js = bytes_to_js_new(b1);
-  bjs = bytes_from_js_new(js);
+  js = bytes_to_js(b1);
+  bjs = bytes_from_js(js);
   assert(*bytes_bs(bjs) == 'a');
   assert(bytes_bs(bjs)[1] == 'b');
   assert(bytes_bs(bjs)[2] == 'c');
-  free(js);
-  bytes_free(bjs);
 
-  bytes_free(b1);
   b1 = bytes_new();
   bytes_add(b1, b2);
   assert(bytes_len(b1) == 1);
   assert(*bytes_bs(b1) == 'c');
-
-  bytes_free(b1);
-  bytes_free(b2);
 
   puts("    Finished");
 }

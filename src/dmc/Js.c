@@ -7,6 +7,8 @@
 #include <errno.h>
 #include "dmc/std.h"
 
+#define FAIL(msg) THROW("Json") msg _THROW
+
 static void json_unicode(Buf *bf, char *hexdigits) {
   char hexvalue (char ch) {
     return (ch <= '9') ? ch - '0' : toupper(ch) - 'A' + 10;
@@ -136,8 +138,8 @@ static int json_rend(char *json) {
   return *json ? 0 : 1;
 }
 
-static char *json_error_new(char *json, char *msg) {
-  return str_f_new("%s in\n'%s'\n", msg, json);
+static char *json_error(char *json, char *msg) {
+  return str_f("%s in\n'%s'\n", msg, json);
 }
 
 int js_is_null (Js *json) {
@@ -154,18 +156,18 @@ int js_rb (Js *json) {
 
   char *j = jsons;
   if (memcmp(j, "true", 4)) {
-    if (memcmp(j, "false", 5)) {
-      FAIL(json_error_new(jsons, "Bad value reading a boolean value"))
-    }
+    if (memcmp(j, "false", 5))
+      FAIL(json_error(jsons, "Bad value reading a boolean value"))
+
     r = 0;
     j += 5;
   } else {
     r = 1;
     j += 4;
   }
-  if (!json_rend(j)) {
-    FAIL(json_error_new(jsons, "Spare characters reading a boolean value"))
-  }
+  if (!json_rend(j))
+    FAIL(json_error(jsons, "Spare characters reading a boolean value"))
+
   return r;
 }
 
@@ -176,29 +178,27 @@ int js_ri (Js *json) {
 long js_rl (Js *json) {
   char *jsons = json_blanks((char *)json);
   char *j = jsons;
-  if (*j != '-' && (*j < '0' || *j > '9')) {
-    FAIL(json_error_new(j, "Bad start number"))
-  }
+  if (*j != '-' && (*j < '0' || *j > '9'))
+    FAIL(json_error(j, "Bad start number"))
+
   Buf *bf = buf_new();
   while (*j && *j != '}' && *j != ']' && *j != ',' && *j > ' ') {
     ++j;
   }
   buf_add_buf(bf, jsons, j - jsons);
-  char *n = buf_to_str_new(bf);
-  buf_free(bf);
-  if (!json_rend(j)) {
-    FAIL(json_error_new(j, "Spare characters reading a number value"))
-  }
+  char *n = buf_to_str(bf);
+  if (!json_rend(j))
+    FAIL(json_error(j, "Spare characters reading a number value"))
+
   char *tail;
   errno = 0;
   long r = strtol(n, &tail, 10);
-  if (errno) {
-    FAIL(json_error_new(n, "Overflow"))
-  }
-  if (*tail) {
-    FAIL(json_error_new(n, "Bad number"))
-  }
-  free(n);
+  if (errno)
+    FAIL(json_error(n, "Overflow"))
+
+  if (*tail)
+    FAIL(json_error(n, "Bad number"))
+
   return r;
 }
 
@@ -206,37 +206,35 @@ double js_rd (Js *json) {
   struct lconv *lc = localeconv();
   char *jsons = json_blanks((char *)json);
   char *j = jsons;
-  if (*j != '-' && (*j < '0' || *j > '9')) {
-    FAIL(json_error_new(jsons, "Bad start number"))
-  }
+  if (*j != '-' && (*j < '0' || *j > '9'))
+    FAIL(json_error(jsons, "Bad start number"))
+
   Buf *bf = buf_new();
   while (*j && *j != '}' && *j != ']' && *j != ',' && *j > ' ') {
     ++j;
   }
   buf_add_buf(bf, jsons, j - jsons);
-  char *n = buf_to_str_new(bf);
-  buf_free(bf);
+  char *n = buf_to_str(bf);
   int ix = str_cindex(n, '.');
   if (ix != -1) {
     n[ix] = *lc->decimal_point;
   }
-  if (!json_rend(j)) {
-    FAIL(json_error_new(jsons, "Spare characters reading a number value"))
-  }
+  if (!json_rend(j))
+    FAIL(json_error(jsons, "Spare characters reading a number value"))
+
   errno = 0;
   char *tail;
   double r = strtod(n, &tail);
-  if (errno) {
-    FAIL(json_error_new(n, "Overflow"))
-  }
-  if (*tail) {
-    FAIL(json_error_new(jsons, "Bad number"))
-  }
-  free(n);
+  if (errno)
+    FAIL(json_error(n, "Overflow"))
+
+  if (*tail)
+    FAIL(json_error(jsons, "Bad number"))
+
   return r;
 }
 
-char *js_rs_new (Js *j) {
+char *js_rs (Js *j) {
   int is_hex (char ch) {
     return (ch >= '0' && ch <= '9') ||
       (ch >= 'a' && ch <= 'f') ||
@@ -245,7 +243,7 @@ char *js_rs_new (Js *j) {
 
   char *json = json_blanks((char *)j);
   if (*json != '"') {
-    FAIL(json_error_new(json, "String does not start with \""))
+    FAIL(json_error(json, "String does not start with \""))
   }
   ++json;
   Buf *bf = buf_new();
@@ -253,159 +251,150 @@ char *js_rs_new (Js *j) {
     if (*json == '\\') {
       ++json;
       switch (*json) {
-      case '"' :
-      case '\\' :
-      case '/' :
-        buf_cadd(bf, *json);
-        break;
-      case 'b' :
-        buf_cadd(bf, '\b');
-        break;
-      case 'f' :
-        buf_cadd(bf, '\f');
-        break;
-      case 'n' :
-        buf_cadd(bf, '\n');
-        break;
-      case 'r' :
-        buf_cadd(bf, '\r');
-        break;
-      case 't' :
-        buf_cadd(bf, '\t');
-        break;
-      case 'u' : {
-        ++json;
-        int c = 5;
-        while (--c) {
-          if (!is_hex(*json++)) {
-            FAIL(json_error_new((char *)j, "Bad hexadecimal unicode in string"))
+        case '"' :
+        case '\\' :
+        case '/' :
+          buf_cadd(bf, *json);
+          break;
+        case 'b' :
+          buf_cadd(bf, '\b');
+          break;
+        case 'f' :
+          buf_cadd(bf, '\f');
+          break;
+        case 'n' :
+          buf_cadd(bf, '\n');
+          break;
+        case 'r' :
+          buf_cadd(bf, '\r');
+          break;
+        case 't' :
+          buf_cadd(bf, '\t');
+          break;
+        case 'u' : {
+          ++json;
+          int c = 5;
+          while (--c) {
+            if (!is_hex(*json++))
+              FAIL(json_error((char *)j, "Bad hexadecimal unicode in string"))
+
           }
+          json_unicode(bf, json - 4);
+          continue;
         }
-        json_unicode(bf, json - 4);
-        continue;
-      }
-      default :
-        FAIL(json_error_new((char *)j, "Bad escape sequence in string"))
+        default :
+          FAIL(json_error((char *)j, "Bad escape sequence in string"))
       }
       ++json;
     } else {
       buf_cadd(bf, *json++);
     }
   }
-  if (!*json) {
-    FAIL(json_error_new((char *)j, "String does not end with \""))
-  }
-  if (!json_rend(json + 1)) {
-    FAIL(json_error_new((char *)j, "Spare characters reading a string value"))
-  }
-  char *r = buf_to_str_new(bf);
-  buf_free(bf);
-  return r;
+  if (!*json)
+    FAIL(json_error((char *)j, "String does not end with \""))
+
+  if (!json_rend(json + 1))
+    FAIL(json_error((char *)j, "Spare characters reading a string value"))
+
+  return buf_to_str(bf);
 }
 
 // Arr[Js]
-Arr *js_ra_new (Js *j) {
+Arr *js_ra (Js *j) {
   char *json = json_blanks((char *)j);
-  if (*json != '[') {
-    FAIL(json_error_new(json, "Array does not start with ["))
-  }
+  if (*json != '[')
+    FAIL(json_error(json, "Array does not start with ["))
+
   ++json;
   // Arr[Js]
-  Arr *a = arr_new(free);
+  Arr *a = arr_new();
   while (*json && *json != ']') {
     char *tmp = json;
     json = json_selement(json);
     Buf *bf = buf_new();
     buf_add_buf(bf, tmp, json - tmp);
-    arr_push(a, buf_to_str_new(bf));
-    buf_free(bf);
+    arr_push(a, buf_to_str(bf));
     if (*json == ',') {
       ++json;
-    } else if (*json && *json != ']') {
-      FAIL(json_error_new((char *)j, "Comma missing reading an array value"))
-    }
+    } else if (*json && *json != ']')
+      FAIL(json_error((char *)j, "Comma missing reading an array value"))
+
   }
-  if (!*json) {
-    FAIL(json_error_new((char *)j, "Array does not end with ]"))
-  }
-  if (!json_rend(json + 1)) {
-    FAIL(json_error_new((char *)j, "Spare characters reading an array value"))
-  }
+  if (!*json)
+    FAIL(json_error((char *)j, "Array does not end with ]"))
+
+  if (!json_rend(json + 1))
+    FAIL(json_error((char *)j, "Spare characters reading an array value"))
+
   return a;
 }
 
 // Map[Js]
-Map *js_ro_new (Js *j) {
+Map *js_ro (Js *j) {
   char *json = json_blanks((char *)j);
-  if (*json != '{') {
-    FAIL(json_error_new((char *)j, "Object does not start with {"))
-  }
+  if (*json != '{')
+    FAIL(json_error((char *)j, "Object does not start with {"))
+
   json = json_blanks(json + 1);
   // Map[Js]
-  Map *m = map_new(free);
+  Map *m = map_new();
   while (*json && *json != '}') {
-    if (*json != '"') {
-      FAIL(json_error_new((char *)j, "Object key is not a string"))
-    }
+    if (*json != '"')
+      FAIL(json_error((char *)j, "Object key is not a string"))
+
     char *tmp = json;
     json = json_sstring(json);
     Buf *kbf = buf_new();
     buf_add_buf(kbf, tmp, json - tmp);
 
-    if (*json != ':') {
-      FAIL(json_error_new((char *)j, "key-value separator (:) is missing"))
-    }
+    if (*json != ':')
+      FAIL(json_error((char *)j, "key-value separator (:) is missing"))
+
     ++json;
     tmp = json;
     json = json_selement(json);
     Buf *vbf = buf_new();
     buf_add_buf(vbf, tmp, json - tmp);
 
-    tmp = buf_to_str_new(kbf);
-    char *stmp = js_rs_new((Js *)tmp);
-    map_put(m, stmp, (Js *)buf_to_str_new(vbf));
-    free(stmp);
-    free(tmp);
-    buf_free(kbf);
-    buf_free(vbf);
+    map_put(m, js_rs((Js *)buf_to_str(kbf)), (Js *)buf_to_str(vbf));
 
     if (*json == ',') {
       json = json_blanks(json + 1);
-    } else if (*json && *json != '}') {
-      FAIL(json_error_new((char *)j, "Comma missing reading an object value"))
-    }
+    } else if (*json && *json != '}')
+      FAIL(json_error((char *)j, "Comma missing reading an object value"))
+
   }
-  if (!*json) {
-    FAIL(json_error_new((char *)j, "Object does not end with }"))
-  }
-  if (!json_rend(json + 1)) {
-    FAIL(json_error_new((char *)j, "Spare characters reading an object value"))
-  }
+  if (!*json)
+    FAIL(json_error((char *)j, "Object does not end with }"))
+
+  if (!json_rend(json + 1))
+    FAIL(json_error((char *)j, "Spare characters reading an object value"))
+
   return m;
 }
 
-Js *js_wn_new() {
+Js *js_wn() {
   return (Js *)str_new("null");
 }
 
-Js *js_wb_new(int value) {
+Js *js_wb(int value) {
   return (Js *)str_new(value ? "true" : "false");
 }
 
-Js *js_wi_new(int n) {
-  return (Js *)str_f_new("%d", n);
+Js *js_wi(int n) {
+  return (Js *)str_f("%d", n);
 }
 
-Js *js_wl_new(long n) {
-  return (Js *)str_f_new("%ld", n);
+Js *js_wl(long n) {
+  return (Js *)str_f("%ld", n);
 }
 
-Js *js_wd_new(double n, int scale) {
+Js *js_wd(double n, int scale) {
   struct lconv *lc = localeconv();
   scale = (scale < 0) ? 0 : (scale > 9) ? 9 : scale;
   char format[] = "%.xf";
   format[2] = '0' + scale;
-  char *ns = str_f_new(format, n);
+  char *ns = str_f(format, n);
   int ix = str_cindex(ns, *lc->decimal_point);
   if (ix != -1) {
     ns[ix] = '.';
@@ -413,7 +402,7 @@ Js *js_wd_new(double n, int scale) {
   return (Js *)ns;
 }
 
-Js *js_ws_new(const char *s) {
+Js *js_ws(char *s) {
   Buf *bf = buf_new();
 
   char tmp;
@@ -447,13 +436,11 @@ Js *js_ws_new(const char *s) {
     }
   }
   buf_cadd(bf, '"');
-  Js *r = (Js *)buf_to_str_new(bf);
-  buf_free(bf);
-  return r;
+  return (Js *)buf_to_str(bf);
 }
 
 // a = Arr[Js]
-Js *js_wa_new(Arr *a) {
+Js *js_wa(Arr *a) {
   int size = arr_size(a);
   Buf *bf = buf_new();
   buf_cadd(bf, '[');
@@ -466,27 +453,21 @@ Js *js_wa_new(Arr *a) {
     }
   }
   buf_cadd(bf, ']');
-  Js *r = (Js *)buf_to_str_new(bf);
-  buf_free(bf);
-  return r;
+  return (Js *)buf_to_str(bf);
 }
 
 // m = Map[Js]
-Js *js_wo_new(Map *m) {
+Js *js_wo(Map *m) {
   Buf *bf = buf_new();
   buf_cadd(bf, '{');
   EACH_IX(m, Kv, kv, i) {
     if (i) {
       buf_cadd(bf, ',');
     }
-    char *tmp = (char *)js_ws_new(map_key(kv));
-    buf_add(bf, tmp);
-    free(tmp);
+    buf_add(bf, (char *)js_ws(kv_key(kv)));
     buf_cadd(bf, ':');
-    buf_add(bf, map_value(kv));
+    buf_add(bf, kv_value(kv));
   }_EACH
   buf_cadd(bf, '}');
-  Js *r = (Js *)buf_to_str_new(bf);
-  buf_free(bf);
-  return r;
+  return (Js *)buf_to_str(bf);
 }

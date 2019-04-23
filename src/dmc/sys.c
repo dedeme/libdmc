@@ -14,19 +14,15 @@ static struct {
   char *uname;
 } sys;
 
-void sys_init (const char *path) {
+void sys_init (char *path) {
+  exc_init();
   rnd_init();
 
   uid_t uid = getuid();
   struct passwd *udata = getpwuid(uid);
-  sys.home = path_cat_new(udata->pw_dir, ".dmCApp", path, NULL);
+  sys.home = path_cat(udata->pw_dir, ".dmCApp", path, NULL);
   sys.uname = str_new(udata->pw_name);
   file_mkdir(sys.home);
-}
-
-void sys_end(void) {
-  free(sys.home);
-  free(sys.uname);
 }
 
 char *sys_home (void) {
@@ -37,17 +33,16 @@ char *sys_uname (void) {
   return sys.uname;
 }
 
-void sys_locale (const char *language) {
+void sys_locale (char *language) {
   setlocale (LC_ALL, language);
 }
 
-char *sys_cmd_new_null(const char *command) {
-  char *c = str_f_new("%s 2>&1", command);
+Opt *sys_cmd(char *command) {
+  char *c = str_f("%s 2>&1", command);
   FILE *fp = popen(c, "r");
-  free(c);
 
   if (!fp)
-    return NULL;
+    return opt_empty();
 
   Buf *bf = buf_new();
   char *line = NULL;
@@ -58,32 +53,6 @@ char *sys_cmd_new_null(const char *command) {
     line = NULL;
   }
   free(line);
-  char *r = buf_to_str_new(bf);
-  buf_free(bf);
   fclose(fp);
-  return r;
-}
-
-void sys_fail(
-  const char *message,
-  const char *file,
-  const char *func,
-  int line
-) {
-  void *array[25];
-  size_t size;
-  char **strings;
-  size = backtrace(array, 25);
-  strings = backtrace_symbols(array, size);
-
-  char *name = str_new(file);
-  path_name(&name);
-  printf("%s:%d:[%s]:\n%s\n", name, line, func, message);
-  free(name);
-  RANGE0(i, size) {
-    puts(strings[i]);
-  }_RANGE
-  free(strings);
-
-  exit(1);
+  return opt_new(buf_to_str(bf));
 }

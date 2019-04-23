@@ -17,10 +17,7 @@ typedef struct dec_Dec Dec;
 Dec *dec_new(double n, int scale);
 
 ///
-void dec_free(Dec *this);
-
-///
-char *dec_to_str_new(Dec *this);
+char *dec_to_str(Dec *this);
 
 /// dec_n returns the double value of 'this'
 double dec_n(Dec *this);
@@ -41,23 +38,23 @@ int dec_eqf_gap(float d1, float d2, float gap);
 /// ("" returns 'true')
 int dec_digits(const char *s);
 
-/// dec_regularize_iso_new sets a number without thousand separators and
+/// dec_regularize_iso returns a number without thousand separators and
 /// with decimal point.
-void dec_regularize_iso(char **s);
+char *dec_regularize_iso(char *s);
 
-/// dec_regularize_us_new sets a number without thousand separators and with
+/// dec_regularize_us returns a number without thousand separators and with
 /// decimal point.
-void dec_regularize_us(char **s);
+char *dec_regularize_us(char *s);
 
 /// dec_number Returns 'true' if "s" is a regularized number.<br>
 /// "" returns 'true'. "xxx.", "." or ".xxx" also returns 'true'
-int dec_number(const char *s);
+int dec_number(char *s);
 
 ///
-Js *dec_to_js_new(Dec *this);
+Js *dec_to_js(Dec *this);
 
 ///
-Dec *dec_from_js_new(Js *js);
+Dec *dec_from_js(Js *js);
 
 
 #endif

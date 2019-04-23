@@ -28,35 +28,35 @@ long js_rl (Js *json);
 double js_rd (Js *json);
 
 /// Read string
-char *js_rs_new (Js *json);
+char *js_rs (Js *json);
 
 /// Read array in an Arr[Js]
-Arr *js_ra_new (Js *json);
+Arr *js_ra (Js *json);
 
 /// Read object in a Map[js]
-Map *js_ro_new (Js *json);
+Map *js_ro (Js *json);
 /// Write a null value
-Js *js_wn_new(void);
+Js *js_wn(void);
 
 /// Write a boolean value
-Js *js_wb_new(int value);
+Js *js_wb(int value);
 
 /// Write an int value
-Js *js_wi_new(int n);
+Js *js_wi(int n);
 
 /// Write an long value
-Js *js_wl_new(long n);
+Js *js_wl(long n);
 
 /// Write a double value. 'scale' is forced between [0 - 9] inclusive
-Js *js_wd_new(double n, int scale);
+Js *js_wd(double n, int scale);
 
 /// Write a string
-Js *js_ws_new(const char *s);
+Js *js_ws(char *s);
 
 /// Write an Arr[Js]
-Js *js_wa_new(Arr *a);
+Js *js_wa(Arr *a);
 
 /// Write a Map[Js]
-Js *js_wo_new(Map *m);
+Js *js_wo(Map *m);
 
 #endif

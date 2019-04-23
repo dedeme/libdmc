@@ -24,13 +24,10 @@ Bytes *bytes_new(void);
 Bytes *bytes_bf_new(int length);
 
 /// Returns a new allocated 'Bytes' whitch is copy of 'bs'
-Bytes *bytes_from_bytes_new(unsigned char *bs, int length);
+Bytes *bytes_from_bytes(unsigned char *bs, int length);
 
 /// Returns a 'Bytes' whitch is copy of 's' without the ending zero.
-Bytes *bytes_from_str_new(const char *s);
-
-///
-void bytes_free(Bytes *this);
+Bytes *bytes_from_str(char *s);
 
 ///
 unsigned char *bytes_bs(Bytes *this);
@@ -45,12 +42,12 @@ void bytes_add_bytes(Bytes *this, unsigned char *bs, int length);
 void bytes_add(Bytes *this, Bytes *another);
 
 /// Adds to 'this' a copy of 's' without the ending zero
-void bytes_add_str(Bytes *this, const char *s);
+void bytes_add_str(Bytes *this, char *s);
 
 ///
-Js *bytes_to_js_new(Bytes *this);
+Js *bytes_to_js(Bytes *this);
 
 ///
-Bytes *bytes_from_js_new(Js *js);
+Bytes *bytes_from_js(Js *js);
 
 #endif

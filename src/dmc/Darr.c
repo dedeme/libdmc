@@ -19,8 +19,8 @@ Darr *darr_new(void) {
 
 ///
 Darr *darr_bf_new(int buffer) {
-  Darr *this = malloc(sizeof(Darr));
-  double *es = malloc(buffer * sizeof(double));
+  Darr *this = MALLOC(Darr);
+  double *es = ATOMIC(buffer * sizeof(double));
   this->es = es;
   this->end = es;
   this->endbf = es + buffer;
@@ -28,10 +28,9 @@ Darr *darr_bf_new(int buffer) {
 }
 
 
-Darr *darr_left_new(Darr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+Darr *darr_left(Darr *this, int ix) {
+  EXC_RANGE(ix, 0, darr_size(this))
+
   double *source = this->es;
   Darr *r = darr_bf_new(ix);
   double *target = r->es;
@@ -44,10 +43,9 @@ Darr *darr_left_new(Darr *this, int ix) {
 }
 
 
-Darr *darr_right_new(Darr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+Darr *darr_right(Darr *this, int ix) {
+  EXC_RANGE(ix, 0, darr_size(this))
+
   double *source = this->es + ix;
   Darr *r = darr_bf_new(this->end - source);
   double *target = r->es;
@@ -59,13 +57,11 @@ Darr *darr_right_new(Darr *this, int ix) {
   return r;
 }
 
-Darr *darr_sub_new(Darr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
+Darr *darr_sub(Darr *this, int begin, int end) {
+  int size = darr_size(this);
+  EXC_RANGE(begin, 0, size);
+  EXC_RANGE(end, begin, size);
+
   double *source = this->es + begin;
   Darr *r = darr_bf_new((this->es + end) - source);
   double *target = r->es;
@@ -77,7 +73,7 @@ Darr *darr_sub_new(Darr *this, int begin, int end) {
   return r;
 }
 
-Darr *darr_copy_new(Darr *this) {
+Darr *darr_copy(Darr *this) {
   double *source = this->es;
   Darr *r = darr_bf_new(this->end - source);
   double *target = r->es;
@@ -87,13 +83,6 @@ Darr *darr_copy_new(Darr *this) {
     *target++ = *source++;
   }
   return r;
-}
-
-void darr_free(Darr *this) {
-  if (this) {
-    free(this->es);
-    free(this);
-  }
 }
 
 int darr_size(Darr *this) {
@@ -116,9 +105,8 @@ int darr_eq(Darr *this, Darr *other, double gap) {
 }
 
 double darr_get(Darr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, darr_size(this) - 1)
+
   return *(this->es + ix);
 }
 
@@ -134,7 +122,7 @@ void darr_push(Darr *this, double e) {
   if (this->end == this->endbf) {
     int size = this->endbf - this->es;
     int new_size = size + size;
-    this->es = realloc(this->es, new_size * sizeof(double));
+    this->es = GC_REALLOC(this->es, new_size * sizeof(double));
     this->end = this->es + size;
     this->endbf = this->es + new_size;
   }
@@ -142,16 +130,14 @@ void darr_push(Darr *this, double e) {
 }
 
 void darr_set(Darr *this, int ix, double e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, darr_size(this) - 1)
+
   *(this->es + ix) = e;
 }
 
 void darr_insert(Darr *this, int ix, double e) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, darr_size(this))
+
   Darr *new = darr_bf_new((this->endbf - this->es) + 1);
   double *p = this->es;
   double *p_end = this->end;
@@ -173,18 +159,14 @@ void darr_insert(Darr *this, int ix, double e) {
     *t++ = e;
   }
 
-  free(this->es);
   this->es = new->es;
   this->end = t;
   this->endbf = new->endbf;
-  free(new);
 }
 
-///
 void darr_remove(Darr *this, int ix) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
+  EXC_RANGE(ix, 0, darr_size(this) - 1)
+
   Darr *new = darr_bf_new((this->endbf - this->es) - 1);
   double *p = this->es;
   double *p_end = this->end;
@@ -202,11 +184,9 @@ void darr_remove(Darr *this, int ix) {
     *t++ = *p++;
   }
 
-  free(this->es);
   this->es = new->es;
   this->end = t;
   this->endbf = new->endbf;
-  free(new);
 }
 
 void darr_cat(Darr *this, Darr *other) {
@@ -216,7 +196,7 @@ void darr_cat(Darr *this, Darr *other) {
     int this_size = this->endbf - this->es;
     if (this_len + other_len >= this_size){
       int new_size = this_size + other_len;
-      this->es = realloc(this->es, new_size * sizeof(double));
+      this->es = GC_REALLOC(this->es, new_size * sizeof(double));
       this->end = this->es + this_len;
       this->endbf = this->es + new_size;
     }
@@ -226,37 +206,28 @@ void darr_cat(Darr *this, Darr *other) {
 }
 
 void darr_insert_arr(Darr *this, int ix, Darr *other) {
-  if (ix < 0) {
-    ix = (this->end - this->es) + ix;
-  }
-  Darr *left = darr_left_new(this, ix);
-  Darr *right = darr_right_new(this, ix);
+  EXC_RANGE(ix, 0, darr_size(this))
+
+  Darr *left = darr_left(this, ix);
+  Darr *right = darr_right(this, ix);
   darr_cat(left, other);
   darr_cat(left, right);
-  darr_free(right);
-  free(this->es);
   this->es = left->es;
   this->end = left->end;
   this->endbf = left->endbf;
-  free(left);
 }
 
 void darr_remove_range(Darr *this, int begin, int end) {
-  if (begin < 0) {
-    begin = (this->end - this->es) + begin;
-  }
-  if (end < 0) {
-    end = (this->end - this->es) + end;
-  }
-  Darr *left = darr_left_new(this, begin);
-  Darr *right = darr_right_new(this, end);
+  int size = darr_size(this);
+  EXC_RANGE(begin, 0, size)
+  EXC_RANGE(end, begin, size)
+
+  Darr *left = darr_left(this, begin);
+  Darr *right = darr_right(this, end);
   darr_cat(left, right);
-  darr_free(right);
-  free(this->es);
   this->es = left->es;
   this->end = left->end;
   this->endbf = left->endbf;
-  free(left);
 }
 
 void darr_reverse(Darr *this) {
@@ -277,8 +248,8 @@ void darr_sort(Darr *this) {
     }
     int mid1 = size / 2;
     int mid2 = size - mid1;
-    double *a1 = malloc(mid1 * sizeof(double));
-    double *a2 = malloc(mid2 * sizeof(double));
+    double *a1 = ATOMIC(mid1 * sizeof(double));
+    double *a2 = ATOMIC(mid2 * sizeof(double));
     double *pa = a;
     double *pa1 = a1;
     double *pa2 = a2;
@@ -324,19 +295,17 @@ void darr_sort(Darr *this) {
         ++ia1;
       }
     }
-    free(a1);
-    free(a2);
   }
   sort(this->es, this->end - this->es);
 }
 
-Js *darr_to_js_new(Darr *this) {
+Js *darr_to_js(Darr *this) {
   // Arr[Js]
-  Arr *a = arr_new(free);
+  Arr *a = arr_new();
   double *p = this->es;
   double *end = this->end;
   while (p < end) {
-    char *str = (char *)js_wd_new(*p++, 9);
+    char *str = (char *)js_wd(*p++, 9);
     if (str_cindex(str, '.') != -1) {
       char *s = str;
       char *p = s + (strlen(s) - 1);
@@ -344,23 +313,20 @@ Js *darr_to_js_new(Darr *this) {
         --p;
       }
       char *tmp = str;
-      str = str_left_new(tmp, p - s + (*p == '.' ? 0 : 1));
-      free(tmp);
+      str = str_left(tmp, p - s + (*p == '.' ? 0 : 1));
     }
     arr_push(a, str);
   }
-  Js *r = js_wa_new(a);
-  arr_free(a);
+  Js *r = js_wa(a);
   return r;
 }
 
-Darr *darr_from_js_new(Js *js) {
+Darr *darr_from_js(Js *js) {
   Darr *this = darr_new();
   // Arr[Js]
-  Arr *a = js_ra_new(js);
+  Arr *a = js_ra(js);
   EACH(a, Js, js)
     darr_push(this, js_rd(js));
   _EACH
-  arr_free(a);
   return this;
 }

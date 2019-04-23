@@ -16,19 +16,12 @@ Buf *buf_new(void) {
 }
 
 Buf *buf_bf_new(int buffer_size) {
-  Buf *this = malloc(sizeof(Buf));
+  Buf *this = MALLOC(Buf);
   this->size = buffer_size - 1;
-  this->str = malloc(buffer_size);
+  this->str = ATOMIC(buffer_size);
   memset(this->str, 0, buffer_size);
   this->length = 0;
   return this;
-}
-
-void buf_free(Buf *this) {
-  if (this) {
-    free(this->str);
-    free(this);
-  }
 }
 
 int buf_len(Buf *this) {
@@ -39,24 +32,23 @@ char *buf_str(Buf *this) {
   return this->str;
 }
 
-void buf_add_buf (Buf *this, const char *data, int length) {
+void buf_add_buf (Buf *this, char *data, int length) {
   int ixend = this->length + length;
   if (this->size < ixend) {
       while (this->size < ixend) {
           this->size += this->size;
       }
       int memsize = this->size + 1;
-      char *newstr = malloc(memsize);
+      char *newstr = ATOMIC(memsize);
       memset(newstr, 0, memsize);
       memcpy(newstr, this->str, this->length);
-      free(this->str);
       this->str = newstr;
   }
   memcpy(this->str + this->length, data, length);
   this->length = ixend;
 }
 
-void buf_add (Buf *this, const char *data) {
+void buf_add (Buf *this, char *data) {
   buf_add_buf(this, data, strlen(data));
 }
 
@@ -64,7 +56,7 @@ void buf_cadd (Buf *this, char data) {
   buf_add_buf(this, &data, 1);
 }
 
-char *buf_to_str_new (Buf *this) {
+char *buf_to_str (Buf *this) {
   return str_new(this->str);
 }
 

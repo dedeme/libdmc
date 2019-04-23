@@ -18,19 +18,16 @@ Iarr *iarr_new(void);
 Iarr *iarr_bf_new(int buffer);
 
 /// If ix is < 0 then is changed to 'iarr_size - ix'
-Iarr *iarr_left_new(Iarr *this, int ix);
+Iarr *iarr_left(Iarr *this, int ix);
 
 /// If ix is < 0 then is changed to 'iarr_size - ix'
-Iarr *iarr_right_new(Iarr *this, int ix);
+Iarr *iarr_right(Iarr *this, int ix);
 
 /// If begin or end are < 0 then is changed to 'iarr_size - itsValue'
-Iarr *iarr_sub_new(Iarr *this, int begin, int end);
+Iarr *iarr_sub(Iarr *this, int begin, int end);
 
 ///
-Iarr *iarr_copy_new(Iarr *this);
-
-///
-void iarr_free(Iarr *this);
+Iarr *iarr_copy(Iarr *this);
 
 ///
 int iarr_size(Iarr *this);
@@ -75,9 +72,9 @@ void iarr_reverse(Iarr *this);
 void iarr_sort(Iarr *this);
 
 ///
-Js *iarr_to_js_new(Iarr *this);
+Js *iarr_to_js(Iarr *this);
 
 ///
-Iarr *iarr_from_js_new(Js *js);
+Iarr *iarr_from_js(Js *js);
 
 #endif

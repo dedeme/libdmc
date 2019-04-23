@@ -23,20 +23,16 @@ void buf_tests(void) {
   buf_add(bf, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-  char *s = buf_to_str_new(bf);
+  char *s = buf_to_str(bf);
   assert(str_eq(s, "+01abcabc"
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
-  free(s);
 
   buf_reset(bf);
-  s = buf_to_str_new(bf);
+  s = buf_to_str(bf);
   assert(str_eq(s, ""));
   assert(!buf_len(bf));
-
-  free(s);
-  buf_free(bf);
 
   puts("    Finished");
 }

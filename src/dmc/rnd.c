@@ -6,8 +6,9 @@
 #include <stdio.h>
 #include <time.h>
 #include "dmc/DEFS.h"
-#include "dmc/Arr.h"
 #include "dmc/sys.h"
+#include "dmc/exc.h"
+#include "dmc/str.h"
 
 void rnd_init (void) {
   srand(time(0));
@@ -24,37 +25,31 @@ int rnd_i (int top) {
 struct rnd_Box {
   int i;
   int size;
-  Varr *a;
+  Arr *a;
 };
 
-Box *rnd_box_new(Varr *a) {
-  if (!varr_size(a)) {
-    FAIL("rnd_box_new: a is empty")
-  }
+Box *rnd_box_new(Arr *a) {
+  if (!arr_size(a))
+    EXC_ILLEGAL_STATE("Arr 'a' is empty")
 
-  Varr *va = varr_new();
+  Arr *va = arr_new();
   EACH(a, void, e)
-    varr_push(va, e);
+    arr_push(va, e);
   _EACH
-  varr_shuffle(va);
+  arr_shuffle(va);
 
   Box *this = malloc(sizeof(Box));
   this->i = 0;
-  this->size = varr_size(va);
+  this->size = arr_size(va);
   this->a = va;
   return this;
-}
-
-void rnd_box_free(Box *this) {
-  varr_free(this->a);
-  free(this);
 }
 
 /// rnd_box_next returns the next element of 'this'.
 void *rnd_box_next(Box *this) {
   if (this->i == this->size) {
-    varr_shuffle(this->a);
+    arr_shuffle(this->a);
     this->i = 0;
   }
-  return varr_get(this->a, this->i++);
+  return arr_get(this->a, this->i++);
 }

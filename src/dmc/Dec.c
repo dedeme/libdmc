@@ -26,28 +26,19 @@ double _dec_round(double dbl) {
 }
 
 Dec *dec_new(double n, int scale) {
-  Dec *this = malloc(sizeof(Dec));
+  Dec *this = MALLOC(Dec);
   this->n = n >= 0 ? n + _dec_round(n) : n - _dec_round(n);
   this->scale = scale < 0 ? 0 : scale > 10 ? 10 : scale;
 
   return this;
 }
 
-void dec_free(Dec *this) {
-  free(this);
-}
-
-char *dec_to_str_new(Dec *this) {
+char *dec_to_str(Dec *this) {
   double n = this->n;
-  char *scale = str_f_new("%d", this->scale);
-  char *tpl = str_cat_new("%.", scale, "f", NULL);
-  char *r = str_f_new(tpl, n);
-  free(scale);
-  free(tpl);
+  char *scale = str_f("%d", this->scale);
+  char *r = str_f(str_cat("%.", scale, "f", NULL), n);
   if (*r == '-' && dec_eq(n, 0.0)) {
-    char *tmp = r;
-    r = str_right_new(tmp, 1);
-    free(tmp);
+    r = str_right(r, 1);
   }
   return r;
 }
@@ -78,20 +69,15 @@ int dec_digits(const char *s) {
   return 1;
 }
 
-void dec_regularize_iso(char **s) {
-  char *tmp = *s;
-  *s = str_replace_new(tmp, ".", "");
-  free(tmp);
-  str_creplace(s, ',', '.');
+char *dec_regularize_iso(char *s) {
+  return str_creplace(str_replace(s, ".", ""), ',', '.');
 }
 
-void dec_regularize_us(char **s) {
-  char *tmp = *s;
-  *s = str_replace_new(tmp, ",", "");
-  free(tmp);
+char *dec_regularize_us(char *s) {
+  return str_replace(s, ",", "");
 }
 
-int dec_number(const char *s) {
+int dec_number(char *s) {
   char ch;
   ch = *s++;
   if (ch == '-')
@@ -114,21 +100,19 @@ int dec_number(const char *s) {
   return 1;
 }
 
-Js *dec_to_js_new(Dec *this) {
-  Arr *a = arr_new(free);
-  arr_push(a, js_wd_new(this->n, this->scale));
-  arr_push(a, js_wi_new(this->scale));
-  Js *r = js_wa_new(a);
-  arr_free(a);
+Js *dec_to_js(Dec *this) {
+  Arr *a = arr_new();
+  arr_push(a, js_wd(this->n, this->scale));
+  arr_push(a, js_wi(this->scale));
+  Js *r = js_wa(a);
   return r;
 }
 
-Dec *dec_from_js_new(Js *js) {
-  Dec *this = malloc(sizeof(Dec));
-  Arr *a = js_ra_new(js);
+Dec *dec_from_js(Js *js) {
+  Dec *this = MALLOC(Dec);
+  Arr *a = js_ra(js);
   this->n = js_rd(arr_get(a, 0));
   this->scale = js_ri(arr_get(a, 1));
-  arr_free(a);
   return this;
 }
 

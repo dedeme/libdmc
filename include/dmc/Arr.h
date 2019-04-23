@@ -11,27 +11,25 @@
 
 typedef struct js_Js Js;
 
+typedef struct it_It It;
+
 ///
 typedef struct arr_Arr Arr;
 
 /// Creates a new Array.<br>
-/// 'ffree' is the function to free elements of Arr.
-Arr *arr_new(void(*ffree)(void *));
+Arr *arr_new(void);
 
 /// buffer must be > 0
-Arr *arr_bf_new(int buffer, void(*ffree)(void *));
+Arr *arr_bf_new(int buffer);
 
 /// Returns elements placed in an index < ix
-Arr *arr_left_new(Arr *this, int ix, void *(*copy_new)(void *));
+Arr *arr_left(Arr *this, int ix, void *(*copy)(void *));
 
 /// Returns elements placed in an index >= ix
-Arr *arr_right_new(Arr *this, int ix, void *(*copy_new)(void *));
+Arr *arr_right(Arr *this, int ix, void *(*copy)(void *));
 
 /// Returns elements placed between [begin-end)
-Arr *arr_sub_new(Arr *this, int begin, int end, void *(*copy_new)(void *));
-
-///
-void arr_free(Arr *this);
+Arr *arr_sub(Arr *this, int begin, int end, void *(*copy)(void *));
 
 ///
 int arr_size(Arr *this);
@@ -46,15 +44,11 @@ void **arr_start(Arr *this);
 /// 'arr_end' does not point to a valid element.
 void **arr_end(Arr *this);
 
-/// Returns the 'free' function for elements
-FPROC arr_ffree(Arr *this);
-//void (*arr_ffree(Arr *this))(void *);
-
 /// Adds an element at the end of 'this'. 'e' will be freed by 'this'.
 void arr_push(Arr *this, void *e);
 
 /// Returns and removes the last element.
-void *arr_pop_new(Arr *this);
+void *arr_pop(Arr *this);
 
 /// Returns the las element.
 void *arr_peek(Arr *this);
@@ -68,11 +62,11 @@ void arr_insert(Arr *this, int ix, void *e);
 /// Removes an element at position ix
 void arr_remove(Arr *this, int ix);
 
-/// Adds other to 'this' using the function 'copy_new'
-void arr_cat(Arr *this, Arr *other, void *(*copy_new)(void *));
+/// Adds other to 'this' using the function 'copy'
+void arr_cat(Arr *this, Arr *other, void *(*copy)(void *));
 
 /// Inserts an Arr in position ix
-void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy_new)(void *));
+void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy)(void *));
 
 /// Removes elements between [begin-end)
 void arr_remove_range(Arr *this, int begin, int end);
@@ -95,15 +89,16 @@ int arr_index(Arr *this, int (*pred)(void *e));
 /// arr_filter removes every element which returns 'false' with 'pred'.
 void arr_filter(Arr *this, int (*pred)(void *e));
 
-/// 'to_new' returns a Js from an element of 'this'
-Js *arr_to_js_new(Arr *this, Js *(*to_new)(void *e));
+/// Creates an iterator over 'this'
+It *arr_to_it(Arr *this);
 
-/// 'from_new' parse a Js to an element of 'this'.<br>
-/// 'free' frees an element of 'this'
-Arr *arr_from_js_new(
-  Js *js,
-  void *(*from_new)(Js *jse),
-  void (*ffree)(void *e)
-);
+/// Creates an Arr from 'it'
+Arr *arr_from_it(It *it);
+
+/// Returns a Js from an element of 'this'
+Js *arr_to_js(Arr *this, Js *(*to)(void *e));
+
+/// Parses a Js to an element of 'this'.<br>
+Arr *arr_from_js(Js *js, void *(*from)(Js *jse));
 
 #endif

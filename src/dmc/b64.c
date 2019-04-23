@@ -8,6 +8,9 @@
 #include <stdio.h>
 #include "dmc/sys.h"
 #include "dmc/DEFS.h"
+#include "dmc/exc.h"
+#include "dmc/str.h"
+#include "gc.h"
 
 static char encoding_table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -32,13 +35,13 @@ static const unsigned char decoding_table[256] = {
 };
 static int mod_table[] = {0, 2, 1};
 
-static char *base64_encode_new(
+static char *base64_encode(
   unsigned char *data,
   size_t input_length,
   size_t *output_length
 ) {
   *output_length = 4 * ((input_length + 2) / 3);
-  char *encoded_data = malloc(*output_length + 1);
+  char *encoded_data = ATOMIC(*output_length + 1);
 
   for (int i = 0, j = 0; i < input_length;) {
     uint32_t octet_a = i < input_length ? (unsigned char)data[i++] : 0;
@@ -62,14 +65,15 @@ static char *base64_encode_new(
 }
 
 // Only for positive input_length
-static Bytes *base64_decode_new(
+static Bytes *base64_decode(
   const char *data,
   size_t input_length,
   size_t *output_length
 ) {
-  if (input_length % 4 != 0) {
-    FAIL("b64_decode - b64_decode_new: Wrong input length")
-  }
+  if (input_length % 4 != 0)
+    EXC_ILLEGAL_ARGUMENT(
+      "Wrong input length", "len % 4 != 0", str_f("%d", input_length % 4)
+    )
 
   *output_length = input_length / 4 * 3;
   if (data[input_length - 1] == '=') (*output_length)--;
@@ -110,31 +114,30 @@ static Bytes *base64_decode_new(
   return bs;
 }
 
-char *b64_decode_new(const char *b64) {
-  Bytes *bs = b64_decode_bytes_new(b64);
+char *b64_decode(char *b64) {
+  Bytes *bs = b64_decode_bytes(b64);
   int len = bytes_len(bs);
-  char *s = malloc(len + 1);
+  char *s = ATOMIC(len + 1);
   memcpy(s, bytes_bs(bs), len);
-  bytes_free(bs);
   *(s + len) = 0;
   return s;
 }
 
-Bytes *b64_decode_bytes_new(const char *b64) {
+Bytes *b64_decode_bytes(char *b64) {
   if (*b64) {
     size_t len;
-    return base64_decode_new(b64, strlen(b64), &len);
+    return base64_decode(b64, strlen(b64), &len);
   } else {
     return bytes_bf_new(0);
   }
 }
 
-char *b64_encode_new(const char *s) {
+char *b64_encode(char *s) {
   size_t len;
-  return base64_encode_new((unsigned char *)s, strlen(s), &len);
+  return base64_encode((unsigned char *)s, strlen(s), &len);
 }
 
-char *b64_encode_bytes_new(Bytes *bs) {
+char *b64_encode_bytes(Bytes *bs) {
   size_t len;
-  return base64_encode_new(bytes_bs(bs), bytes_len(bs), &len);
+  return base64_encode(bytes_bs(bs), bytes_len(bs), &len);
 }

@@ -8,6 +8,15 @@
 
 #include "dmc/std.h"
 
+/// Return of cgi_get_session_data
+typedef struct cgi_Session CgiSession;
+
+/// Returns comunication key
+char *cgiSession_key(CgiSession *this);
+
+/// Returns connection identifier
+char *cgiSession_id(CgiSession *this);
+
 /// cgi_klen returns the standard length of keys.
 int cgi_klen(void);
 
@@ -15,23 +24,18 @@ int cgi_klen(void);
 ///   home        : Aboslute path of application directory below wwwcgi/dmcgi
 ///                 directory. (e.g. /peter/wwwcgi/dmcgi/JsMon)
 ///   t_expiration: Time in seconds.
-void cgi_init(const char *home, time_t t_expiration);
-
-/// Finalizes cgi session and frees resources
-void cgi_end(void);
+void cgi_init(char *home, time_t t_expiration);
 
 ///
 char *cgi_home(void);
 
 /// cgi_set_key sets the key which 'cgi_ok' and 'cgi_err' will use. This
 /// function is called when connection or authentication.
-void cgi_set_key(const char *k);
+void cgi_set_key(char *k);
 
-/// cgi_get_key returns 'key' and 'connectionId'. If session_id is wrong its
-/// values are "". This function is called when normal requests.
-void cgi_get_session_data(
-  char **key_new, char **connectionId_new, const char *session_id
-);
+/// cgi_get_key returns comunication key and connection idenfitier of
+/// 'session_id'. If 'session_id' is not valid returns 'opt_empty'.
+Opt *cgi_get_session(char *session_id);
 
 /// cgi_add_usser adds an user to database and send response.
 ///   admin: Admin name
@@ -42,8 +46,8 @@ void cgi_get_session_data(
 ///   Response: A boolean field {ok:true|false}, sets to true if
 ///     operation succeeded. A fail can come up if 'admin' authentication fails.
 void cgi_add_user(
-  const char *admin, const char *akey,
-  const char *user, const char *ukey, const char *level
+  char *admin, char *akey,
+  char *user, char *ukey, char *level
 );
 
 /// cgi_del_user remove an user from database and send response
@@ -53,7 +57,7 @@ void cgi_add_user(
 ///   user: User name to remove
 ///   Response: A boolean field {ok:true|false}, sets to true if
 ///     operation succeeded. A fail can come up if 'admin' authentication fails.
-void cgi_del_user(const char *admin, const char *akey, const char *user);
+void cgi_del_user(char *admin, char *akey, char *user);
 
 /// cgi_change_level modify a user level and send response
 ///   this:
@@ -65,7 +69,7 @@ void cgi_del_user(const char *admin, const char *akey, const char *user);
 ///     operation succeeded. A fail can come up if 'admin' authentication fails
 ///     or 'user' does not exist.
 void cgi_change_level(
-  const char *admin, const char *akey, const char *user, const char *level
+  char *admin, char *akey, char *user, char *level
 );
 
 /// cgi_change pass change a user password and send response
@@ -75,10 +79,10 @@ void cgi_change_level(
 ///   new_key: New password
 ///   Response: A boolean field {ok:true|false}, sets to true if
 ///     operation succeeded. A fail can come up if 'user' authentication fails.
-void cgi_change_pass(const char *user, const char *key, const char *new_key);
+void cgi_change_pass(char *user, char *key, char *new_key);
 
 /// cgi_del_session deletes 'session' and return an empty response.
-void cgi_del_session(const char *session_id);
+void cgi_del_session(char *session_id);
 
 /// cgi_authentication send to client level, key, page_id and session_id.
 /// If authentication failed every value is "".
@@ -87,12 +91,12 @@ void cgi_del_session(const char *session_id);
 ///   key: User password
 ///   expiration: If is set to false, session will expire after 30 days.
 ///   Response: 'level', 'key', 'pageId' and 'sessionId' fields.
-void cgi_authentication(const char *user, const char *key, int expiration);
+void cgi_authentication(char *user, char *key, int expiration);
 
 /// cig_connect send client 'connectionId' and 'key'. If conection failed
 /// both are "".<br>
 /// 'key' is a new key, set for the new connection.
-void cgi_connect(const char  *session_id);
+void cgi_connect(char  *session_id);
 
 /// cgi_ok send a normal response.<br>
 /// 'data' is a Map[Js]
@@ -102,7 +106,7 @@ void cgi_ok(Map *data);
 void cgi_empty(void);
 
 /// cgi_ok send an error response, setting {error:msg}.
-void cgi_error(const char *msg);
+void cgi_error(char *msg);
 
 /// cgi_expired and expired response, setting {expired:1}
 void cgi_expired(void);

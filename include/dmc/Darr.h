@@ -18,19 +18,16 @@ Darr *darr_new(void);
 Darr *darr_bf_new(int buffer);
 
 /// If ix is < 0 then is changed to 'darr_size - ix'
-Darr *darr_left_new(Darr *this, int ix);
+Darr *darr_left(Darr *this, int ix);
 
 /// If ix is < 0 then is changed to 'darr_size - ix'
-Darr *darr_right_new(Darr *this, int ix);
+Darr *darr_right(Darr *this, int ix);
 
 /// If begin or end are < 0 then is changed to 'darr_size - itsValue'
-Darr *darr_sub_new(Darr *this, int begin, int end);
+Darr *darr_sub(Darr *this, int begin, int end);
 
 ///
-Darr *darr_copy_new(Darr *this);
-
-///
-void darr_free(Darr *this);
+Darr *darr_copy(Darr *this);
 
 ///
 int darr_eq(Darr *this, Darr *other, double gap);
@@ -75,9 +72,9 @@ void darr_reverse(Darr *this);
 void darr_sort(Darr *this);
 
 ///
-Js *darr_to_js_new(Darr *this);
+Js *darr_to_js(Darr *this);
 
 ///
-Darr *darr_from_js_new(Js *js);
+Darr *darr_from_js(Js *js);
 
 #endif

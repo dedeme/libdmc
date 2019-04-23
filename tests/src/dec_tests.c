@@ -10,38 +10,26 @@ void dec_tests(void) {
   puts("Dec tests");
 
   int decEqstr(char *n, Dec *this) {
-    char *r = dec_to_str_new(this);
+    char *r = dec_to_str(this);
     char *lc = setlocale(LC_ALL, NULL);
     if (str_starts(lc, "es") || str_starts(lc, "ES")){
-      dec_regularize_iso(&r);
+      r = dec_regularize_iso(r);
     }
-    int rs = str_eq(r, n);
-    free(r);
-    return rs;
+    return str_eq(r, n);
   }
 
   int iso_eq(char *rs, char *dec) {
-    char *tmp = str_new(dec);
-    dec_regularize_iso(&tmp);
-    int r = str_eq(rs, tmp);
-    free(tmp);
-    return r;
+    return str_eq(rs, dec_regularize_iso(dec));
   }
 
   int us_eq(char *rs, char *dec) {
-    char *tmp = str_new(dec);
-    dec_regularize_us(&tmp);
-    int r = str_eq(rs, tmp);
-    free(tmp);
-    return r;
+    return str_eq(rs, dec_regularize_us(dec));
   }
 
   double a2f (char *s) {
     char *lc = setlocale(LC_ALL, NULL);
     if (str_starts(lc, "es") || str_starts(lc, "ES")) {
-      char *tmp = s;
-      s = str_replace_new(tmp, ".", ",");
-      free(tmp);
+      s = str_replace(s, ".", ",");
     }
     double r = atof(s);
     return r;
@@ -53,37 +41,27 @@ void dec_tests(void) {
 
   d = dec_new(1234567890.125, 2);
   assert(decEqstr("1234567890.13", d));
-  js = dec_to_js_new(d);
-  djs = dec_from_js_new(js);
+  js = dec_to_js(d);
+  djs = dec_from_js(js);
   assert(decEqstr("1234567890.13", djs));
-  dec_free(d);
-  free(js);
-  dec_free(djs);
 
   d = dec_new(0.0, 0);
   assert(decEqstr("0", d));
-  dec_free(d);
 
   d = dec_new(0.1234, 3);
   assert(decEqstr("0.123", d));
-  dec_free(d);
 
   d = dec_new(12.21, 4);
   assert(decEqstr("12.2100", d));
-  dec_free(d);
 
   d = dec_new(-0.1226, 3);
   assert(decEqstr("-0.123", d));
-  dec_free(d);
 
   d = dec_new(-12.21, 4);
   assert(decEqstr("-12.2100", d));
-  js = dec_to_js_new(d);
-  djs = dec_from_js_new(js);
+  js = dec_to_js(d);
+  djs = dec_from_js(js);
   assert(decEqstr("-12.2100", djs));
-  dec_free(d);
-  free(js);
-  dec_free(djs);
 
   assert(dec_eq(3.0, 3.0));
   assert(dec_eq_gap(3.0, 3.0, 0.01));
@@ -140,7 +118,7 @@ void dec_tests(void) {
   assert(dec_number("-234.25") && dec_eq(-234.25, a2f("-234.25")));
   assert(dec_number("-25.12") && dec_eq(-25.12, a2f("-25.12")));
   assert(dec_number("-25") && dec_eq(-25, a2f("-25")));
-/*
+
   assert(dec_number(""));
   assert(dec_number("3."));
   assert(dec_number(".3"));
@@ -153,7 +131,7 @@ void dec_tests(void) {
   assert(!dec_number("12b.eb"));
   assert(!dec_number("124.7b"));
   assert(!dec_number("12b"));
-*/
+
   puts("    Finished");
 }
 

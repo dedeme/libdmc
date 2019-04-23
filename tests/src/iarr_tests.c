@@ -12,27 +12,21 @@ void iarr_tests(void) {
 
   assert(iarr_size(ia) == 0);
 
-  Js *js = iarr_to_js_new(ia);
-  Iarr *ia2 = iarr_from_js_new(js);
-  free(js);
+  Js *js = iarr_to_js(ia);
+  Iarr *ia2 = iarr_from_js(js);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_copy_new(ia);
+  ia2 = iarr_copy(ia);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_left_new(ia, 0);
+  ia2 = iarr_left(ia, 0);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_right_new(ia, 0);
+  ia2 = iarr_right(ia, 0);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_sub_new(ia, 0, 0);
+  ia2 = iarr_sub(ia, 0, 0);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
   iarr_push(ia, 1);
   iarr_push(ia, 2);
@@ -40,39 +34,31 @@ void iarr_tests(void) {
   assert(iarr_get(ia, 1) == 2);
   assert(iarr_size(ia) == 2);
 
-  js = iarr_to_js_new(ia);
-  ia2 = iarr_from_js_new(js);
-  free(js);
+  js = iarr_to_js(ia);
+  ia2 = iarr_from_js(js);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_copy_new(ia);
+  ia2 = iarr_copy(ia);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_left_new(ia, 1);
+  ia2 = iarr_left(ia, 1);
   assert(iarr_get(ia2, 0) == 1);
   assert(iarr_size(ia2) == 1);
-  iarr_free(ia2);
 
-  ia2 = iarr_right_new(ia, 1);
+  ia2 = iarr_right(ia, 1);
   assert(iarr_get(ia2, 0) == 2);
   assert(iarr_size(ia2) == 1);
-  iarr_free(ia2);
 
-  ia2 = iarr_sub_new(ia, 0, 2);
+  ia2 = iarr_sub(ia, 0, 2);
   assert(iarr_eq(ia, ia2));
-  iarr_free(ia2);
 
-  ia2 = iarr_sub_new(ia, 0, 1);
+  ia2 = iarr_sub(ia, 0, 1);
   assert(iarr_get(ia2, 0) == 1);
   assert(iarr_size(ia2) == 1);
-  iarr_free(ia2);
 
-  ia2 = iarr_sub_new(ia, 1, 2);
+  ia2 = iarr_sub(ia, 1, 2);
   assert(iarr_get(ia2, 0) == 2);
   assert(iarr_size(ia2) == 1);
-  iarr_free(ia2);
 
   ia2 = iarr_new();
   iarr_cat(ia, ia2);
@@ -144,19 +130,16 @@ void iarr_tests(void) {
   assert(iarr_get(ia, 3) == 2);
   assert(iarr_get(ia, 4) == 1);
 
-  assert(iarr_get(ia, -1) == 1);
-  assert(iarr_get(ia, -2) == 2);
-  assert(iarr_get(ia, -3) == 3);
-  assert(iarr_get(ia, -4) == 101);
-  assert(iarr_get(ia, -5) == 101);
+  assert(iarr_get(ia, iarr_size(ia) - 1) == 1);
+  assert(iarr_get(ia, iarr_size(ia) - 2) == 2);
+  assert(iarr_get(ia, iarr_size(ia) - 3) == 3);
+  assert(iarr_get(ia, iarr_size(ia) - 4) == 101);
+  assert(iarr_get(ia, iarr_size(ia) - 5) == 101);
 
-  iarr_free(ia);
   ia = iarr_new();
   iarr_sort(ia);
   iarr_reverse(ia);
   assert(iarr_size(ia) == 0);
 
-  iarr_free(ia2);
-  iarr_free(ia);
   puts("    Finished");
 }

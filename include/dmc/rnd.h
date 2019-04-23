@@ -6,7 +6,7 @@
 #ifndef DMC_RND_H
   #define DMC_RND_H
 
-#include "dmc/Varr.h"
+#include "dmc/Arr.h"
 
 ///
 typedef struct rnd_Box Box;
@@ -22,10 +22,7 @@ int rnd_i(int top);
 
 /// rnd_box_new returns an 'Box' that iterates over 'a' elements randomly. When
 /// it finishes with all the elements of 'a', restarts again.
-Box *rnd_box_new(Varr *a);
-
-///
-void rnd_box_free(Box *this);
+Box *rnd_box_new(Arr *a);
 
 /// rnd_box_next returns the next element of 'this'.
 void *rnd_box_next(Box *this);

@@ -8,12 +8,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <gc.h>
 
 #include "DEFS.h"
+#include "Tp.h"
+#include "Kv.h"
+#include "Tp3.h"
+#include "exc.h"
+#include "Opt.h"
 #include "Bytes.h"
-#include "Varr.h"
 #include "Arr.h"
-#include "Vmap.h"
+#include "It.h"
 #include "Map.h"
 #include "Buf.h"
 #include "str.h"

@@ -8,17 +8,12 @@ OBJECTS = $(subst src/$(LIB),obj,$(patsubst %.c,%.o,$(wildcard ../src/$(LIB)/*.c
 
 bin/tests : $(TESTS) ../lib/lib$(LIB).a
 	gcc $(CFLAGS) $(TESTS) -o bin/tests -Iinclude \
-		-I../include -L../lib -l$(LIB)
+		-I../include -L../lib -l$(LIB) \
+		-lgc
 
 ../lib/lib$(LIB).a : $(OBJECTS)
 	ar rcs ../lib/lib$(LIB).a $(OBJECTS)
 
 ../obj/%.o : ../src/$(LIB)/%.c ../include/$(LIB)/%.h
-	gcc $(CFLAGS) -c $< -o $@ -I../include
-
-.PHONY: valgrind
-
-valgrind :
-	gcc $(CFLAGS) -O0 -g $(TESTS) -o bin/v_tests -Iinclude \
-		-I../include -L../lib -l$(LIB)
+	gcc $(CFLAGS) -c $< -o $@ -I../include -lgc
 

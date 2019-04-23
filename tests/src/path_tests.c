@@ -7,12 +7,8 @@
 void path_tests(void) {
   puts("Path tests");
 
-  int test_path(void (*f)(char **), char *path, char *rs) {
-    char *p = str_new(path);
-    f(&p);
-    int r = str_eq(p, rs);
-    free(p);
-    return r;
+  int test_path(char *(*f)(char *), char *path, char *rs) {
+    return str_eq(f(path), rs);
   }
 
   assert(test_path(path_name, "", ""));
@@ -51,10 +47,8 @@ void path_tests(void) {
   char *s0 = "";
   char *s1 = "1";
 
-  char *r = path_cat_new(s0, s1, "ab", "ab", "", "cd", NULL);
+  char *r = path_cat(s0, s1, "ab", "ab", "", "cd", NULL);
   assert(str_eq(r, "1/ab/ab/cd"));
-
-  free(r);
 
   puts("    Finished");
 }
