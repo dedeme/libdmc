@@ -305,17 +305,7 @@ Js *darr_to_js(Darr *this) {
   double *p = this->es;
   double *end = this->end;
   while (p < end) {
-    char *str = (char *)js_wd(*p++, 9);
-    if (str_cindex(str, '.') != -1) {
-      char *s = str;
-      char *p = s + (strlen(s) - 1);
-      while (p >= s && *p == '0') {
-        --p;
-      }
-      char *tmp = str;
-      str = str_left(tmp, p - s + (*p == '.' ? 0 : 1));
-    }
-    arr_push(a, str);
+    arr_push(a, js_wd(*p++));
   }
   Js *r = js_wa(a);
   return r;

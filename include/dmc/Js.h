@@ -47,8 +47,8 @@ Js *js_wi(int n);
 /// Write an long value
 Js *js_wl(long n);
 
-/// Write a double value. 'scale' is forced between [0 - 9] inclusive
-Js *js_wd(double n, int scale);
+/// Write a double value with a maximum of 9 decimal positions.
+Js *js_wd(double n);
 
 /// Write a string
 Js *js_ws(char *s);

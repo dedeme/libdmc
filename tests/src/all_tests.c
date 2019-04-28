@@ -28,7 +28,7 @@
 
 int main(int argc, char *argv[]) {
   sys_init("libdmc_tests");
-/*
+
   iarr_tests();
   darr_tests();
   bytes_tests();
@@ -38,8 +38,7 @@ int main(int argc, char *argv[]) {
   str_tests();
   map_tests();
   list_tests();
-*/  hash_tests();
-/*
+  hash_tests();
   rnd_tests();
   b64_tests();
   cryp_tests();
@@ -50,5 +49,5 @@ int main(int argc, char *argv[]) {
   date_tests();
   ext_tests();
   cgi_tests();
-*/
+
 }

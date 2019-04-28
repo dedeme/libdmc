@@ -233,7 +233,7 @@ typedef void *(*FFROM)(Js *);
   THROW(exc_illegal_state_t) exc_illegal_state(msg) _THROW
 
 /// Example:
-//    EXC_IO("Fail")
+///   EXC_IO("Fail")
 #define EXC_IO(msg) \
   THROW(exc_io_t) exc_io(msg) _THROW
 

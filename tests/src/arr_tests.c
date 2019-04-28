@@ -105,7 +105,7 @@ void arr_tests(void) {
   assert(*(double *)arr_get(ia, 4) == 1);
 
   Js *double_to_js_new(double *d) {
-    return js_wd(*d, 0);
+    return js_wd(*d);
   }
   double *double_from_js_new(Js *js) {
     double *this = malloc(sizeof(double));

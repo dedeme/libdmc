@@ -47,18 +47,18 @@ void js_tests(void) {
   assert(js_ri(s) == 254);
   s = js_wi(-1100);
   assert(js_ri(s) == -1100);
-  s = js_wd(0.0, 5);
+  s = js_wd(0.0);
   assert(js_rd(s) == 0);
-  s = js_wd(-0.0, 0);
+  s = js_wd(-0.0);
   assert(js_rd(s) == 0);
-  s = js_wd(-.0, 2);
+  s = js_wd(-.0);
   assert(js_rd(s) == 0);
-  s = js_wd(1.045, 3);
+  s = js_wd(1.045);
   assert(js_rd(s) == 1.045);
-  s = js_wd(-21.045, 3);
+  s = js_wd(-21.045);
   assert(js_rd(s) == -21.045);
-  s = js_wd(-21.045, 2);
-  assert(js_rd(s) == -21.05);
+  s = js_wd(-21.04);
+  assert(js_rd(s) == -21.04);
 
   str = js_rs((Js*)"  \"\" ");
   assert(str_eq("", str));
@@ -146,7 +146,7 @@ void js_tests(void) {
   a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
 
-  arr_push(a, js_wd(1, 2));
+  arr_push(a, js_wd(1));
   s = js_wa(a);
   a3 = js_ra(s);
   assert(arr_eq_str(a, a3));
@@ -229,7 +229,7 @@ void js_tests(void) {
   m2 = js_ro(s);
   assert(map_eq_str(m, m2));
 
-  map_put(m, "C", js_wd(321.189, 2));
+  map_put(m, "C", js_wd(321.19));
   s = js_wo(m);
   m2 = js_ro(s);
   assert(map_eq_str(m, m2));

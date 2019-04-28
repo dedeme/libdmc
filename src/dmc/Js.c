@@ -389,15 +389,26 @@ Js *js_wl(long n) {
   return (Js *)str_f("%ld", n);
 }
 
-Js *js_wd(double n, int scale) {
+Js *js_wd(double n) {
   struct lconv *lc = localeconv();
-  scale = (scale < 0) ? 0 : (scale > 9) ? 9 : scale;
-  char format[] = "%.xf";
-  format[2] = '0' + scale;
-  char *ns = str_f(format, n);
+  char *ns = str_f("%.9f", n);
   int ix = str_cindex(ns, *lc->decimal_point);
   if (ix != -1) {
     ns[ix] = '.';
+    int i;
+    for (i = strlen(ns) - 1; i >= ix; --i) {
+      if (ns[i] != '0') {
+        break;
+      }
+    }
+    if (ix != i) {
+      ++i;
+    }
+    if (i) {
+      ns = str_left(ns, i);
+    } else {
+      ns = "0";
+    }
   }
   return (Js *)ns;
 }

@@ -102,7 +102,7 @@ int dec_number(char *s) {
 
 Js *dec_to_js(Dec *this) {
   Arr *a = arr_new();
-  arr_push(a, js_wd(this->n, this->scale));
+  arr_push(a, js_wd(this->n));
   arr_push(a, js_wi(this->scale));
   Js *r = js_wa(a);
   return r;
