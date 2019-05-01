@@ -13,9 +13,6 @@
 #include "dmc/std.h"
 #include <pthread.h>
 
-/// Stops the current thread
-void async_sleep (int millis);
-
 /// Launchs 'fn' in a new thread. Example of use:
 ///   void fn(char *tx) { puts(tx); }
 ///   pthread_t *thr = async_thread((FPROC)fn, "Hello");

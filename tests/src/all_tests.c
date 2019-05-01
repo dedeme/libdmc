@@ -26,6 +26,8 @@
 #include "ext_tests.h"
 #include "cgi_tests.h"
 #include "async_tests.h"
+#include "schd_tests.h"
+#include "iserver_tests.h"
 
 int main(int argc, char *argv[]) {
   sys_init("libdmc_tests");
@@ -51,5 +53,7 @@ int main(int argc, char *argv[]) {
   ext_tests();
   cgi_tests();
   async_tests();
+  schd_tests();
+  iserver_tests();
 
 }

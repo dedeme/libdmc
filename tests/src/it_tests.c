@@ -7,7 +7,6 @@
 #include "dmc/It.h"
 #include "dmc/Buf.h"
 #include "dmc/str.h"
-#include "dmc/Tps.h"
 #include "dmc/DEFS.h"
 
 void it_tests() {

@@ -8,6 +8,7 @@
 #include <execinfo.h>
 #include "dmc/std.h"
 #include "dmc/rnd.h"
+#include "time.h"
 
 static struct {
   char *home;
@@ -55,4 +56,13 @@ Opt *sys_cmd(char *command) {
   free(line);
   fclose(fp);
   return opt_new(buf_to_str(bf));
+}
+
+void sys_sleep (int millis) {
+  struct timespec t;
+  struct timespec rem;
+
+  t.tv_sec = millis / 1000;
+  t.tv_nsec = (millis % 1000) * 1000000;
+  nanosleep(&t, &rem);
 }

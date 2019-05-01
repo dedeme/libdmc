@@ -139,22 +139,39 @@ int date_year (time_t this);
 ///          minute offset from UTC). (SU)
 ///   %Z     The timezone name or abbreviation.
 ///   %%     A literal '%' character.
-char *date_f(time_t this, char *template);
+char *date_f (time_t this, char *template);
 
 /// date_to_str returns a string in format yyyymmdd
-char *date_to_str(time_t this);
+char *date_to_str (time_t this);
 
 /// date_to_iso returns a string in format dd/mm/yyyy
-char *date_to_iso(time_t this);
+char *date_to_iso (time_t this);
 
 /// date_to_us returns a string in format mm/dd/yyyy
-char *date_to_us(time_t this);
+char *date_to_us (time_t this);
 
 ///
-Js *date_to_js(time_t this);
+Js *date_to_js (time_t this);
 
 ///
-time_t date_from_js(Js *js);
+time_t date_from_js (Js *js);
 
+///
+typedef struct timeval DateTm;
+
+/// Returns the current time with microsconds of precission.
+///   struct timeval has following fields:
+///     time_t tv_sec Seconds
+///     long int tv_usecs Microseconds (0 - 999999)
+DateTm *date_tm_now ();
+
+/// Returns t1 - t2
+DateTm *date_tm_tdf (DateTm *t1, DateTm *t2);
+
+/// Adds 'millis' milliseconds to 't'. 'millis' can be negative:
+DateTm *date_tm_add (DateTm *t, int millis);
+
+/// Returns t1 - t2 in milliseconds
+int date_tm_df (DateTm *t1, DateTm *t2);
 
 #endif

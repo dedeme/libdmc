@@ -1,6 +1,8 @@
 // Copyright 23-Apr-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Tuple of three values.
+
 #ifndef DMC_TP3_H
   #define DMC_TP3_H
 

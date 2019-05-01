@@ -30,4 +30,7 @@ void sys_locale (char *language);
 ///   return: Opt[char]
 Opt *sys_cmd(char *command);
 
+/// Stops the current thread
+void sys_sleep (int millis);
+
 #endif

@@ -4,15 +4,6 @@
 #include "dmc/async.h"
 #include "time.h"
 
-void async_sleep (int millis) {
-  struct timespec t;
-  struct timespec rem;
-
-  t.tv_sec = millis / 1000;
-  t.tv_nsec = (millis % 1000) * 1000000;
-  nanosleep(&t, &rem);
-}
-
 struct async_Thread {
   void (*fn) (void *);
   void *value;
@@ -79,7 +70,7 @@ static void actor_cycle(AsyncActor *this) {
   while (this->active) {
     job = get_job(this);
     if (opt_is_empty(job)) {
-      async_sleep(millis);
+      sys_sleep(millis);
     } else {
       struct async_Thread *j = opt_get(job);
       j->fn(j->value);
@@ -119,7 +110,7 @@ void asyncActor_end (AsyncActor *this) {
 
 void asyncActor_join (AsyncActor *this) {
   while (this->live) {
-    async_sleep(this->millis);
+    sys_sleep(this->millis);
   }
 }
 
@@ -133,7 +124,7 @@ static void timer_cycle(AsyncTimer *this) {
   struct async_Thread *job = this->job;
   while (this->active) {
     async_thread(job->fn, job->value);
-    async_sleep(this->millis);
+    sys_sleep(this->millis);
   }
 }
 

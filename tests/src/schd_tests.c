@@ -1,22 +1,28 @@
-// Copyright 29-Apr-2019 ºDeme
+// Copyright 30-Apr-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "async_tests.h"
+#include "schd_tests.h"
 #include <assert.h>
-#include "dmc/async.h"
+#include "dmc/Schd.h"
 #include "dmc/date.h"
 #include "dmc/rnd.h"
 
 static void barbery (void) {
-  int TIME_MAX_CLIENT_CREATE = 3000; // millis
-  int TIME_MIN_CLIENT_CREATE = 200; // millis
-  int TIME_HAIR_CUT = 1800; // millis
-  int TIME_OPEN = 120; // seconds
+
+  // Constants -----------------------------------
+
+  int TIME_MAX_CLIENT_CREATE = 3000;
+  int TIME_MIN_CLIENT_CREATE = 200;
+  int TIME_HAIR_CUT = 1800;
+  int TIME_OPEN = 120000;
+
+  // Schd ----------------------------------------
+
+  Schd *sc = schd_new();
+
+  // Barbery and its -----------------------------
 
   int is_closed = 1;
-  int is_occupy = 0;
-
-  AsyncActor *actor = asyncActor_new(50);
 
   int corder = 1;
   int SIT_C = 5;
@@ -81,35 +87,38 @@ static void barbery (void) {
     return str_f("[%s]", str_join(cs, ", "));
   }
 
-  time_t clock = 0;
+  // Clock ---------------------------------------
 
-  void clock_init (void) {
-    clock = date_now();
+  int is_close_time = 0;
+
+  void fclock (void *null_value) {
+    is_close_time = 1;
   }
 
-  int is_time_out (void) {
-    if (!clock)
-      EXC_ILLEGAL_STATE("Clock is 0")
-    return date_now() - clock > TIME_OPEN;
-  }
+  schd_delay(sc, fclock, NULL, TIME_OPEN);
+
+  // Barber --------------------------------------
+
+  int is_occupy = 0;
 
   void bmsg(char *msg) {
     printf("Barber: %s\n", msg);
   }
 
-  void barber_start (void) {
+  void barber_start (void *null_value) {
     bmsg("Openning barbery");
     is_closed = 0;
+    is_occupy = 0;
   }
 
-  void watch_sites(void *(hair_cut)(int *c)) {
+  void hair_cut_end (Tp *client_fstart) {
+    bmsg(str_f("End cutting hair to %d", *((int *)tp_e1(client_fstart))));
     bmsg("Watching for clients");
     // Opt[int]
     Opt *client = get_client();
     if (opt_is_empty(client)) {
-      if (is_time_out()) {
+      if (is_close_time) {
         is_closed = 1;
-        asyncActor_end(actor);
         bmsg("No clientes and time out: Barbery closed");
       } else {
         is_occupy = 0;
@@ -117,22 +126,27 @@ static void barbery (void) {
       }
       return;
     }
-    bmsg("Taking a client");
+    if (is_close_time && !is_closed) {
+      bmsg("Close barbery");
+      is_closed = 1;
+    }
+    bmsg(str_f("Taking the client %d", *((int *)opt_get(client))));
     puts(sits_to_str());
     is_occupy = 1;
-    async_thread((FPROC)hair_cut, opt_get(client));
+    schd_add(sc, tp_e2(client_fstart), opt_get(client));
   }
 
-  void hair_cut (int *client) {
-    bmsg(str_f("Start cutting hair to %d", *client));
-    sys_sleep(TIME_HAIR_CUT);
-    bmsg(str_f("End cutting hair to %d", *client));
-    asyncActor_run(actor, (FPROC)watch_sites, hair_cut);
+  void hair_cut_start (int *client) {
+    is_occupy = 1;
+    bmsg(str_f("Start cutting hair to %d. ✄✄✄✄", *client));
+    schd_delay(
+      sc, (FPROC)hair_cut_end, tp_new(client, hair_cut_start), TIME_HAIR_CUT
+    );
   }
 
-  void barber_end (void) {
-    is_closed = 1;
-  }
+  schd_add(sc, barber_start, NULL);
+
+  // Clients -------------------------------------
 
   int clientc = 1;
 
@@ -160,8 +174,7 @@ static void barbery (void) {
         puts(sits_to_str());
       } else {
         cmsg(client, "Calling to barber");
-        is_occupy = 1;
-        async_thread((FPROC)hair_cut, client);
+        schd_add(sc, (FPROC)hair_cut_start, client);
       }
     } else {
       if (get_a_sit(client)) {
@@ -173,54 +186,59 @@ static void barbery (void) {
     }
   }
 
-  clock_init();
-  barber_start();
+  DateTm *time_to_new_client = date_tm_now();
 
-  int delay = 0;
-
-  void create_clients (void *null_value) {
-    if (delay == 0) {
-      asyncActor_run(actor, (FPROC)client_run, mk_client());
-      delay = (
-          TIME_MIN_CLIENT_CREATE +
-          rnd_i(TIME_MAX_CLIENT_CREATE - TIME_MIN_CLIENT_CREATE)
-        ) / 50;
+  void fclients (void *null_pointer) {
+    if (is_close_time) {
       return;
     }
-    --delay;
+
+    int *client = mk_client();
+    client_run(client);
+
+    time_to_new_client = date_tm_add(time_to_new_client,
+      TIME_MIN_CLIENT_CREATE +
+      rnd_i(TIME_MAX_CLIENT_CREATE - TIME_MIN_CLIENT_CREATE)
+    );
+    int df = date_tm_df(time_to_new_client, date_tm_now());
+    schd_delay(sc, fclients, NULL, df);
   }
 
-  AsyncTimer *timer_clients = asyncTimer_new(create_clients, NULL, 50);
+  schd_add(sc, fclients, NULL);
 
-  AsyncTimer *timer_clock = NULL;
+  // Start Schd ----------------------------------
 
-  void timer_clock_end (void *null_value) {
-    if (is_time_out()) {
-      puts("Time out");
-      asyncTimer_end(timer_clients);
-      barber_end();
-      asyncTimer_end(timer_clock);
-    }
-  }
+  schd_start(sc);
 
-  void clock_control (void *null_value) {
-    asyncActor_run(actor, timer_clock_end, NULL);
-  }
-
-  timer_clock = asyncTimer_new(clock_control, NULL, 50);
-
-  asyncActor_join(actor);
 }
 
-void async_tests(void) {
-  puts("Async tests");
+void schd_tests(void) {
+  puts("Schd tests");
+
 /*
-  void fn(char *tx) { puts(tx); }
-  pthread_t *thr = async_thread((FPROC)fn, "Hello");
-  async_join(thr);
+
+  Schd *sc = schd_new();
+
+  puts ("before");
+
+  int *vinterval = ATOMIC(sizeof(int));
+  *vinterval = 0;
+  void finterval (int *c) {
+    printf("%d\n", *c);
+    *c += 1;
+  }
+  SchdTask *tk_interval = schd_interval(sc, (FPROC)finterval, vinterval, 100);
+  void fdelay (void *null_value) {
+    schd_del(sc, tk_interval);
+    puts("after");
+  }
+  schd_delay(sc, fdelay, NULL, 2000);
+
+  schd_start(sc);
+
 */
 
   if (0) barbery();
 
-  puts("    Finished");
+  puts( "    Finished");
 }

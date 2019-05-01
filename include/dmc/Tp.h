@@ -1,6 +1,8 @@
 // Copyright 23-Apr-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Pair of two values
+
 #ifndef DMC_TP_H
   #define DMC_TP_H
 

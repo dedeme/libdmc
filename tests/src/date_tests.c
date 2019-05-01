@@ -72,6 +72,11 @@ void date_tests(void) {
   assert(date_eq(date_from_us("02/01/2015"),
     date_from_us_sep("02/1/15", '/')));
 
+  DateTm *t = date_tm_now();
+  assert(date_tm_df(date_tm_add(date_tm_add(t, 25), -25), t) == 0);
+  assert(date_tm_df(date_tm_add(date_tm_add(t, 25), -30), t) == -5);
+  assert(date_tm_df(date_tm_add(date_tm_add(t, 25), -20), t) == 5);
+
   puts("    Finished");
 }
 

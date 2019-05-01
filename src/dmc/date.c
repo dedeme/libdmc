@@ -3,6 +3,7 @@
 
 #include "dmc/date.h"
 #include "dmc/Dec.h"
+#include <sys/time.h>
 
 time_t date_new(int day, int month, int year) {
   struct tm t;
@@ -139,4 +140,32 @@ Js *date_to_js(time_t this) {
 
 time_t date_from_js(Js *js) {
   return js_rl(js);
+}
+
+DateTm *date_tm_now () {
+  DateTm *r = MALLOC(DateTm);
+  gettimeofday (r, NULL);
+  return r;
+}
+
+DateTm *date_tm_tdf (DateTm *t1, DateTm *t2) {
+  DateTm *r = MALLOC(DateTm);
+  r->tv_sec = t1->tv_sec - t2->tv_sec;
+  r->tv_usec = t1->tv_usec - t2->tv_usec;
+  return r;
+}
+
+DateTm *date_tm_add (DateTm *t, int millis) {
+  DateTm *r = MALLOC(DateTm);
+  long int m = t->tv_usec + millis * 1000;
+  time_t s = m / 1000000;
+
+  r->tv_sec = t->tv_sec + s;
+  r->tv_usec = m - s * 1000000;
+  return r;
+}
+
+int date_tm_df (DateTm *t1, DateTm *t2) {
+  DateTm *r = date_tm_tdf(t1, t2);
+  return r->tv_sec * 1000 + r->tv_usec / 1000;
 }
