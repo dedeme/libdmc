@@ -1,6 +1,8 @@
 // Copyright 01-May-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Inet server.
+
 #ifndef DMC_ISERVER_H
   #define DMC_ISERVER_H
 
@@ -32,7 +34,7 @@ typedef struct iserver_Iserver Iserver;
 ///
 Iserver *iserver_new (int port);
 
-/// Read text in not blocking way.
+/// Read text in a not blocking way.
 IserverRq *iserver_read (Iserver *this);
 
 ///

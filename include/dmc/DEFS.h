@@ -8,6 +8,8 @@
 
 typedef struct js_Js Js;
 
+typedef struct schd_Task SchdTask;
+
 ///
 #define MALLOC(type) (type *)GC_MALLOC(sizeof(type))
 
@@ -180,6 +182,9 @@ typedef Js *(*FTO)(void *);
 
 ///
 typedef void *(*FFROM)(Js *);
+
+///
+typedef void (*FLOOP)(void *, SchdTask *);
 
 /// Macros to manage exceptions. Example:
 ///   TRY {

@@ -6,6 +6,7 @@
 #include "dmc/Schd.h"
 #include "dmc/date.h"
 #include "dmc/rnd.h"
+#include "dmc/ext.h"
 
 static void barbery (void) {
 
@@ -216,26 +217,27 @@ void schd_tests(void) {
   puts("Schd tests");
 
 /*
-
   Schd *sc = schd_new();
 
   puts ("before");
 
   int *vinterval = ATOMIC(sizeof(int));
   *vinterval = 0;
-  void finterval (int *c) {
+  void finterval (int *c, SchdTask *tk) {
     printf("%d\n", *c);
     *c += 1;
+    if (*c == 20) {
+      schdTask_del(tk);
+    }
   }
-  SchdTask *tk_interval = schd_interval(sc, (FPROC)finterval, vinterval, 100);
-  void fdelay (void *null_value) {
-    schd_del(sc, tk_interval);
-    puts("after");
+  schd_loop(sc, (FLOOP)finterval, vinterval, 500);
+
+  void fcmd (char *page) {
+    puts(page);
   }
-  schd_delay(sc, fdelay, NULL, 2000);
+  ext_awget(sc, fcmd, "http://www.invertia.com");
 
   schd_start(sc);
-
 */
 
   if (0) barbery();

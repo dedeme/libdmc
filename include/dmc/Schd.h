@@ -11,6 +11,9 @@
 ///
 typedef struct schd_Task SchdTask;
 
+/// Deletes a task
+void schdTask_del (SchdTask *this);
+
 ///
 typedef struct schd_Schd Schd;
 
@@ -20,9 +23,6 @@ Schd *schd_new (void);
 /// Adds a task
 SchdTask *schd_add (Schd *this, void (*fn)(void *), void *value);
 
-/// Removes a task
-void schd_del (Schd *this, SchdTask *task);
-
 /// Returns '1' if 'task' is active in 'this'
 int schd_exists (Schd *this, SchdTask *task);
 
@@ -31,8 +31,11 @@ int schd_exists (Schd *this, SchdTask *task);
 ///     * The task can be stopped with 'schd_del'
 ///     * The first execution of 'fn' is immedate.
 ///     * 'millis' is forced to be at least 4 milliseconds.
-SchdTask *schd_interval (
-  Schd *this, void (*fn)(void *), void *value, int millis
+SchdTask *schd_loop (
+  Schd *this,
+  void (*fn)(void *value, SchdTask *tk),
+  void *value,
+  int millis
 );
 
 /// Adds a task to do after 'millis' milliseconds.
@@ -45,5 +48,8 @@ void schd_start (Schd *this);
 
 /// Ends 'this' when the current task finishes
 void schd_end (Schd *this);
+
+///
+void schd_cmd (Schd *this, void (*fn)(char *result), char *cmd);
 
 #endif
