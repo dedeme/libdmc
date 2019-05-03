@@ -18,6 +18,11 @@ char *iserverRq_error (IserverRq *this);
 /// If 'iserverRq_error' returns an error, throws an ILLEGAL_STATE exception.
 Opt *iserverRq_msg (IserverRq *this);
 
+/// Retuns the direction (IPv4) of connected server. Throws an ILLEGAL_STATE
+/// exception if no request was read.<br>
+/// For being sure about receiving request, 'iserverRq_msg' should be tested.
+char *iserverRq_host (IserverRq *this);
+
 /// Writes response in 'this' and close it.
 ///   Returns an error message or an empty string if everithing was well.
 char *iserverRq_write (IserverRq *this, char *response);

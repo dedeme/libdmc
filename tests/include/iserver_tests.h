@@ -7,6 +7,6 @@
 #include "dmc/std.h"
 
 ///
-void iserver_tests();
+void iserver_tests(int active);
 
 #endif

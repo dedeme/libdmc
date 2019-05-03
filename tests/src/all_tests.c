@@ -54,6 +54,6 @@ int main(int argc, char *argv[]) {
   cgi_tests();
   async_tests();
   schd_tests();
-  iserver_tests();
+  iserver_tests(0);
 
 }

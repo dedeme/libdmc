@@ -7,18 +7,22 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
+#include <arpa/inet.h>
 
 struct iserver_Rq {
   int sock;
   // Opt[char]
   Opt *msg;
+  // Opt[char]
+  Opt *host;
 };
 
-// msg is Opt[char]
-static IserverRq *iserverRq_new (int sock, Opt *msg) {
+// msg and host are Opt[char]
+static IserverRq *iserverRq_new (int sock, Opt *msg, Opt *host) {
   IserverRq *this = MALLOC(IserverRq);
   this->sock = sock;
   this->msg = msg;
+  this->host = host;
   return this;
 }
 
@@ -30,6 +34,12 @@ Opt *iserverRq_msg (IserverRq *this) {
   if (this->sock < 0)
     EXC_ILLEGAL_STATE("No request has been read")
   return this->msg;
+}
+
+char *iserverRq_host (IserverRq *this) {
+  if (opt_is_empty(this->host))
+    EXC_ILLEGAL_STATE("No request has been read")
+  return opt_get(this->host);
 }
 
 char *iserverRq_write (IserverRq *this, char *response) {
@@ -95,18 +105,20 @@ IserverRq *iserver_read (Iserver *this) {
   int rs = select (FD_SETSIZE, read_fd_set, NULL, NULL, &timeout);
 
   if (rs < 0) {
-    return iserverRq_new(-1, opt_new("Fail in server select"));
+    return iserverRq_new(-1, opt_new("Fail in server select"), opt_empty());
   }
   if (!FD_ISSET(sock, read_fd_set)) {
     FD_SET (sock, read_fd_set);
-    return iserverRq_new(0, opt_empty());
+    return iserverRq_new(0, opt_empty(), opt_empty());
   }
 
   struct sockaddr_in clientname;
   socklen_t size = sizeof(clientname);
   int new = accept(sock, (struct sockaddr *) &clientname, &size);
   if (new < 0) {
-    return iserverRq_new(-1, opt_new("Fail accepting connection"));
+    return iserverRq_new(
+      -1, opt_new("Fail accepting connection"), opt_empty()
+    );
   }
 
   Buf *bf = buf_new();
@@ -118,7 +130,9 @@ IserverRq *iserver_read (Iserver *this) {
     if (nbytes < 0) {
       close(new);
       FD_CLR (new, read_fd_set);
-      return iserverRq_new(-1, opt_new("Fail reading client connection"));
+      return iserverRq_new(
+        -1, opt_new("Fail reading client connection"), opt_empty()
+      );
     }
 
     if (nbytes == 0) break;
@@ -127,7 +141,10 @@ IserverRq *iserver_read (Iserver *this) {
   }
 
   FD_CLR (new, read_fd_set);
-  return iserverRq_new(new, opt_new(buf_to_str(bf)));
+  return iserverRq_new(
+    new, opt_new(buf_to_str(bf)),
+    opt_new(str_new(inet_ntoa(clientname.sin_addr)))
+  );
 }
 
 void iserver_close (Iserver *this) {

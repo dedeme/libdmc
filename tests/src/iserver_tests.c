@@ -13,6 +13,7 @@ static void run_server (Iserver *is) {
       EXC_IO(iserverRq_error(rq))
 
     if (opt_is_full(iserverRq_msg(rq))) {
+      assert(str_eq(iserverRq_host(rq), "127.0.0.1"));
       char *msg = opt_get(iserverRq_msg(rq));
       printf("Server-received: %s\nSever-sending: Echo %s\n", msg, msg);
       if (str_eq(msg, "end")) {
@@ -39,10 +40,10 @@ static void run_client (void *null) {
   _RANGE
 }
 
-void iserver_tests() {
+void iserver_tests(int active) {
   puts("Iserver tests:");
 
-  if (0) {
+  if (active) {
     Iserver *is = iserver_new(8888);
 
     async_thread((FPROC)run_server, is);
