@@ -26,15 +26,12 @@ char *iserverRq_error (IserverRq *this) {
   return this->sock < 0 ? opt_get(this->msg) : "";
 }
 
-/// Returns Opt[char]. If no request was received, returns 'opt_emtpy'.
-/// If 'iserverRq_error' returns an error, throws an EXC_ILLEGALSTATE.
 Opt *iserverRq_msg (IserverRq *this) {
   if (this->sock < 0)
     EXC_ILLEGAL_STATE("No request has been read")
   return this->msg;
 }
 
-/// Returns a error message or an empty string if everithing was well.
 char *iserverRq_write (IserverRq *this, char *response) {
   if (this->sock < 0 || opt_is_empty(this->msg))
     EXC_ILLEGAL_STATE("No request has been read")
@@ -60,7 +57,6 @@ struct iserver_Iserver {
   fd_set *active_fd_set;
 };
 
-///
 Iserver *iserver_new (int port) {
   int sock;
   struct sockaddr_in *name = MALLOC(struct sockaddr_in);
