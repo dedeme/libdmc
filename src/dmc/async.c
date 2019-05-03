@@ -35,52 +35,70 @@ void async_join (pthread_t *thr) {
   pthread_join(*thr, NULL);
 }
 
+struct async_AThread {
+  void (*fn) (void *);
+  void *value;
+  int waiting;
+};
+
+static struct async_AThread *async_athread_new (
+  void (*fn) (void *), void *value
+) {
+  struct async_AThread *this = MALLOC(struct async_AThread);
+  this->fn = fn;
+  this->value = value;
+  this->waiting = 1;
+  return this;
+}
+
 struct async_AsyncActor {
   pthread_mutex_t mutex;
-  // Arr[async_Thread]
-  Arr *jobs;
+  // Arr[async_AThread]
+  Arr *tasks;
   int millis;
   int active;
   int live;
 };
 
-static void add_job (AsyncActor *this, struct async_Thread *data) {
+static void add_task (AsyncActor *this, struct async_AThread *data) {
   pthread_mutex_lock(&this->mutex);
-  arr_push(this->jobs, data);
+  arr_push(this->tasks, data);
   pthread_mutex_unlock(&this->mutex);
 }
 
-// Returns Opt[struct async_Thread]
-static Opt *get_job (AsyncActor *this) {
+// Returns Opt[struct async_AThread]
+static Opt *get_task (AsyncActor *this) {
   Opt *r = opt_empty();
-  Arr *jobs = this->jobs;
-  if (arr_size(jobs)) {
+  Arr *tasks = this->tasks;
+  if (arr_size(tasks)) {
     pthread_mutex_lock(&this->mutex);
-    r = opt_new(*arr_start(jobs));
-    arr_remove(jobs, 0);
+    r = opt_new(*arr_start(tasks));
+    arr_remove(tasks, 0);
     pthread_mutex_unlock(&this->mutex);
   }
   return r;
 }
 
 static void actor_cycle(AsyncActor *this) {
-  /// Opt[struct async_Thread]
-  Opt *job;
+  /// Opt[struct async_AThread]
+  Opt *task;
   int millis = this->millis;
   while (this->active) {
-    job = get_job(this);
-    if (opt_is_empty(job)) {
+    task = get_task(this);
+    if (opt_is_empty(task)) {
       sys_sleep(millis);
     } else {
-      struct async_Thread *j = opt_get(job);
+      struct async_AThread *j = opt_get(task);
       j->fn(j->value);
+      j->waiting = 0;
     }
   }
-  job = get_job(this);
-  while (opt_is_full(job)) {
-    struct async_Thread *j = opt_get(job);
+  task = get_task(this);
+  while (opt_is_full(task)) {
+    struct async_AThread *j = opt_get(task);
     j->fn(j->value);
-    job = get_job(this);
+    j->waiting = 1;
+    task = get_task(this);
   }
   this->live = 0;
 }
@@ -88,7 +106,7 @@ static void actor_cycle(AsyncActor *this) {
 AsyncActor *asyncActor_new (int millis) {
   AsyncActor *this = MALLOC(AsyncActor);
   pthread_mutex_init(&this->mutex, NULL);
-  this->jobs = arr_new();
+  this->tasks = arr_new();
   this->millis = millis;
   this->active = 1;
   this->live = 1;
@@ -100,7 +118,18 @@ AsyncActor *asyncActor_new (int millis) {
 
 void asyncActor_run (AsyncActor *this, void (*fn)(void *), void *value) {
   if (this->active) {
-    add_job(this, async_thread_new(fn, value));
+    add_task(this, async_athread_new(fn, value));
+
+  }
+}
+
+void asyncActor_wait (AsyncActor *this, void (*fn)(void *), void *value) {
+  if (this->active) {
+    struct async_AThread *task = async_athread_new(fn, value);
+    add_task(this, task);
+    while (task->waiting) {
+      sys_sleep(50);
+    }
   }
 }
 
@@ -115,22 +144,22 @@ void asyncActor_join (AsyncActor *this) {
 }
 
 struct async_AsyncTimer {
-  struct async_Thread *job;
+  struct async_Thread *task;
   int millis;
   int active;
 };
 
 static void timer_cycle(AsyncTimer *this) {
-  struct async_Thread *job = this->job;
+  struct async_Thread *task = this->task;
   while (this->active) {
-    async_thread(job->fn, job->value);
+    async_thread(task->fn, task->value);
     sys_sleep(this->millis);
   }
 }
 
 AsyncTimer *asyncTimer_new (void (*fn)(void *), void *value, int millis) {
   AsyncTimer *this = MALLOC(AsyncTimer);
-  this->job = async_thread_new(fn, value);
+  this->task = async_thread_new(fn, value);
   this->millis = millis;
   this->active = 1;
 

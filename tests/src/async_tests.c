@@ -219,6 +219,28 @@ void async_tests(void) {
   pthread_t *thr = async_thread((FPROC)fn, "Hello");
   async_join(thr);
 */
+/*
+  AsyncActor *ac = asyncActor_new(50);
+  void task (void *null) {
+    puts("--------");
+    RANGE0(i, 10)
+      printf("%d\n", i);
+      sys_sleep(10);
+    _RANGE
+  }
+  void end (void *null) {
+    asyncActor_end(ac);
+  }
+  asyncActor_run(ac, task, NULL);
+  puts("Main thread 1");
+
+  asyncActor_wait(ac, task, NULL);
+  puts("Main thread 2");
+
+  asyncActor_run(ac, end, NULL);
+
+  asyncActor_join(ac);
+*/
 
   if (0) barbery();
 

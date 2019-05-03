@@ -28,8 +28,12 @@ typedef struct async_AsyncActor AsyncActor;
 /// 'millis' is the latence time.
 AsyncActor *asyncActor_new (int millis);
 
-/// Executes 'fn(value)' synchronicaly.
+/// Executes 'fn(value)' synchronicaly. This function returns immediatly.
 void asyncActor_run (AsyncActor *this, void (*fn)(void *), void *value);
+
+/// Executes 'fn(value)' synchronicaly. This function stops the program
+/// until 'fn' is finished.
+void asyncActor_wait (AsyncActor *this, void (*fn)(void *), void *value);
 
 /// Finalizes 'this'. 'this' also will finish is pendant jobs.
 void asyncActor_end (AsyncActor *this);
