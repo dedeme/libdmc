@@ -6,17 +6,13 @@
 #include "dmc/cgi.h"
 #include "dmc/cryp.h"
 
-/**************************************************************
- * For passing this test is need to make changes in cgi_ok to *
- * redirect output.                                           *
- **************************************************************/
+
 
 // Map [Js]
-Map *rp_new(char *key) {
-  char *r = file_read("data/tmp.txt");
-  r = cryp_decryp(r, key);
+Map *rp_new(char *key, char *rp) {
+  rp = cryp_decryp(rp, key);
   // Map[Js]
-  return js_ro((Js *)r);
+  return js_ro((Js *)rp);
 }
 
 void cgi_tests(void) {
@@ -27,18 +23,18 @@ void cgi_tests(void) {
   char *key = cryp_key("cgi_tests", cgi_klen());
 
   cgi_set_key(key);
-  cgi_authentication("admin", "deme", 10);
+  char *r = cgi_authentication("admin", "deme", 10);
 
   // Map[Js]
-  Map *rp = rp_new(key);
+  Map *rp = rp_new(key, r);
   char *level = js_rs(opt_get(map_get(rp, "level")));
   assert(str_eq(level, ""));
 
   char *pass = cryp_key("deme", cgi_klen());
 
   cgi_set_key(key);
-  cgi_authentication("admin", pass, 10);
-  rp = rp_new(key);
+  r = cgi_authentication("admin", pass, 10);
+  rp = rp_new(key, r);
 
   level = js_rs(opt_get(map_get(rp, "level")));
   char *session_id = js_rs(opt_get(map_get(rp, "sessionId")));
@@ -50,8 +46,8 @@ void cgi_tests(void) {
   assert(*key2);
   assert(!*con_id);
 
-  cgi_connect(session_id);
-  rp = rp_new(key);
+  r = cgi_connect(session_id);
+  rp = rp_new(key, r);
   char *key2b = js_rs(opt_get(map_get(rp, "key")));
   char *con_idb = js_rs(opt_get(map_get(rp, "connectionId")));
 
@@ -64,50 +60,50 @@ void cgi_tests(void) {
   assert(str_eq(key2b, key2));
   assert(str_eq(con_idb, con_id));
 
-  cgi_del_session(session_id);
-  rp = rp_new(key);
+  r = cgi_del_session(session_id);
+  rp = rp_new(key, r);
   assert(!map_size(rp));
 
-  cgi_connect(session_id);
-  rp = rp_new(key);
+  r = cgi_connect(session_id);
+  rp = rp_new(key, r);
   key2b = js_rs(opt_get(map_get(rp, "key")));
   con_idb = js_rs(opt_get(map_get(rp, "connectionId")));
 
   assert(str_eq(key2b, ""));
   assert(str_eq(con_idb, ""));
 
-  cgi_add_user("admin", pass, "u1", "passu1", "1");
-  rp = rp_new(key);
+  r = cgi_add_user("admin", pass, "u1", "passu1", "1");
+  rp = rp_new(key, r);
   assert(js_rb(opt_get(map_get(rp, "ok"))));
 
-  cgi_authentication("u1", "passu1", 10);
-  rp = rp_new(key);
+  r = cgi_authentication("u1", "passu1", 10);
+  rp = rp_new(key, r);
   level = js_rs(opt_get(map_get(rp, "level")));
   session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(str_eq(level, "1"));
   assert(*session_id);
 
-  cgi_change_pass("u1", "passu1", "newpassu1");
-  rp = rp_new(key);
+  r = cgi_change_pass("u1", "passu1", "newpassu1");
+  rp = rp_new(key, r);
   assert(js_rb(opt_get(map_get(rp, "ok"))));
 
-  cgi_change_level("admin", pass, "u1", "2");
-  rp = rp_new(key);
+  r = cgi_change_level("admin", pass, "u1", "2");
+  rp = rp_new(key, r);
   assert(js_rb(opt_get(map_get(rp, "ok"))));
 
-  cgi_authentication("u1", "newpassu1", 10);
-  rp = rp_new(key);
+  r = cgi_authentication("u1", "newpassu1", 10);
+  rp = rp_new(key, r);
   level = js_rs(opt_get(map_get(rp, "level")));
   session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(str_eq(level, "2"));
   assert(*session_id);
 
-  cgi_del_user("admin", pass, "u1");
-  rp = rp_new(key);
+  r = cgi_del_user("admin", pass, "u1");
+  rp = rp_new(key, r);
   assert(js_rb(opt_get(map_get(rp, "ok"))));
 
-  cgi_authentication("u1", "newpassu1", 10);
-  rp = rp_new(key);
+  r = cgi_authentication("u1", "newpassu1", 10);
+  rp = rp_new(key, r);
   level = js_rs(opt_get(map_get(rp, "level")));
   session_id = js_rs(opt_get(map_get(rp, "sessionId")));
   assert(!*level);

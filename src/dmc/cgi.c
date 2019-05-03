@@ -400,7 +400,7 @@ Opt *cgi_get_session(char *session_id) {
   return read_session(session_id);
 }
 
-void cgi_add_user(
+char *cgi_add_user(
   char *admin, char *akey,
   char *user, char *ukey, char *level
 ){
@@ -417,10 +417,10 @@ void cgi_add_user(
   } else {
     map_put(m, "ok", js_wb(0));
   }
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
-void cgi_del_user(char *admin, char *akey, char *user) {
+char *cgi_del_user(char *admin, char *akey, char *user) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
@@ -434,10 +434,10 @@ void cgi_del_user(char *admin, char *akey, char *user) {
   } else {
     map_put(m, "ok", js_wb(0));
   }
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
-void cgi_change_level(
+char *cgi_change_level(
   char *admin, char *akey, char *user, char *level
 ) {
   if (!cgi_null)
@@ -456,10 +456,10 @@ void cgi_change_level(
   } else {
     map_put(m, "ok", js_wb(0));
   }
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
-void cgi_change_pass(char *user, char *key, char *new_key) {
+char *cgi_change_pass(char *user, char *key, char *new_key) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
@@ -470,20 +470,18 @@ void cgi_change_pass(char *user, char *key, char *new_key) {
   } else {
     map_put(m, "ok", js_wb(0));
   }
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
-void cgi_del_session(char *session_id) {
+char *cgi_del_session(char *session_id) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  // Map[Js]
-  Map *m = map_new();
   del_session(session_id);
-  cgi_ok(m);
+  return cgi_empty();
 }
 
-void cgi_authentication(char *user, char *key, int expiration) {
+char *cgi_authentication(char *user, char *key, int expiration) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
@@ -507,10 +505,10 @@ void cgi_authentication(char *user, char *key, int expiration) {
     map_put(m, "key", js_ws(""));
   }
 
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
-void cgi_connect(char *session_id) {
+char *cgi_connect(char *session_id) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
@@ -531,21 +529,21 @@ void cgi_connect(char *session_id) {
 
   map_put(m, "key", js_ws(com_key));
   map_put(m, "connectionId", js_ws(con_id));
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
 // data is Map[Js]
-void cgi_ok(Map *data) {
+char *cgi_ok(Map *data) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
   char *msg = (char *)js_wo(data);
-  msg = cryp_cryp(
+  return cryp_cryp(
     msg,
     opt_eget(cgi_null->key, "Cgi->key is not set")
   );
 
-
+/*
   // To debug
   FILE *tmp = fopen("data/tmp.txt", "w");
   fputs(msg, tmp);
@@ -553,23 +551,24 @@ void cgi_ok(Map *data) {
 
 
 //  fputs(msg, stdout);
+*/
 }
 
-void cgi_empty(void) {
-  cgi_ok(map_new());
+char *cgi_empty(void) {
+  return cgi_ok(map_new());
 }
 
-void cgi_error(char *msg) {
+char *cgi_error(char *msg) {
   // Map[Js]
   Map *m = map_new();
   map_put(m, "error", js_ws(msg));
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
-void cgi_expired(void) {
+char *cgi_expired(void) {
   // Map[Js]
   Map *m = map_new();
   map_put(m, "expired", js_wb(1));
-  cgi_ok(m);
+  return cgi_ok(m);
 }
 
