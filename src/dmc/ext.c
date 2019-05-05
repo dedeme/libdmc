@@ -80,7 +80,6 @@ void ext_zip(char *source, char *target) {
   char *tg = str_new(target);
   if (*tg != '/') {
     char *t = path_cat(cd, tg, NULL);
-    free(tg);
     tg = t;
   }
   char *parent = path_parent(source);
@@ -89,7 +88,6 @@ void ext_zip(char *source, char *target) {
 
   char *cmd = str_f("zip -q %s %s 2>&1", tg, name);
   if (file_is_directory(name)) {
-    free(cmd);
     cmd = str_f("zip -q -r %s %s 2>&1", tg, name);
   }
 
