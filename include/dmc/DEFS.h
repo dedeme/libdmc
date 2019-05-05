@@ -242,55 +242,53 @@ typedef void (*FLOOP)(void *, SchdTask *);
 #define EXC_IO(msg) \
   THROW(exc_io_t) exc_io(msg) _THROW
 
-/// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a FAIL,
-/// otherwise returns its value in 'type var' using 'f'.
+/// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a
+/// ILLEGAL_ARGUMENT exception, otherwise returns its value in 'type var'
+/// using 'fun'.
 /// <table><tr><td>
-///   type   : type of var_new
-///   var_new: name of new variable. It shuld be free.
-///   fun    : function to pass 'Js' to 'type'
-///   map    : A Map[Js]
-///   field  : field key. Its value must be const char *
+///   type : type of var
+///   var  : name of new variable. It shuld be free.
+///   fun  : function to pass 'Js' to 'type'
+///   map  : A Map[Js]
+///   field: field key. Its value must be const char *
 /// </table>
 /// Examples:
 /// <table><tr><td>
 ///   CGI_GET(int, i, js_ri, m, "index")
-///   CGI_GET(Arr *, a, js_ra_new, m, "values")
+///   CGI_GET(char *, a, js_rs, m, "value")
+///   CGI_GET(Arr *, a, js_ra, m, "values")
 /// </table>
-#define CGI_GET(type, var_new, fun, map, field) \
-  type var_new; \
+#define CGI_GET(type, var, fun, map, field) \
+  type var; \
   { \
-    char *field2 = str_new(field); \
-    Js *js = map_get_null(map, field2); \
-    if (!js) { \
-      char *msg = str_f_new("Field '%s' not found", field2); \
-      sys_fail(msg, __FILE__, (char *)__func__, __LINE__); \
-    } \
-    var_new = fun(js); \
-    free(field2); \
+    Opt *js = map_get(map, field); \
+    if (opt_is_empty(js))  \
+      EXC_ILLEGAL_ARGUMENT(field, "Map key", "Key not found") \
+    var = fun(opt_get(js)); \
   }
 
-/// Calls CGI_GET with 'var_new' as 'int'.
-#define CGI_GET_BOOL(var_new, map, field) \
-  CGI_GET(int, var_new, js_rb, map, field)
+/// Calls CGI_GET with 'var' as 'int'.
+#define CGI_GET_BOOL(var, map, field) \
+  CGI_GET(int, var, js_rb, map, field)
 
-/// Calls CGI_GET with 'var_new' as 'int'.
-#define CGI_GET_INT(var_new, map, field) \
-  CGI_GET(int, var_new, js_ri, map, field)
+/// Calls CGI_GET with 'var' as 'int'.
+#define CGI_GET_INT(var, map, field) \
+  CGI_GET(int, var, js_ri, map, field)
 
-/// Calls CGI_GET with 'var_new' as 'double'.
-#define CGI_GET_DOUBLE(var_new, map, field) \
-  CGI_GET(double, var_new, js_rd, map, field)
+/// Calls CGI_GET with 'var' as 'double'.
+#define CGI_GET_DOUBLE(var, map, field) \
+  CGI_GET(double, var, js_rd, map, field)
 
-/// Calls CGI_GET with 'var_new' as 'char *'.
-#define CGI_GET_STR(var_new, map, field) \
-  CGI_GET(char *, var_new, js_rs_new, map, field)
+/// Calls CGI_GET with 'var' as 'char *'.
+#define CGI_GET_STR(var, map, field) \
+  CGI_GET(char *, var, js_rs, map, field)
 
-/// Calls CGI_GET with 'var_new' as 'Arr[Js]'.
-#define CGI_GET_ARR(var_new, map, field) \
-  CGI_GET(char *, var_new, js_ra_new, map, field)
+/// Calls CGI_GET with 'var' as 'Arr[Js]'.
+#define CGI_GET_ARR(var, map, field) \
+  CGI_GET(char *, var, js_ra, map, field)
 
-/// Calls CGI_GET with 'var_new' as 'Map[Js]'.
-#define CGI_GET_MAP(var_new, map, field) \
-  CGI_GET(char *, var_new, js_ro_new, map, field)
+/// Calls CGI_GET with 'var' as 'Map[Js]'.
+#define CGI_GET_MAP(var, map, field) \
+  CGI_GET(char *, var, js_ro, map, field)
 
 #endif

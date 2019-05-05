@@ -45,3 +45,8 @@ void *opt_eget (Opt *this, char *msg) {
 
   return this->value;
 }
+
+void *opt_oget (Opt *this, void *value) {
+  if (!this->value) return value;
+  return this->value;
+}

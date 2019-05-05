@@ -35,8 +35,8 @@ char *cgi_home(void);
 /// function is called when connection or authentication.
 void cgi_set_key(char *k);
 
-/// cgi_get_key returns comunication key and connection idenfitier of
-/// 'session_id'. If 'session_id' is not valid returns 'opt_empty'.
+/// cgi_get_key returns Opt[CgiSession].<br>
+/// If 'session_id' is not valid, it returns 'opt_empty'.
 Opt *cgi_get_session(char *session_id);
 
 /// cgi_add_usser adds an user to database and retuns a response.
