@@ -113,17 +113,17 @@ void file_del (char *path) {
   }
 }
 
-void file_rename (char *oldname, char *newname) {
-  if (rename(oldname, newname) == -1)
+void file_rename (char *old_path, char *new_path) {
+  if (rename(old_path, new_path) == -1)
     EXC_IO(str_f(
-      "Fail renaming '%s' to '%s: %s", oldname, newname, strerror(errno)
+      "Fail renaming '%s' to '%s: %s", old_path, new_path, strerror(errno)
     ))
 }
 
-void file_link (char *oldpath, char *newpath) {
-  if (symlink(oldpath, newpath) == -1)
+void file_link (char *old_path, char *new_path) {
+  if (symlink(old_path, new_path) == -1)
     EXC_IO(str_f(
-      "Fail linking '%s' to '%s: %s", newpath, oldpath, strerror(errno)
+      "Fail linking '%s' to '%s: %s", new_path, old_path, strerror(errno)
     ))
 }
 

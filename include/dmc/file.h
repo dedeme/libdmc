@@ -39,11 +39,11 @@ Arr *file_dir (char *path);
 ///   If 'path' does not exists it does nothing.
 void file_del (char *path);
 
-/// file_raname renames 'oldname' to 'newname'.
-void file_rename (char *oldname, char *newname);
+/// file_raname renames 'old_path' to 'new_path'.
+void file_rename (char *old_path, char *new_path);
 
-/// file_link makes a symbol link from 'newpath' to 'oldpath'.
-void file_link (char *oldpath, char *newpath);
+/// file_link makes a symbol link from 'new_path' to 'old_path'.
+void file_link (char *old_path, char *new_path);
 
 /// file_exits returns true if 'path' exists in the file system.
 int file_exists (char *path);
