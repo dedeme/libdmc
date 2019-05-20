@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "dmc/sys.h"
 #include "dmc/DEFS.h"
-#include "dmc/exc.h"
+#include "dmc/Exc.h"
 #include "dmc/str.h"
 #include "gc.h"
 

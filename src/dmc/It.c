@@ -6,7 +6,7 @@
 #include "dmc/It.h"
 #include "dmc/Opt.h"
 #include "dmc/str.h"
-#include "dmc/exc.h"
+#include "dmc/Exc.h"
 #include "dmc/Arr.h"
 #include "dmc/Tp.h"
 #include "dmc/Tp3.h"

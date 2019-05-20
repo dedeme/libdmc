@@ -3,7 +3,7 @@
 
 #include <gc.h>
 #include "dmc/List.h"
-#include "dmc/exc.h"
+#include "dmc/Exc.h"
 #include "dmc/str.h"
 #include "dmc/It.h"
 #include "dmc/Arr.h"

@@ -5,7 +5,7 @@
 #include "dmc/DEFS.h"
 #include "gc.h"
 #include "dmc/sys.h"
-#include "dmc/exc.h"
+#include "dmc/Exc.h"
 #include "dmc/str.h"
 
 struct opt_Opt {

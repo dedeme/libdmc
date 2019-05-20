@@ -7,7 +7,7 @@
 #include <time.h>
 #include "dmc/DEFS.h"
 #include "dmc/sys.h"
-#include "dmc/exc.h"
+#include "dmc/Exc.h"
 #include "dmc/str.h"
 
 void rnd_init (void) {

@@ -4,7 +4,7 @@
 #include "dmc/Iarr.h"
 #include "dmc/std.h"
 #include "string.h"
-#include "dmc/exc.h"
+#include "dmc/Exc.h"
 
 struct iarr_Iarr {
   int *es;
