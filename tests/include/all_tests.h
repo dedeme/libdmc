@@ -4,6 +4,8 @@
 #ifndef ALL_TESTS_H
   #define ALL_TESTS_H
 
+#include "dmc/async.h"
+
 int main(int argc, char *argv[]);
 
 #endif

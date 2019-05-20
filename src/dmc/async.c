@@ -19,7 +19,9 @@ static struct async_Thread *async_thread_new (
 }
 
 static void *async_thread_run (struct async_Thread *data) {
+  exc_thread_init();
   data->fn(data->value);
+  exc_thread_end();
   return NULL;
 }
 

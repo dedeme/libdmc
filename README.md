@@ -4,7 +4,7 @@ C utilities.
 
 Some utilities from C language.
 
-These utilities depend on 'libgc' (Garbage collector)
+These utilities depend on 'libpthread' and 'libgc' (Garbage collector)
 
 ```sh
 apt-get install libgc-dev

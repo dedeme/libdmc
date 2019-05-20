@@ -214,12 +214,12 @@ static void barbery (void) {
 
 void async_tests(void) {
   puts("Async tests");
-/*
+
   void fn(char *tx) { puts(tx); }
   pthread_t *thr = async_thread((FPROC)fn, "Hello");
   async_join(thr);
-*/
-/*
+
+
   AsyncActor *ac = asyncActor_new(50);
   void task (void *null) {
     puts("--------");
@@ -240,7 +240,7 @@ void async_tests(void) {
   asyncActor_run(ac, end, NULL);
 
   asyncActor_join(ac);
-*/
+
 
   if (0) barbery();
 

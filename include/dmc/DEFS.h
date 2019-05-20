@@ -187,22 +187,22 @@ typedef void *(*FFROM)(Js *);
 typedef void (*FLOOP)(void *, SchdTask *);
 
 /// Macros to manage exceptions. Example:
-///   TRY {
+///   TRY
 ///     ...
-///   } CATCH (e) {
-///     puts(e);
-///   }_TRY
+///   CATCH (e)
+///     puts(exc_msg(e));
+///   _TRY
 /// NOTE: <i>CATCH block must return 'void'</i>
-#define TRY {void _TRY_try() {
-
-/// See <a href="#hp:TRY">TRY</a>
-#define CATCH(e) ;exc_remove();} void _TRY_catch(char *e) {exc_remove();
-
-/// See <a href="#hp:TRY">TRY</a>
-#define _TRY } jmp_buf *_TRY_buf = MALLOC(jmp_buf); \
+#define TRY { \
+  jmp_buf *_TRY_buf = MALLOC(jmp_buf); \
   exc_add(_TRY_buf); \
-  int _TRY_val = setjmp(*_TRY_buf); \
-  if(_TRY_val != 0) {_TRY_catch(exc_msg());} else {_TRY_try();}}
+  if (!setjmp(*_TRY_buf)) { \
+
+/// See <a href="#hp:TRY">TRY</a>
+#define CATCH(e) ;exc_remove();} else { Exc *e = exc_get();
+
+/// See <a href="#hp:TRY">TRY</a>
+#define _TRY ;exc_remove();}}
 
 /// Example
 ///   THROW(exc_io_t) "Working directory not found: %s", strerror(errno) _THROW

@@ -14,7 +14,7 @@
 #include "Tp.h"
 #include "Kv.h"
 #include "Tp3.h"
-#include "exc.h"
+#include "Exc.h"
 #include "Opt.h"
 #include "Bytes.h"
 #include "Arr.h"
