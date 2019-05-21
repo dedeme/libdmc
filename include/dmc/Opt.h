@@ -27,6 +27,6 @@ void *opt_get (Opt *this);
 void *opt_eget (Opt *this, char *msg);
 
 /// Returns value if 'this' is empty.
-void *opt_oget (Opt *this, void *vaoue);
+void *opt_oget (Opt *this, void *value);
 
 #endif

@@ -285,10 +285,10 @@ typedef void (*FLOOP)(void *, SchdTask *);
 
 /// Calls CGI_GET with 'var' as 'Arr[Js]'.
 #define CGI_GET_ARR(var, map, field) \
-  CGI_GET(char *, var, js_ra, map, field)
+  CGI_GET(Arr *, var, js_ra, map, field)
 
 /// Calls CGI_GET with 'var' as 'Map[Js]'.
 #define CGI_GET_MAP(var, map, field) \
-  CGI_GET(char *, var, js_ro, map, field)
+  CGI_GET(Map *, var, js_ro, map, field)
 
 #endif
