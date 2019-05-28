@@ -18,6 +18,11 @@ typedef struct file_FileLck FileLck;
 /// digits.
 char *file_tmp (char *prefix);
 
+/// file_tmp returns a new file path whose template is:
+/// 'dir'/'prefix'xxxxxxxxxx. Where xxxxxxxxxx is an aleatory sequence of
+/// digits.
+char *file_tmp_in (char *dir, char *prefix);
+
 /// file_cwd returns the working directory
 char *file_cwd (void);
 

@@ -23,11 +23,15 @@ static FileLck *lckFile_new(struct flock *lock, FILE *f) {
 }
 
 char *file_tmp (char *prefix) {
+  return file_tmp_in("/tmp", prefix);
+}
+
+char *file_tmp_in (char *dir, char *prefix) {
   char *r = cryp_genk(10);
   r = str_creplace(r, '/', '_');
-  r = str_f("/tmp/%s%s", prefix, r);
+  r = str_f("%s/%s%s", dir, prefix, r);
   if (file_exists(r)) {
-    return file_tmp(prefix);
+    return file_tmp_in(dir, prefix);
   }
   return r;
 }
