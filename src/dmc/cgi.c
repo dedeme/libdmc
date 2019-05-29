@@ -5,6 +5,7 @@
 #include "dmc/rnd.h"
 #include "dmc/cryp.h"
 #include "dmc/date.h"
+#include "dmc/async.h"
 
 static size_t klen = 300;
 static time_t t_no_expiration = 2592000; // seconds == 30 days
@@ -572,3 +573,39 @@ char *cgi_expired(void) {
   return cgi_ok(m);
 }
 
+// fn_data is Tp[Map[Js] *(*fn)(Map[Js] *rq), Map[Js]]
+static void long_run(Tp *fn_rq) {
+  Map *(*long_run)(Map *) = tp_e1(fn_rq);
+  Map *rq = tp_e2(fn_rq);
+  CGI_GET_STR(long_run_file, rq, "longRunFile")
+
+  // Map[js]
+  Map *rp = long_run(rq);
+  map_put(rp, "longRunEnd", js_wb(1));
+
+  char *tmp = file_tmp("dmc_cgi_long_run");
+  file_write(tmp, (char *)js_wo(rp));
+  file_rename(tmp, long_run_file);
+}
+
+// All Maps are Map[Js]
+Map *cgi_long_run(Map *(*fn)(Map *rq), Map *rq) {
+  CGI_GET_STR(long_run_file, rq, "longRunFile")
+  // Map[Js]
+  Map *rp = map_new();
+  if (*long_run_file) {
+    if (file_exists(long_run_file)) {
+      rp = js_ro((Js *)file_read(long_run_file));
+      map_put(rp, "longRunEnd", js_wb(1));
+      file_del(long_run_file);
+    } else {
+      map_put(rp, "longRunEnd", js_wb(0));
+    }
+  } else {
+    Js *long_run_file = js_ws(file_tmp("dmc_cgi_long_run"));
+    map_put(rq, "longRunFile", long_run_file);
+    map_put(rp, "longRunFile", long_run_file);
+    async_thread((FPROC)long_run, tp_new(fn, rq));
+  }
+  return rp;
+}
