@@ -113,8 +113,9 @@ char *cgi_expired(void);
 
 /// Runs a "long run" task. This function is intended to be called until it
 /// returns {"longRunEnd"='true'}.
-///   fn: Map[Js] *(*)(Map[Js *rq]). "Long run" task. <i>It must not be defined
-///       as inner function</i>.
+///   fn: Map[Js] *(*)(void *ctx, Map[Js *rq]). "Long run" task. <i>It must
+///       not be defined as inner function</i>.
+///   ctx: Context. It can be NULL. Value to pass to fn.
 ///   rq: Map[js]. Data for 'fn'. 'rq' must have a field called "longRunFile"
 ///       which value the first time it is called is "" and after that its value
 ///       is the returned by this function.
@@ -125,5 +126,5 @@ char *cgi_expired(void);
 ///                        the field {"longRunEnd"='true'} added.
 ///                      - If 'fn' is running a Map with the only field
 ///                        {"longRunEnd"='false'}
-Map *cgi_long_run(Map *(*fn)(Map *rq), Map *rq);
+Map *cgi_long_run(Map *(*fn)(void *ctx, Map *rq), void *ctx, Map *rq);
 #endif

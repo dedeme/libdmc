@@ -42,7 +42,7 @@ int it_has_next (It *this);
 ///
 void *it_next (It *this);
 
-// Show next element witout advancing.
+/// Show next element witout advancing.
 void *it_peek (It *this);
 
 /// it_add adds an element at the end of 'this'

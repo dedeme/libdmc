@@ -573,14 +573,15 @@ char *cgi_expired(void) {
   return cgi_ok(m);
 }
 
-// fn_data is Tp[Map[Js] *(*fn)(Map[Js] *rq), Map[Js]]
-static void long_run(Tp *fn_rq) {
-  Map *(*long_run)(Map *) = tp_e1(fn_rq);
-  Map *rq = tp_e2(fn_rq);
+// fn_data is Tp3[Map[Js] *(*fn)(void *ctx, Map[Js] *rq), void, Map[Js]]
+static void long_run(Tp3 *fn_v_rq) {
+  Map *(*lrun)(void *, Map *) = tp3_e1(fn_v_rq);
+  void *ctx = tp3_e2(fn_v_rq);
+  Map *rq = tp3_e3(fn_v_rq);
   CGI_GET_STR(long_run_file, rq, "longRunFile")
 
   // Map[js]
-  Map *rp = long_run(rq);
+  Map *rp = lrun(ctx, rq);
   map_put(rp, "longRunEnd", js_wb(1));
 
   char *tmp = file_tmp("dmc_cgi_long_run");
@@ -589,7 +590,7 @@ static void long_run(Tp *fn_rq) {
 }
 
 // All Maps are Map[Js]
-Map *cgi_long_run(Map *(*fn)(Map *rq), Map *rq) {
+Map *cgi_long_run(Map *(*fn)(void *ctx, Map *rq), void *ctx, Map *rq) {
   CGI_GET_STR(long_run_file, rq, "longRunFile")
   // Map[Js]
   Map *rp = map_new();
@@ -605,7 +606,7 @@ Map *cgi_long_run(Map *(*fn)(Map *rq), Map *rq) {
     Js *long_run_file = js_ws(file_tmp("dmc_cgi_long_run"));
     map_put(rq, "longRunFile", long_run_file);
     map_put(rp, "longRunFile", long_run_file);
-    async_thread((FPROC)long_run, tp_new(fn, rq));
+    async_thread((FPROC)long_run, tp3_new(fn, ctx, rq));
   }
   return rp;
 }
