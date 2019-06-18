@@ -27,45 +27,6 @@ Arr *arr_bf_new(int buffer) {
   return this;
 }
 
-
-Arr *arr_left(Arr *this, int ix, void *(*copy)(void *)) {
-  EXC_RANGE(ix, 0, arr_size(this))
-
-  Arr *tmp = MALLOC(Arr);
-  tmp->es = this->es;
-  tmp->end = this->es + ix;
-  Arr *r = arr_new();
-  arr_cat(r, tmp, copy);
-  return r;
-}
-
-
-Arr *arr_right(Arr *this, int ix, void *(*copy)(void *)) {
-  EXC_RANGE(ix, 0, arr_size(this))
-
-  Arr *tmp = MALLOC(Arr);
-  tmp->es = this->es + ix;
-  tmp->end = this->end;
-  Arr *r = arr_new();
-  arr_cat(r, tmp, copy);
-  return r;
-}
-
-Arr *arr_sub(Arr *this, int begin, int end, void *(*copy)(void *)) {
-  int size = arr_size(this);
-  EXC_RANGE(begin, 0, size);
-  EXC_RANGE(end, begin, size);
-
-  Arr *r = arr_new();
-  if (end > begin) {
-    Arr *tmp = MALLOC(Arr);
-    tmp->es = this->es + begin;
-    tmp->end = this->es + end;
-    arr_cat(r, tmp, copy);
-  }
-  return r;
-}
-
 int arr_size(Arr *this) {
   return this->end - this->es;
 }
@@ -152,33 +113,16 @@ void arr_insert(Arr *this, int ix, void *e) {
 void arr_remove(Arr *this, int ix) {
   EXC_RANGE(ix, 0, arr_size(this) - 1)
 
-  int size = (this->endbf - this->es) - 1;
-  if (size < 5) {
-    size = 5;
+  void **p = this->es + ix;
+  void **p1 = p + 1;
+  void **pend = this->end;
+  while (p1 < pend) {
+    *p++ = *p1++;
   }
-  Arr *new = arr_bf_new(size);
-  void **p = this->es;
-  void **p_end = this->end;
-  void **t = new->es;
-  int c = 0;
-  while (p < p_end) {
-    if (c == ix) {
-      ++p;
-      break;
-    }
-    *t++ = *p++;
-    ++c;
-  }
-  while (p < p_end) {
-    *t++ = *p++;
-  }
-
-  this->es = new->es;
-  this->end = t;
-  this->endbf = new->endbf;
+  --this->end;
 }
 
-void arr_cat(Arr *this, Arr *other, void *(*copy)(void *)) {
+void arr_cat(Arr *this, Arr *other) {
   int other_len = other->end - other->es;
   if (other_len) {
     int this_len = this->end - this->es;
@@ -192,20 +136,46 @@ void arr_cat(Arr *this, Arr *other, void *(*copy)(void *)) {
     void **s = other->es;
     void **t = this->end;
     REPEAT(other_len)
-      *t++ = copy(*s++);
+      *t++ = *s++;
     _REPEAT
     this->end = t;
   }
 }
 
-void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy)(void *)) {
-  const int sz = arr_size(this);
-  EXC_RANGE(ix, 0, sz)
+void arr_insert_arr(Arr *this, int ix, Arr *other) {
+  const int this_len = this->end - this->es;
+  EXC_RANGE(ix, 0, this_len)
 
-  Arr *right = arr_right(this, ix, copy);
-  arr_remove_range(this, ix, sz);
-  arr_cat(this, other, copy);
-  arr_cat(this, right, copy);
+  int other_len = other->end - other->es;
+  if (other_len) {
+    int this_size = this->endbf - this->es;
+    int new_size = this_size;
+    if (this_len + other_len >= this_size){
+      new_size = this_size + other_len;
+    }
+
+    void **es = GC_MALLOC(new_size * sizeof(void *));
+    void **end = es;
+
+    void **p = this->es;
+    void **pend = p + ix;
+    while (p < pend) {
+      *end++ = *p++;
+    }
+    void **p2 = other->es;
+    void **p2end = other->end;
+    while (p2 < p2end) {
+      *end++ = *p2++;
+    }
+    pend = this->end;
+    while (p < pend) {
+      *end++ = *p++;
+    }
+
+    this->es = es;
+    this->end = end;
+    this->endbf = es + new_size;
+  }
 }
 
 void arr_remove_range(Arr *this, int begin, int end) {
@@ -214,33 +184,17 @@ void arr_remove_range(Arr *this, int begin, int end) {
   EXC_RANGE(end, begin, sz)
 
   int df = end - begin;
-  if (df < 0) {
+  if (df == 0) {
     return;
   }
-  int size = (this->endbf - this->es) - df;
-  if (size < 5) {
-    size = 5;
-  }
-  Arr *new = arr_bf_new(size);
-  void **p = this->es;
-  void **p_end = this->end;
-  void **t = new->es;
-  int c = 0;
-  while (p < p_end) {
-    if (c == begin) {
-      p += df;
-      break;
-    }
-    *t++ = *p++;
-    ++c;
-  }
-  while (p < p_end) {
-    *t++ = *p++;
-  }
 
-  this->es = new->es;
-  this->end = t;
-  this->endbf = new->endbf;
+  void **pb = this->es + begin;
+  void **pe = this->es + end;
+  void **pend = this->end;
+  while (pe < pend) {
+    *pb++ = *pe++;
+  }
+  this->end -= df;
 }
 
 void arr_reverse(Arr *this) {

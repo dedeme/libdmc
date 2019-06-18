@@ -22,15 +22,6 @@ Arr *arr_new(void);
 /// buffer must be > 0
 Arr *arr_bf_new(int buffer);
 
-/// Returns elements placed in an index < ix
-Arr *arr_left(Arr *this, int ix, void *(*copy)(void *));
-
-/// Returns elements placed in an index >= ix
-Arr *arr_right(Arr *this, int ix, void *(*copy)(void *));
-
-/// Returns elements placed between [begin-end)
-Arr *arr_sub(Arr *this, int begin, int end, void *(*copy)(void *));
-
 ///
 int arr_size(Arr *this);
 
@@ -59,16 +50,16 @@ void arr_set(Arr *this, int ix, void *e);
 /// Inserts an element at position ix
 void arr_insert(Arr *this, int ix, void *e);
 
-/// Removes an element at position ix
+/// Removes an element at position ix. Total size of 'this' does not change.
 void arr_remove(Arr *this, int ix);
 
-/// Adds other to 'this' using the function 'copy'
-void arr_cat(Arr *this, Arr *other, void *(*copy)(void *));
+/// Adds pointer to elements of 'other' to 'this'.
+void arr_cat(Arr *this, Arr *other);
 
-/// Inserts an Arr in position ix
-void arr_insert_arr(Arr *this, int ix, Arr *other, void *(*copy)(void *));
+/// Inserts pointer to elements of 'other' at 'ix'
+void arr_insert_arr(Arr *this, int ix, Arr *other);
 
-/// Removes elements between [begin-end)
+/// Removes elements between [begin-end). Total size of 'this' does not change.
 void arr_remove_range(Arr *this, int begin, int end);
 
 /// Reverses elements of 'this'

@@ -15,10 +15,6 @@ static double *double_new(double n) {
   return this;
 }
 
-static double *double_copy_new(double *n) {
-  return double_new(*n);
-}
-
 void arr_tests(void) {
   puts("Arr tests");
   // Arr[double]
@@ -33,7 +29,7 @@ void arr_tests(void) {
 
   // Arr[double]
   Arr *ia2 = arr_new();
-  arr_cat(ia, ia2, (FCOPY) double_copy_new);
+  arr_cat(ia, ia2);
   assert(*(double *)arr_get(ia, 0) == 1);
   assert(*(double *)arr_get(ia, 1) == 2);
   assert(arr_size(ia) == 2);
@@ -45,7 +41,7 @@ void arr_tests(void) {
   assert(*(double *)arr_get(ia2, 1) == 2);
   assert(*(double *)arr_get(ia2, 2) == 3);
   assert(arr_size(ia2) == 3);
-  arr_cat(ia, ia2, (FCOPY) double_copy_new);
+  arr_cat(ia, ia2);
   assert(*(double *)arr_get(ia, 0) == 1);
   assert(*(double *)arr_get(ia, 1) == 2);
   assert(*(double *)arr_get(ia, 2) == 1);
@@ -81,10 +77,20 @@ void arr_tests(void) {
     arr_set(ia, i, double_new(101));
   _RANGE
 
-  arr_insert_arr(ia, 2, ia2, (FCOPY) double_copy_new);
+  arr_insert_arr(ia, 2, ia2);
   assert(arr_size(ia) == 8);
   assert(*(double *)arr_get(ia, 0) == 101);
   assert(*(double *)arr_get(ia, 2) == 1);
+  assert(*(double *)arr_get(ia, 3) == 2);
+  assert(*(double *)arr_get(ia, 4) == 3);
+  assert(*(double *)arr_get(ia, 7) == 101);
+
+  arr_insert_arr(ia, 2, arr_new());
+  assert(arr_size(ia) == 8);
+  assert(*(double *)arr_get(ia, 0) == 101);
+  assert(*(double *)arr_get(ia, 2) == 1);
+  assert(*(double *)arr_get(ia, 3) == 2);
+  assert(*(double *)arr_get(ia, 4) == 3);
   assert(*(double *)arr_get(ia, 7) == 101);
 
   *sum = 0;
@@ -96,6 +102,17 @@ void arr_tests(void) {
   arr_remove_range(ia, 5, 8);
   arr_sort(ia, (FCMP) greater);
   arr_reverse(ia);
+
+  assert(arr_size(ia) == 5);
+  assert(*(double *)arr_get(ia, 0) == 101);
+  assert(*(double *)arr_get(ia, 1) == 101);
+  assert(*(double *)arr_get(ia, 2) == 3);
+  assert(*(double *)arr_get(ia, 3) == 2);
+  assert(*(double *)arr_get(ia, 4) == 1);
+
+  arr_remove_range(ia, 0, 0);
+  arr_remove_range(ia, 4, 4);
+  arr_remove_range(ia, 5, 5);
 
   assert(arr_size(ia) == 5);
   assert(*(double *)arr_get(ia, 0) == 101);
