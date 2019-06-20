@@ -17,6 +17,7 @@
 
 // Arr[Exc]
 static Arr *pool = NULL;
+static pthread_mutex_t mutex;
 
 struct exc_Exc {
   pthread_t thread;
@@ -78,6 +79,7 @@ void exc_init () {
     return;
   }
   pool = arr_new();
+  pthread_mutex_init(&mutex, NULL);
 
   jmp_buf *bf = MALLOC(jmp_buf);
   Exc *exc = exc_new(pthread_self(), bf);
@@ -92,6 +94,8 @@ void exc_init () {
 
 void exc_thread_init (void) {
   if (pool) {
+    pthread_mutex_lock(&mutex);
+
     pthread_t self = pthread_self();
     jmp_buf *bf = MALLOC(jmp_buf);
     Exc *exc = exc_new(self, bf);
@@ -110,6 +114,8 @@ void exc_thread_init (void) {
       arr_set(pool, i, exc);
     }
 
+    pthread_mutex_unlock(&mutex);
+
     int val = setjmp(*bf);
     if (val) {
       Exc *exc = exc_get();
@@ -123,6 +129,8 @@ void exc_thread_init (void) {
 
 void exc_thread_end (void) {
   if (pool) {
+    pthread_mutex_lock(&mutex);
+
     pthread_t th = pthread_self();
     int i = -1;
     EACH_IX(pool, Exc, exc, ix)
@@ -134,6 +142,8 @@ void exc_thread_end (void) {
     if (i != -1) {
       arr_remove(pool, i);
     }
+
+    pthread_mutex_unlock(&mutex);
   } else {
     puts("'exc_init()' has not been called");
     exit(1);
@@ -153,6 +163,8 @@ void exc_remove () {
 Exc *exc_get (void) {
   Exc *r = NULL;
   if (pool) {
+    pthread_mutex_lock(&mutex);
+
     pthread_t th = pthread_self();
     EACH(pool, Exc, exc)
       if (pthread_equal(exc->thread, th)) {
@@ -160,6 +172,8 @@ Exc *exc_get (void) {
         break;
       }
     _EACH
+
+    pthread_mutex_unlock(&mutex);
   } else {
     puts("'exc_init()' has not been called");
     exit(1);
