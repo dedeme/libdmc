@@ -11,7 +11,7 @@
 ///
 typedef struct dec_Dec Dec;
 
-/// dec_new makes a new Dec
+/// dec_new makes a new Dec. It requires link with -lm.
 ///   n : Number which will be rounded to 'scale'
 ///   scale: Decimal positions. Maximum scale is 10.
 Dec *dec_new(double n, int scale);
@@ -19,7 +19,7 @@ Dec *dec_new(double n, int scale);
 ///
 char *dec_to_str(Dec *this);
 
-/// dec_n returns the double value of 'this'
+/// dec_n returns the rounded double value of 'this'
 double dec_n(Dec *this);
 
 /// dec_scale returns the scale of 'this'

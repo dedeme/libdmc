@@ -41,24 +41,36 @@ void dec_tests(void) {
 
   d = dec_new(1234567890.125, 2);
   assert(decEqstr("1234567890.13", d));
+  assert(1234567890.13 == dec_n(d));
+  assert(dec_scale(d) == 2);
   js = dec_to_js(d);
   djs = dec_from_js(js);
   assert(decEqstr("1234567890.13", djs));
 
   d = dec_new(0.0, 0);
   assert(decEqstr("0", d));
+  assert(0 == dec_n(d));
+  assert(dec_scale(d) == 0);
 
   d = dec_new(0.1234, 3);
   assert(decEqstr("0.123", d));
+  assert(0.123 == dec_n(d));
+  assert(dec_scale(d) == 3);
 
   d = dec_new(12.21, 4);
   assert(decEqstr("12.2100", d));
+  assert(12.2100 == dec_n(d));
+  assert(dec_scale(d) == 4);
 
   d = dec_new(-0.1226, 3);
   assert(decEqstr("-0.123", d));
+  assert(-0.123 == dec_n(d));
+  assert(dec_scale(d) == 3);
 
   d = dec_new(-12.21, 4);
   assert(decEqstr("-12.2100", d));
+  assert(-12.2100 == dec_n(d));
+  assert(dec_scale(d) == 4);
   js = dec_to_js(d);
   djs = dec_from_js(js);
   assert(decEqstr("-12.2100", djs));

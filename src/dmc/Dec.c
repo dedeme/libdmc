@@ -8,6 +8,7 @@
 struct dec_Dec {
   double n;
   int scale;
+  int mul;
 };
 
 double _dec_round(double dbl) {
@@ -29,8 +30,21 @@ Dec *dec_new(double n, int scale) {
   Dec *this = MALLOC(Dec);
   this->n = n >= 0 ? n + _dec_round(n) : n - _dec_round(n);
   this->scale = scale < 0 ? 0 : scale > 10 ? 10 : scale;
+  int mul = 1;
+  REPEAT(scale)
+    mul *= 10;
+  _REPEAT
+  this->mul = mul;
 
   return this;
+}
+
+double dec_n(Dec *this) {
+  return round(this->n * this->mul) / this->mul;
+}
+
+int dec_scale(Dec *this) {
+  return this->scale;
 }
 
 char *dec_to_str(Dec *this) {
