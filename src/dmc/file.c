@@ -146,7 +146,7 @@ int file_is_directory (char *path) {
   struct stat buf;
   if (stat(path, &buf)) {
     if (errno == ENOENT) {
-      return 1;
+      return 0;
     }
     EXC_IO(str_f("Fail reading %s: %s", path, strerror(errno)))
   }
