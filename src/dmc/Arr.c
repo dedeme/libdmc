@@ -13,12 +13,11 @@ struct arr_Arr {
   void **endbf;
 };
 
-Arr *arr_new() {
+Arr *arr_new () {
   return arr_bf_new(15);
 }
 
-///
-Arr *arr_bf_new(int buffer) {
+Arr *arr_bf_new (int buffer) {
   Arr *this = MALLOC(Arr);
   void **es = GC_MALLOC(buffer * sizeof(void *));
   this->es = es;
@@ -27,25 +26,37 @@ Arr *arr_bf_new(int buffer) {
   return this;
 }
 
-int arr_size(Arr *this) {
+Arr *arr_copy (Arr *this) {
+  int buffer = this->endbf - this->es;
+  int bf_size = buffer * sizeof(void *);
+  Arr *r = MALLOC(Arr);
+  void **es = GC_MALLOC(bf_size);
+  r->es = es;
+  r->end = es + (this->end - this->es);
+  r->endbf = es + buffer;
+  memcpy(es, this->es, bf_size);
+  return r;
+}
+
+int arr_size (Arr *this) {
   return this->end - this->es;
 }
 
-void *arr_get(Arr *this, int ix) {
+void *arr_get (Arr *this, int ix) {
   EXC_RANGE(ix, 0, arr_size(this) - 1)
 
   return *(this->es + ix);
 }
 
-void **arr_start(Arr *this) {
+void **arr_start (Arr *this) {
   return this->es;
 }
 
-void **arr_end(Arr *this) {
+void **arr_end (Arr *this) {
   return this->end;
 }
 
-void arr_push(Arr *this, void *e) {
+void arr_push (Arr *this, void *e) {
   if (this->end == this->endbf) {
     int size = this->endbf - this->es;
     int new_size = size + size;
@@ -56,7 +67,7 @@ void arr_push(Arr *this, void *e) {
   *this->end++ = e;
 }
 
-void *arr_pop(Arr *this) {
+void *arr_pop (Arr *this) {
   if (this->es >= this->end)
     EXC_ILLEGAL_STATE("Array is empty")
 
@@ -64,18 +75,18 @@ void *arr_pop(Arr *this) {
   return *this->end;
 }
 
-void *arr_peek(Arr *this) {
+void *arr_peek (Arr *this) {
   return *(this->end - 1);
 }
 
-void arr_set(Arr *this, int ix, void *e) {
+void arr_set (Arr *this, int ix, void *e) {
   EXC_RANGE(ix, 0, arr_size(this) - 1)
 
   void **p = this->es + ix;
   *p = e;
 }
 
-void arr_insert(Arr *this, int ix, void *e) {
+void arr_insert (Arr *this, int ix, void *e) {
   EXC_RANGE(ix, 0, arr_size(this))
 
   int size = arr_size(this);
@@ -110,7 +121,7 @@ void arr_insert(Arr *this, int ix, void *e) {
   this->endbf = new->endbf;
 }
 
-void arr_remove(Arr *this, int ix) {
+void arr_remove (Arr *this, int ix) {
   EXC_RANGE(ix, 0, arr_size(this) - 1)
 
   void **p = this->es + ix;
@@ -122,7 +133,7 @@ void arr_remove(Arr *this, int ix) {
   --this->end;
 }
 
-void arr_cat(Arr *this, Arr *other) {
+void arr_cat (Arr *this, Arr *other) {
   int other_len = other->end - other->es;
   if (other_len) {
     int this_len = this->end - this->es;
@@ -142,7 +153,7 @@ void arr_cat(Arr *this, Arr *other) {
   }
 }
 
-void arr_insert_arr(Arr *this, int ix, Arr *other) {
+void arr_insert_arr (Arr *this, int ix, Arr *other) {
   const int this_len = this->end - this->es;
   EXC_RANGE(ix, 0, this_len)
 
@@ -178,7 +189,7 @@ void arr_insert_arr(Arr *this, int ix, Arr *other) {
   }
 }
 
-void arr_remove_range(Arr *this, int begin, int end) {
+void arr_remove_range (Arr *this, int begin, int end) {
   int sz = arr_size(this);
   EXC_RANGE(begin, 0, sz)
   EXC_RANGE(end, begin, sz)
@@ -197,7 +208,18 @@ void arr_remove_range(Arr *this, int begin, int end) {
   this->end -= df;
 }
 
-void arr_reverse(Arr *this) {
+void arr_clear (Arr *this) {
+  arr_bf_clear(this, 15);
+}
+
+void arr_bf_clear (Arr *this, int buffer) {
+  void **es = GC_MALLOC(buffer * sizeof(void *));
+  this->es = es;
+  this->end = es;
+  this->endbf = es + buffer;
+}
+
+void arr_reverse (Arr *this) {
   void **p = this->es;
   void **end = this->end - 1;
   void *tmp;
@@ -208,7 +230,7 @@ void arr_reverse(Arr *this) {
   }_REPEAT
 }
 
-void arr_sort(Arr *this, int (*greater)(void *, void *)) {
+void arr_sort (Arr *this, int (*greater)(void *, void *)) {
   void sort(void **a, int size) {
     if (size < 2) {
       return;
@@ -266,7 +288,7 @@ void arr_sort(Arr *this, int (*greater)(void *, void *)) {
   sort(this->es, this->end - this->es);
 }
 
-void arr_shuffle(Arr *this) {
+void arr_shuffle (Arr *this) {
   void **es = this->es;
   int size = this->end - es;
   void **p = this->end - 1;
@@ -279,7 +301,7 @@ void arr_shuffle(Arr *this) {
   }
 }
 
-int arr_index(Arr *this, int (*pred)(void *e)) {
+int arr_index (Arr *this, int (*pred)(void *e)) {
   int ix = -1;
   EACH_IX(this, void, e, i)
     if (pred(e)) {
@@ -290,7 +312,7 @@ int arr_index(Arr *this, int (*pred)(void *e)) {
   return ix;
 }
 
-void arr_filter(Arr *this, int (*pred)(void *e)) {
+void arr_filter (Arr *this, int (*pred)(void *e)) {
   void **p = this->es;
   void **end = this->end;
   void **new_end = p;
@@ -335,7 +357,7 @@ Arr *arr_from_it (It *it) {
   return r;
 }
 
-Js *arr_to_js(Arr *this, Js *(*to)(void *e)) {
+Js *arr_to_js (Arr *this, Js *(*to)(void *e)) {
   // Arr[Js]
   Arr *a = arr_new();
   void **p = this->es;
@@ -347,7 +369,7 @@ Js *arr_to_js(Arr *this, Js *(*to)(void *e)) {
   return r;
 }
 
-Arr *arr_from_js(Js *js, void *(*from)(Js *jse)) {
+Arr *arr_from_js (Js *js, void *(*from)(Js *jse)) {
   Arr *this = arr_new();
   // Arr[Js]
   Arr *a = js_ra(js);
