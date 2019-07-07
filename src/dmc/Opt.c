@@ -50,3 +50,7 @@ void *opt_oget (Opt *this, void *value) {
   if (!this->value) return value;
   return this->value;
 }
+
+void *opt_nget (Opt *this) {
+  return this->value ? this->value : NULL;
+}

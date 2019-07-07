@@ -29,4 +29,7 @@ void *opt_eget (Opt *this, char *msg);
 /// Returns value if 'this' is empty.
 void *opt_oget (Opt *this, void *value);
 
+/// Returns NULL if 'this' is empty.
+void *opt_nget (Opt *this);
+
 #endif
