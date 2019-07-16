@@ -8,6 +8,7 @@
   #define DM_IT_H
 
 #include <stddef.h>
+#include "Arr.h"
 
 typedef struct opt_Opt Opt;
 
@@ -113,6 +114,12 @@ Opt *it_find (It *this, int (*predicate)(void *e));
 
 /// Returns the first element which satisfies 'predicate' or 'option'.
 void *it_ofind (It *this, void *option, int (*predicate)(void *e));
+
+/// Creates an array from 'this'
+Arr *it_to (It *this);
+
+/// Creates an It from 'a'
+It *it_from (Arr *a);
 
 #endif
 

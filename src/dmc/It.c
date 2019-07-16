@@ -371,3 +371,10 @@ void *it_ofind (It *this, void *option, int (*predicate)(void *e)) {
   return option;
 }
 
+Arr *it_to (It *this) {
+  return arr_from_it (this);
+}
+
+It *it_from (Arr *a) {
+  return arr_to_it(a);
+}

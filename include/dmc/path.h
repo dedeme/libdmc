@@ -10,8 +10,8 @@
 /// If path is "" or ends at ("/") it returns "".
 char *path_name (char *path);
 
-/// path_parent sets the parent path of 'path'.<br>
-/// If 'path' is "/" or a string without '/', it sets an empty string.
+/// path_parent returns the parent path of 'path'.<br>
+/// If 'path' is "/" or a string without '/', it returns an empty string.
 char *path_parent (char *path);
 
 /// path_extendsion returns only extension of path. Extension is
