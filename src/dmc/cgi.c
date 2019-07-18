@@ -247,22 +247,8 @@ static Arr *read_sessions_new(void) {
 static void add_session(
   char *session_id, char *user, char *key, time_t expiration
 ) {
-  // ------------------------------------------------------------------------ //
-  // jsrow is Js(Arr[Js])                                                     //
-  int pred(Js *jsrow) {                                                       //
-    // Arr[Js]                                                                //
-    Arr *row = js_ra(jsrow);                                                  //
-    char *u = js_rs(arr_get(row, 1));                                         //
-    return str_eq(u, user);                                                   //
-  }                                                                           //
-  // ------------------------------------------------------------------------ //
-
   // Arr[Js] (Where Js is a json array)
   Arr *sessions = read_sessions_new();
-  int ix = arr_index(sessions, (FPRED)pred);
-  if (ix != -1) {
-    arr_remove(sessions, ix);
-  }
 
   time_t lapse = expiration ? expiration : t_no_expiration;
   time_t time = date_now() + lapse;
