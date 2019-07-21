@@ -1,4 +1,4 @@
-// Copyright 17-Oct-2018 ºDeme
+// Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #ifndef B64_TESTS_H
@@ -6,6 +6,7 @@
 
 #include "dmc/std.h"
 
-void b64_tests(void);
+///
+void b64_tests (void);
 
 #endif

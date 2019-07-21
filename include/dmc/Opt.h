@@ -1,10 +1,12 @@
-// Copyright 22-Apr-2019 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Option
 
 #ifndef DMC_OPT_H
   #define DMC_OPT_H
+
+#include "Gc.h"
 
 typedef struct opt_Opt Opt;
 
@@ -26,7 +28,7 @@ void *opt_get (Opt *this);
 /// Throws a illegal_state_exception_t if 'this' is empty with 'msg' as message.
 void *opt_eget (Opt *this, char *msg);
 
-/// Returns value if 'this' is empty.
+/// Returns 'value' if 'this' is empty.
 void *opt_oget (Opt *this, void *value);
 
 /// Returns NULL if 'this' is empty.

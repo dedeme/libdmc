@@ -1,13 +1,12 @@
-// Copyright 15-Oct-2018 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Array structure.<p>
-/// This structure is owner of its elements and frees them with 'arr_free".
+/// Array structure.
 
 #ifndef DMC_ARR_H
   #define DMC_ARR_H
 
-#include "DEFS.h"
+#include "Gc.h"
 
 typedef struct js_Js Js;
 
@@ -16,14 +15,14 @@ typedef struct it_It It;
 ///
 typedef struct arr_Arr Arr;
 
-/// Creates a new Array with buffer size of 15 elements.
-Arr *arr_new (void);
+/// Creates a new Array with a buffer of 15 elements.
+Arr *arr_new (Gc *gc);
 
-/// buffer must be > 0.
-Arr *arr_bf_new (int buffer);
+/// 'sz' must be > 0.
+Arr *arr_new_bf (Gc *gc, int sz);
 
 /// Returns a new array with elements of 'this'.
-Arr *arr_copy (Arr *this);
+Arr *arr_copy (Gc *gc, Arr *this);
 
 ///
 int arr_size (Arr *this);
@@ -69,7 +68,7 @@ void arr_remove_range (Arr *this, int begin, int end);
 void arr_clear (Arr *this);
 
 /// Removes every element of 'this'.
-void arr_bf_clear (Arr *this, int buffer);
+void arr_clear_bf (Arr *this, int sz);
 
 /// Reverses elements of 'this'
 void arr_reverse (Arr *this);
@@ -90,15 +89,15 @@ int arr_index (Arr *this, int (*pred)(void *e));
 void arr_filter (Arr *this, int (*pred)(void *e));
 
 /// Creates an iterator over 'this'
-It *arr_to_it (Arr *this);
+It *arr_to_it (Gc *gc, Arr *this);
 
 /// Creates an Arr from 'it'
-Arr *arr_from_it (It *it);
+Arr *arr_from_it (Gc *gc, It *it);
 
 /// Returns a Js from an element of 'this'
-Js *arr_to_js (Arr *this, Js *(*to)(void *e));
+Js *arr_to_js (Gc *gc, Arr *this, Js *(*to)(Gc *gc, void *e));
 
 /// Parses a Js to an element of 'this'.<br>
-Arr *arr_from_js (Js *js, void *(*from)(Js *jse));
+Arr *arr_from_js (Gc *gc, Js *js, void *(*from)(Gc *gc, Js *jse));
 
 #endif

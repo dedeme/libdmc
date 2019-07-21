@@ -1,7 +1,5 @@
-// Copyright 17-Oct-2018 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
-
-/// Generator of random numbers.
 
 #ifndef DMC_RND_H
   #define DMC_RND_H
@@ -22,7 +20,7 @@ int rnd_i(int top);
 
 /// rnd_box_new returns an 'Box' that iterates over 'a' elements randomly. When
 /// it finishes with all the elements of 'a', restarts again.
-Box *rnd_box_new(Arr *a);
+Box *rnd_box_new(Gc *gc, Arr *a);
 
 /// rnd_box_next returns the next element of 'this'.
 void *rnd_box_next(Box *this);

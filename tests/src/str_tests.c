@@ -1,13 +1,14 @@
-// Copyright 16-Oct-2018 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "str_tests.h"
 #include <assert.h>
 
-void str_tests(void) {
+void str_tests (void) {
   puts("Str tests");
+  Gc *gc = gc_new();
 
-  puts("    str-starts/ends\n");
+  puts("    str-starts/ends");
 
   assert(str_starts("ab", ""));
   assert(str_starts("", ""));
@@ -25,7 +26,7 @@ void str_tests(void) {
   assert(!str_ends("ab", "a"));
   assert(!str_ends("ab", "cab"));
 
-  puts("    str-index/last_index\n");
+  puts("    str-index/last_index");
 
   assert(str_cindex("ab", 'a') == 0);
   assert(str_cindex_from("ab", 'a', 1) == -1);
@@ -71,117 +72,117 @@ void str_tests(void) {
   assert(str_last_index("abcddd", "d") == 5);
   assert(str_last_index("abcd", "ad") == -1);
 
-  printf("    str-copy/cat\n");
+  puts("    str-copy/cat");
 
   char *s0 = "";
   char *s1 = "1";
 
   char *r;
 
-  r = str_new(s0);
+  r = str_new(gc, s0);
   assert(str_eq(r, ""));
-  r = str_new(s1);
+  r = str_new(gc, s1);
   assert(str_eq(r, "1"));
 
-  r = str_cat(s0, s1, NULL);
+  r = str_cat(gc, s0, s1, NULL);
   assert(str_eq(r, "1"));
 
-  char *r2 = str_cat(r, "ab", NULL);
+  char *r2 = str_cat(gc, r, "ab", NULL);
   assert(str_eq(r2, "1ab"));
-  r = str_cat(r2, "ab", "", "cd", "ab", s1, "cd", NULL);
+  r = str_cat(gc, r2, "ab", "", "cd", "ab", s1, "cd", NULL);
   assert(str_eq(r, "1ababcdab1cd"));
 
-  printf("    str-sub\n");
+  puts("    str-sub/trim");
 
-  r = str_left("ab", 1);
+  r = str_left(gc, "ab", 1);
   assert(str_eq(r, "a"));
-  r = str_cat(r, "b", NULL);
+  r = str_cat(gc, r, "b", NULL);
 
-  r = str_sub(r, -2, -1);
+  r = str_sub(gc, r, -2, -1);
   assert(str_eq(r, "a"));
-  r = str_cat(r, "b", NULL);
-  r = str_sub(r, 0, 0);
+  r = str_cat(gc, r, "b", NULL);
+  r = str_sub(gc, r, 0, 0);
   assert(str_eq(r, ""));
-  r = str_cat(r, "ab", NULL);
-  r = str_sub(r, -1, 0);
+  r = str_cat(gc, r, "ab", NULL);
+  r = str_sub(gc, r, -1, 0);
   assert(str_eq(r, ""));
-  r = str_cat(r, "ab", NULL);
-  r = str_sub(r, 0, 35);
+  r = str_cat(gc, r, "ab", NULL);
+  r = str_sub(gc, r, 0, 35);
   assert(str_eq(r, ""));
-  r = str_cat(r, "ab", NULL);
-  r = str_sub(r, 3, 3);
+  r = str_cat(gc, r, "ab", NULL);
+  r = str_sub(gc, r, 3, 3);
   assert(str_eq(r, ""));
-  r = str_cat(r, "ab", NULL);
+  r = str_cat(gc, r, "ab", NULL);
   assert(str_eq(r, "ab"));
-  r = str_sub(r, 2, 2);
+  r = str_sub(gc, r, 2, 2);
   assert(str_eq(r, ""));
-  r = str_cat(r, "ab", NULL);
-  r = str_sub(r, 0, 2);
+  r = str_cat(gc, r, "ab", NULL);
+  r = str_sub(gc, r, 0, 2);
   assert(str_eq(r, "ab"));
-  r = str_sub(r, 1, 2);
+  r = str_sub(gc, r, 1, 2);
   assert(str_eq(r, "b"));
-  r = str_right(r, 20);
-  r = str_left(r, 0);
+  r = str_right(gc, r, 20);
+  r = str_left(gc, r, 0);
   assert(str_eq(r, ""));
-  r = str_cat(r, "ab", NULL);
-  r = str_right(r, 0);
+  r = str_cat(gc, r, "ab", NULL);
+  r = str_right(gc, r, 0);
   assert(str_eq(r, "ab"));
-  r = str_right(r, -1);
+  r = str_right(gc, r, -1);
   assert(str_eq(r, "b"));
 
-  r = str_trim("nothing to trim");
+  r = str_trim(gc, "nothing to trim");
   assert(str_eq(r, "nothing to trim"));
-  r = str_trim("trim the back     ");
+  r = str_trim(gc, "trim the back     ");
   assert(str_eq(r, "trim the back"));
-  r = str_trim(" trim one char front and back ");
+  r = str_trim(gc, " trim one char front and back ");
   assert(str_eq(r, "trim one char front and back"));
-  r = str_trim(" trim one char front");
+  r = str_trim(gc, " trim one char front");
   assert(str_eq(r, "trim one char front"));
-  r = str_trim("trim one char back ");
+  r = str_trim(gc, "trim one char back ");
   assert(str_eq(r, "trim one char back"));
-  r = str_trim("                   ");
+  r = str_trim(gc, "                   ");
   assert(str_eq(r, ""));
-  r = str_trim(" ");
+  r = str_trim(gc, " ");
   assert(str_eq(r, ""));
-  r = str_trim("a");
+  r = str_trim(gc, "a");
   assert(str_eq(r, "a"));
-  r = str_trim("");
+  r = str_trim(gc, "");
   assert(str_eq(r, ""));
-  r = str_trim("nothing to trim");
+  r = str_trim(gc, "nothing to trim");
   assert(str_eq(r, "nothing to trim"));
-  r = str_ltrim("trim the back     ");
+  r = str_ltrim(gc, "trim the back     ");
   assert(str_eq(r, "trim the back     "));
-  r = str_ltrim(" trim one char front and back ");
+  r = str_ltrim(gc, " trim one char front and back ");
   assert(str_eq(r, "trim one char front and back "));
-  r = str_ltrim(" trim one char front");
+  r = str_ltrim(gc, " trim one char front");
   assert(str_eq(r, "trim one char front"));
-  r = str_ltrim("trim one char back ");
+  r = str_ltrim(gc, "trim one char back ");
   assert(str_eq(r, "trim one char back "));
-  r = str_ltrim("                   ");
+  r = str_ltrim(gc, "                   ");
   assert(str_eq(r, ""));
-  r = str_ltrim(" ");
+  r = str_ltrim(gc, " ");
   assert(str_eq(r, ""));
-  r = str_ltrim("a");
+  r = str_ltrim(gc, "a");
   assert(str_eq(r, "a"));
-  r = str_ltrim("");
+  r = str_ltrim(gc, "");
   assert(str_eq(r, ""));
-  r = str_rtrim("nothing to trim");
+  r = str_rtrim(gc, "nothing to trim");
   assert(str_eq(r, "nothing to trim"));
-  r = str_rtrim("trim the back     ");
+  r = str_rtrim(gc, "trim the back     ");
   assert(str_eq(r, "trim the back"));
-  r = str_rtrim(" trim one char front and back ");
+  r = str_rtrim(gc, " trim one char front and back ");
   assert(str_eq(r, " trim one char front and back"));
-  r = str_rtrim(" trim one char front");
+  r = str_rtrim(gc, " trim one char front");
   assert(str_eq(r, " trim one char front"));
-  r = str_rtrim("trim one char back ");
+  r = str_rtrim(gc, "trim one char back ");
   assert(str_eq(r, "trim one char back"));
-  r = str_rtrim("                   ");
+  r = str_rtrim(gc, "                   ");
   assert(str_eq(r, ""));
-  r = str_rtrim(" ");
+  r = str_rtrim(gc, " ");
   assert(str_eq(r, ""));
-  r = str_rtrim("a");
+  r = str_rtrim(gc, "a");
   assert(str_eq(r, "a"));
-  r = str_rtrim("");
+  r = str_rtrim(gc, "");
   assert(str_eq(r, ""));
 
   puts("    str-split/join\n");
@@ -198,99 +199,99 @@ void str_tests(void) {
   char *tx3c = "ab;--c;--de";
 
 
-  a = str_csplit(tx0, ';');
-  r = str_cjoin(a, ';');
+  a = str_csplit(gc, tx0, ';');
+  r = str_cjoin(gc, a, ';');
   assert(str_eq(r, tx0));
-  a = str_csplit(tx01, ';');
-  r = str_cjoin(a, ';');
+  a = str_csplit(gc, tx01, ';');
+  r = str_cjoin(gc, a, ';');
   assert(str_eq(r, ""));
-  a = str_csplit(tx1, ';');
-  r = str_cjoin(a, ';');
+  a = str_csplit(gc, tx1, ';');
+  r = str_cjoin(gc, a, ';');
   assert(str_eq(r, tx1));
-  a = str_csplit(tx2, ';');
-  r = str_cjoin(a, ';');
+  a = str_csplit(gc, tx2, ';');
+  r = str_cjoin(gc, a, ';');
   assert(str_eq(r, tx1));
-  a = str_csplit(tx3, ';');
-  r = str_cjoin(a, ';');
+  a = str_csplit(gc, tx3, ';');
+  r = str_cjoin(gc, a, ';');
   assert(str_eq(r, tx3));
-  a = str_split(tx0, ";");
-  r = str_join(a, ";");
+  a = str_split(gc, tx0, ";");
+  r = str_join(gc, a, ";");
   assert(str_eq(r, tx0));
-  a = str_split(tx01, ";");
-  r = str_join(a, ";");
+  a = str_split(gc, tx01, ";");
+  r = str_join(gc, a, ";");
   assert(str_eq(r, ""));
-  a = str_split(tx1, ";");
-  r = str_join(a, ";");
+  a = str_split(gc, tx1, ";");
+  r = str_join(gc, a, ";");
   assert(str_eq(r, tx1));
-  a = str_split(tx2, ";");
-  r = str_join(a, ";");
+  a = str_split(gc, tx2, ";");
+  r = str_join(gc, a, ";");
   assert(str_eq(r, tx1));
-  a = str_split(tx3, ";");
-  r = str_join(a, ";");
+  a = str_split(gc, tx3, ";");
+  r = str_join(gc, a, ";");
   assert(str_eq(r, tx3));
-  a = str_split(tx0, ";--");
-  r = str_join(a, ";--");
+  a = str_split(gc, tx0, ";--");
+  r = str_join(gc, a, ";--");
   assert(str_eq(r, tx0));
-  a = str_split(tx01b, ";--");
-  r = str_join(a, ";--");
+  a = str_split(gc, tx01b, ";--");
+  r = str_join(gc, a, ";--");
   assert(str_eq(r, ""));
-  a = str_split(tx1, ";--");
-  r = str_join(a, ";--");
+  a = str_split(gc, tx1, ";--");
+  r = str_join(gc, a, ";--");
   assert(str_eq(r, tx1));
-  a = str_split(tx2b, ";--");
-  r = str_join(a, ";--");
+  a = str_split(gc, tx2b, ";--");
+  r = str_join(gc, a, ";--");
   assert(str_eq(r, tx1));
-  a = str_split(tx3b, ";--");
-  r = str_join(a, ";--");
+  a = str_split(gc, tx3b, ";--");
+  r = str_join(gc, a, ";--");
   assert(str_eq(r, tx3b));
-  a = str_split_trim(tx3b, ";--");
-  r = str_join(a, ";--");
+  a = str_split_trim(gc, tx3b, ";--");
+  r = str_join(gc, a, ";--");
   assert(str_eq(r, tx3c));
 
   puts("    str-replace\n");
 
-  r = str_new("");
-  r = str_creplace(r, '.', ',');
+  r = str_new(gc, "");
+  r = str_creplace(gc, r, '.', ',');
   assert(str_eq(r, ""));
-  r = str_new(".");
-  r = str_creplace(r, '.', ',');
+  r = str_new(gc, ".");
+  r = str_creplace(gc, r, '.', ',');
   assert(str_eq(r, ","));
-  r = str_new("f.j");
-  r = str_creplace(r, '.', ',');
+  r = str_new(gc, "f.j");
+  r = str_creplace(gc, r, '.', ',');
   assert(str_eq(r, "f,j"));
-  r = str_new("f.j.");
-  r = str_creplace(r, '.', ',');
+  r = str_new(gc, "f.j.");
+  r = str_creplace(gc, r, '.', ',');
   assert(str_eq(r, "f,j,"));
 
-  r = str_replace("", ".", "");
+  r = str_replace(gc, "", ".", "");
   assert(str_eq(r, ""));
-  r = str_replace(".", ".", "");
+  r = str_replace(gc, ".", ".", "");
   assert(str_eq(r, ""));
-  r = str_replace("f.j", ".", "");
+  r = str_replace(gc, "f.j", ".", "");
   assert(str_eq(r, "fj"));
-  r = str_replace("f.j.", ".", "");
+  r = str_replace(gc, "f.j.", ".", "");
   assert(str_eq(r, "fj"));
 
-  r = str_replace("", "..", "---");
+  r = str_replace(gc, "", "..", "---");
   assert(str_eq(r, ""));
-  r = str_replace("..", "..", "---");
+  r = str_replace(gc, "..", "..", "---");
   assert(str_eq(r, "---"));
-  r = str_replace("f..j", "..", "---");
+  r = str_replace(gc, "f..j", "..", "---");
   assert(str_eq(r, "f---j"));
-  r = str_replace("f.j..", "..", "---");
+  r = str_replace(gc, "f.j..", "..", "---");
   assert(str_eq(r, "f.j---"));
 
-  r = str_f("");
+  r = str_f(gc, "");
   assert(str_eq(r, ""));
-  r = str_f("ab");
+  r = str_f(gc, "ab");
   assert(str_eq(r, "ab"));
-  r = str_f("Result is %d", 1);
+  r = str_f(gc, "Result is %d", 1);
   assert(str_eq(r, "Result is 1"));
-  r = str_f("Your %s number %d", "book", 1);
+  r = str_f(gc, "Your %s number %d", "book", 1);
   assert(str_eq(r, "Your book number 1"));
-  r = str_f("%s%s%s", "1", "ab", "");
+  r = str_f(gc, "%s%s%s", "1", "ab", "");
   assert(str_eq(r, "1ab"));
-  r = str_f("%s%s%s", "1", "ab", "c");
+  r = str_f(gc, "%s%s%s", "1", "ab", "c");
   assert(str_eq(r, "1abc"));
 
   printf("    str-utf8\n");
@@ -308,66 +309,67 @@ void str_tests(void) {
   assert(7 == str_runes(" a\tb €\n"));
 
   char *s3 = "cañón | a\tb €\n";
-  r = str_new("");
-  char *ctmp = str_next_rune(&r, s3);
-  Buf *bf = buf_new();
+  r = str_new(gc, "");
+  char *ctmp = str_next_rune(gc, &r, s3);
+  Buf *bf = buf_new(gc);
   while (*r) {
     buf_add(bf, r);
-    ctmp = str_next_rune(&r, ctmp);
+    ctmp = str_next_rune(gc, &r, ctmp);
   }
-  r = buf_to_str(bf);
+  r = buf_to_str(gc, bf);
 
   assert(str_eq(r, s3));
 
   unsigned *u = NULL;
-  u = opt_get(str_to_unicode(""));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, ""));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("", r));
-  u = opt_get(str_to_unicode("a"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "a"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("a", r));
-  u = opt_get(str_to_unicode("\n"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "\n"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("\n", r));
-  u = opt_get(str_to_unicode("ú"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "ú"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("ú", r));
-  u = opt_get(str_to_unicode("ñ"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "ñ"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("ñ", r));
-  u = opt_get(str_to_unicode("€"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "€"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("€", r));
-  u = opt_get(str_to_unicode("a b"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "a b"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("a b", r));
-  u = opt_get(str_to_unicode("a\nb"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "a\nb"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("a\nb", r));
-  u = opt_get(str_to_unicode("a€b"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "a€b"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("a€b", r));
-  u = opt_get(str_to_unicode("añb"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, "añb"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq("añb", r));
-  u = opt_get(str_to_unicode(" a\tb €\n"));
-  r = opt_get(str_from_unicode(u));
+  u = opt_get(str_to_unicode(gc, " a\tb €\n"));
+  r = opt_get(str_from_unicode(gc, u));
   assert(str_eq(" a\tb €\n", r));
 
   printf("    str-to_upper/to_lower\n");
 
   sys_locale("es_ES.utf8");
-  r = str_to_upper("cañón");
+  r = str_to_upper(gc, "cañón");
   assert(str_eq("CAÑÓN", r));
-  r = str_to_lower(r);
+  r = str_to_lower(gc, r);
   assert(str_eq("cañón", r));
   sys_locale("C");
 
-  r = str_to_escape("cuña\\\"abc\"");
+  r = str_to_escape(gc, "cuña\\\"abc\"");
   assert(str_eq("\"cuña\\\\\\\"abc\\\"\"", r));
-  r = str_from_escape(r);
+  r = str_from_escape(gc, r);
   assert(str_eq("cuña\\\"abc\"", r));
 
-  puts("    Finished");
+  gc_free(gc);
+  puts("    Finisehd");
 }
 

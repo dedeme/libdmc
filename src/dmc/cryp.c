@@ -1,4 +1,4 @@
-// Copyright 17-Oct-2018 ºDeme
+// Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/cryp.h"
@@ -12,12 +12,14 @@
 static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-char *cryp_genk (int lg) {
-  if (lg <= 0)
-    EXC_ILLEGAL_ARGUMENT("lg", "> 0", str_f("%d", lg))
+char *cryp_genk (Gc *gc, int lg) {
+  if (lg <= 0) {
+    Gc *gcl = gc_new();
+    EXC_ILLEGAL_ARGUMENT("lg", "> 0", str_f(gcl, "%d", lg), gcl)
+  }
 
   int len = strlen(b64_base);
-  char *r = ATOMIC(lg + 1);
+  char *r = gc_add(gc, malloc(lg + 1));
   char *p = r + lg;
   *p-- = 0;
   while (lg--) {
@@ -26,14 +28,15 @@ char *cryp_genk (int lg) {
   return r;
 }
 
-char *cryp_key (char *key, int lg) {
+char *cryp_key (Gc *gc, char *key, int lg) {
   if (!*key)
-    EXC_ILLEGAL_ARGUMENT("key", "No blank", "blank")
+    EXC_ILLEGAL_ARGUMENT("key", "No blank", "blank", gc_new())
 
-  char *k0 = str_f(
+  Gc *gcl = gc_new();
+  char *k0 = str_f(gcl,
     "%scodified in irreversibleDeme is good, very good!\n\r8@@", key);
-  char *b64 = b64_encode(k0);
-  Bytes *k = b64_decode_bytes(b64);
+  char *b64 = b64_encode(gcl, k0);
+  Bytes *k = b64_decode_bytes(gcl, b64);
 
   unsigned char *ka = bytes_bs(k);
   size_t lenk = bytes_len(k);
@@ -44,11 +47,11 @@ char *cryp_key (char *key, int lg) {
   }_REPEAT
 
   size_t lg2 = lg + lenk;
-  Bytes *rbs = bytes_bf_new(lg2);
+  Bytes *rbs = bytes_new_bf(gcl, lg2);
   unsigned char *ra = bytes_bs(rbs);
-  Bytes *rbs1 = bytes_bf_new(lg2);
+  Bytes *rbs1 = bytes_new_bf(gcl, lg2);
   unsigned char *ra1 = bytes_bs(rbs1);
-  Bytes *rbs2 = bytes_bf_new(lg2);
+  Bytes *rbs2 = bytes_new_bf(gcl, lg2);
   unsigned char *ra2 = bytes_bs(rbs2);
 
   size_t ik = 0;
@@ -77,19 +80,22 @@ char *cryp_key (char *key, int lg) {
     ra[i] = sum + ra1[i];
   }
 
-  return str_left(b64_encode_bytes(rbs), lg);
+  char *r = str_left(gc, b64_encode_bytes(gcl, rbs), lg);
+  gc_free(gcl);
+  return r;
 }
 
-char *cryp_cryp (char *s, char *k) {
+char *cryp_cryp (Gc *gc, char *s, char *k) {
   if (!*k)
-    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank")
+    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank", gc_new())
 
-  char *b64 = b64_encode(s);
+  Gc *gcl = gc_new();
+  char *b64 = b64_encode(gcl, s);
 
   size_t lg = strlen(b64);
-  char *k2 = cryp_key(k, lg);
+  char *k2 = cryp_key(gcl, k, lg);
 
-  Bytes *rbs = bytes_bf_new(lg);
+  Bytes *rbs = bytes_new_bf(gcl, lg);
 
   unsigned char *prbs = bytes_bs(rbs);
   unsigned char *pk2 = (unsigned char *)k2;
@@ -98,19 +104,22 @@ char *cryp_cryp (char *s, char *k) {
     *prbs++ = (*pk2++) + (*pb64++);
   }_REPEAT
 
-  return b64_encode_bytes(rbs);
+  char *r = b64_encode_bytes(gc, rbs);
+  gc_free(gcl);
+  return r;
 }
 
-char *cryp_decryp (char *c, char *k) {
+char *cryp_decryp (Gc *gc, char *c, char *k) {
   if (!*k)
-    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank")
+    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank", gc_new())
 
-  Bytes *bs = b64_decode_bytes(c);
+  Gc *gcl = gc_new();
+  Bytes *bs = b64_decode_bytes(gcl, c);
 
   size_t lg = bytes_len(bs);
-  char *k2 = cryp_key(k, lg);
+  char *k2 = cryp_key(gcl, k, lg);
 
-  char *b64 = ATOMIC(lg + 1);
+  char *b64 = gc_add(gcl, malloc(lg + 1));
 
   unsigned char *pbs = bytes_bs(bs);
   unsigned char *pk2 = (unsigned char *)k2;
@@ -120,30 +129,45 @@ char *cryp_decryp (char *c, char *k) {
   }_REPEAT
   *pb64 = 0;
 
-  return b64_decode(b64);
+  char *r = b64_decode(gc, b64);
+  gc_free(gcl);
+  return r;
 }
 
-char *cryp_auto_cryp (char *s, int nk) {
+char *cryp_auto_cryp (Gc *gc, char *s, int nk) {
+  Gc *gcl = gc_new();
   nk = nk < 1 ? 0 : nk > 64 ? 63 : nk - 1;
-  char *n = str_c(b64_base[nk]);
-  char *k = cryp_genk(nk + 1);
-  s = cryp_cryp(s, k);
-  return str_cat(n, k, s, NULL);
+  char *n = str_new_c(gcl, b64_base[nk]);
+  char *k = cryp_genk(gcl, nk + 1);
+  s = cryp_cryp(gcl, s, k);
+  char *r = str_cat(gc, n, k, s, NULL);
+  gc_free(gcl);
+  return r;
 }
 
-char *cryp_auto_decryp (char *b64) {
+char *cryp_auto_decryp (Gc *gc, char *b64) {
+  Gc *gcl = gc_new();
   char *s = b64;
   int nk = str_cindex(b64_base, *s) + 1;
-  Buf *bf = buf_new();
+  Buf *bf = buf_new(gcl);
   buf_add_buf(bf, s + 1, nk);
-  char *key = buf_to_str(bf);
-  return cryp_decryp(str_right(b64, nk + 1), key);
+  char *key = buf_to_str(gcl, bf);
+  char *r = cryp_decryp(gc, str_right(gcl, b64, nk + 1), key);
+  gc_free(gcl);
+  return r;
 }
 
-char *cryp_encode (char *s, int nk, char *k) {
-  return cryp_cryp(cryp_auto_cryp(s, nk), k);
+char *cryp_encode (Gc *gc, char *s, int nk, char *k) {
+  Gc *gcl = gc_new();
+  char *r = cryp_cryp(gc, cryp_auto_cryp(gcl, s, nk), k);
+  gc_free(gcl);
+  return r;
 }
 
-char *cryp_decode (char *b64, char *k) {
-  return cryp_auto_decryp(cryp_decryp(b64, k));
+char *cryp_decode (Gc *gc, char *b64, char *k) {
+  Gc *gcl = gc_new();
+  char *r = cryp_auto_decryp(gc, cryp_decryp(gcl, b64, k));
+  gc_free(gcl);
+  return r;
 }
+

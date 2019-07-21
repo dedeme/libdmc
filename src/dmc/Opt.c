@@ -1,56 +1,46 @@
-// Copyright 22-Apr-2019 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Opt.h"
 #include "dmc/DEFS.h"
-#include "gc.h"
-#include "dmc/sys.h"
 #include "dmc/Exc.h"
 #include "dmc/str.h"
 
-struct opt_Opt {
-  void *value;
-};
-
 Opt *opt_new (void *value) {
-  Opt *this = MALLOC(Opt);
-  this->value = value;
-  return this;
+  return (Opt *)value;
 }
 
 Opt *opt_empty (void) {
-  Opt *this = MALLOC(Opt);
-  this->value = NULL;
-  return this;
+  return (Opt *)NULL;
 }
 
 int opt_is_empty (Opt *this) {
-  return !this->value;
+  return !this;
 }
 
 int opt_is_full (Opt *this) {
-  return this->value != NULL;
+  return !!this;
 }
 
 void *opt_get (Opt *this) {
-  if (!this->value)
-    EXC_ILLEGAL_STATE("Option is null")
+  if (!this)
+    EXC_ILLEGAL_STATE("Option is null", gc_new())
 
-  return this->value;
+  return this;
 }
 
 void *opt_eget (Opt *this, char *msg) {
-  if (!this->value)
-    EXC_ILLEGAL_STATE(msg)
+  if (!this)
+    EXC_ILLEGAL_STATE(msg, gc_new())
 
-  return this->value;
+  return this;
 }
 
 void *opt_oget (Opt *this, void *value) {
-  if (!this->value) return value;
-  return this->value;
+  return this ? this : value;
 }
 
 void *opt_nget (Opt *this) {
-  return this->value ? this->value : NULL;
+  return this ? this : NULL;
 }
+

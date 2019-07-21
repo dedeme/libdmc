@@ -1,4 +1,4 @@
-// Copyright 16-Oct-2018 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Map structure
@@ -13,7 +13,7 @@
 typedef struct map_Map Map;
 
 /// map_new initializates a map. Map can be cast to Arr[Kv].<br>
-Map *map_new(void);
+Map *map_new(Gc *gc);
 
 ///
 int map_size(Map *this);
@@ -30,14 +30,14 @@ int map_has_key(Map *this, char *key);
 
 /// map_get returns the value pointed by key or 'opt_empty' if 'key' does
 /// not exist
-Opt *map_get(Map *this, char *key);
+Opt *map_get( Map *this, char *key);
 
 /// map_remove removes value with key 'key' or does nothing if 'key' does
 /// not exist
 void map_remove(Map *this, char *key);
 
 /// map_keys returns keys of this in a Arr[char]
-Arr *map_keys(Map *this);
+Arr *map_keys(Gc *gc, Map *this);
 
 /// Equals to (Arr *)this.<br>
 /// Returns an Arr[Kv]
@@ -51,18 +51,18 @@ void map_sort_locale(Map *this);
 
 /// Creates an iterator over 'this'
 ///   return: It[Kv]
-It *map_to_it(Map *this);
+It *map_to_it(Gc *gc, Map *this);
 
 /// Creates a Map from 'it'
 ///   it: It[Kv]
-Map *map_from_it(It *it);
+Map *map_from_it(Gc *gc, It *it);
 
 /// Returns a Js from a value of 'this'
 ///   to: Value converter
-Js *map_to_js(Map *this, Js *(*to)(void *e));
+Js *map_to_js(Gc *gc, Map *this, Js *(*to)(Gc *gc, void *e));
 
 /// ParseS a Js to a value of 'this'.<br>
 ///   from: Value converter
-Map *map_from_js(Js *js, void *(*from)(Js *jse));
+Map *map_from_js(Gc *gc, Js *js, void *(*from)(Gc *gc, Js *jse));
 
 #endif

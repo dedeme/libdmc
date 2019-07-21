@@ -1,19 +1,20 @@
-// Copyright 16-Oct-2018 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/str.h"
+#include <stdarg.h>
 #include <ctype.h>
 #include <wctype.h>
 #include "dmc/std.h"
 
-char *str_new (char *s) {
-  char *r = ATOMIC(strlen(s) + 1);
+char *str_new(Gc *gc, char *s) {
+  char *r = gc_add(gc, malloc(strlen(s) + 1));
   strcpy(r, s);
   return r;
 }
 
-char *str_c (char ch) {
-  char *r = ATOMIC(2);
+char *str_new_c(Gc *gc, char ch) {
+  char *r = gc_add(gc, malloc(2));
   *r = ch;
   r[1] = 0;
   return r;
@@ -148,11 +149,12 @@ int str_last_index(char *str, char *substr) {
   return r;
 }
 
-char *str_cat(char *s, ...) {
+char *str_cat(Gc *gc, char *s, ...) {
+  Gc *gcl = gc_new();
   va_list args;
   char *tmp;
 
-  Buf *bf = buf_new();
+  Buf *bf = buf_new(gcl);
   buf_add(bf, s);
 
   va_start(args, s);
@@ -163,10 +165,12 @@ char *str_cat(char *s, ...) {
   }
   va_end(args);
 
-  return buf_to_str(bf);
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return r;
 }
 
-char *str_sub(char *str, int begin, int end) {
+char *str_sub(Gc *gc, char *str, int begin, int end) {
   int l = strlen(str);
   int df = -1;
   if (begin < 0) {
@@ -182,107 +186,115 @@ char *str_sub(char *str, int begin, int end) {
 
   char *r;
   if (df < 0) {
-    char *r = ATOMIC(1);
+    char *r = gc_add(gc, malloc(1));
     *r = 0;
     return r;
   }
-  r = ATOMIC(df + 1);
+  r = gc_add(gc, malloc(df + 1));
   r[df] = 0;
   memcpy(r, str + begin, df);
   return r;
 }
 
-char *str_left(char *str, int end) {
-  return str_sub(str, 0, end);
+char *str_left(Gc *gc, char *str, int end) {
+  return str_sub(gc, str, 0, end);
 }
 
-char *str_right(char *str, int begin) {
-  return str_sub(str, begin, strlen(str));
+char *str_right(Gc *gc, char *str, int begin) {
+  return str_sub(gc, str, begin, strlen(str));
 }
 
-char *str_ltrim(char *str) {
+char *str_ltrim(Gc *gc, char *str) {
   while (isspace(*str)) ++str;
-  return str_new(str);
+  return str_new(gc, str);
 }
 
-char *str_rtrim(char *str) {
+char *str_rtrim(Gc *gc, char *str) {
   char *p = str + (strlen(str) - 1);
   while (p >= str && isspace(*p)) {
     --p;
   }
-  return str_left(str, (p - str) + 1);
+  return str_left(gc, str, (p - str) + 1);
 }
 
-char *str_trim(char *str) {
+char *str_trim(Gc *gc, char *str) {
   while (isspace(*str)) ++str;
-  return str_rtrim(str);
+  return str_rtrim(gc, str);
 }
 
 // Returns Arr[char]
-Arr *str_csplit(char *s, char sep) {
+Arr *str_csplit(Gc *gc, char *s, char sep) {
   // Arr[char]
-  Arr *r = arr_new();
+  Arr *r = arr_new(gc);
   int i = str_cindex(s, sep);
   while (i != -1) {
-    char *sub = ATOMIC(i + 1);
+    char *sub = gc_add(gc, malloc(i + 1));
     sub[i] = 0;
     memcpy(sub, s, i);
     arr_push(r, sub);
     s = s + i + 1;
     i = str_cindex(s, sep);
   }
-  if (*s) arr_push(r, str_new(s));
+  if (*s) arr_push(r, str_new(gc, s));
   return r;
 }
 
 // Returns Arr[char]
-Arr *str_csplit_trim(char *str, char sep) {
+Arr *str_csplit_trim(Gc *gc, char *str, char sep) {
   // Arr[char]
-  Arr *r = str_csplit(str, sep);
-  char **p = (char **)arr_start(r);
-  char **p_end = (char **)arr_end(r);
+  Arr *r = arr_new(gc);
+  Gc *gcl = gc_new();
+  // Arr[char]
+  Arr *tmp = str_csplit(gcl, str, sep);
+  char **p = (char **)arr_start(tmp);
+  char **p_end = (char **)arr_end(tmp);
   while (p < p_end) {
-    *p = str_trim(*p);
-    ++p;
+    arr_push(r, str_trim(gc, *p++));
   }
+  gc_free(gcl);
   return r;
 }
 
 // Returns Arr[char]
-Arr *str_split(char *s, char *sep) {
+Arr *str_split(Gc *gc, char *s, char *sep) {
   // Arr[char]
-  Arr *r = arr_new();
+  Arr *r = arr_new(gc);
   int len = strlen(sep);
   if (!len) {
-    arr_push(r, str_new(s));
+    arr_push(r, str_new(gc, s));
     return r;
   }
   int i = str_index(s, sep);
   while (i != -1) {
-    char *sub = ATOMIC(i + 1);
+    char *sub = gc_add(gc, malloc(i + 1));
     sub[i] = 0;
     memcpy(sub, s, i);
     arr_push(r, sub);
     s = s + i + len;
     i = str_index(s, sep);
   }
-  if (*s) arr_push(r, str_new(s));
+  if (*s) arr_push(r, str_new(gc, s));
   return r;
 }
 
-Arr *str_split_trim(char *str, char *sep) {
-  Arr *r = str_split(str, sep);
-  char **p = (char **)arr_start(r);
-  char **p_end = (char **)arr_end(r);
+Arr *str_split_trim(Gc *gc, char *str, char *sep) {
+  // Arr[char]
+  Arr *r = arr_new(gc);
+  Gc *gcl = gc_new();
+  // Arr[char]
+  Arr *tmp = str_split(gcl, str, sep);
+  char **p = (char **)arr_start(tmp);
+  char **p_end = (char **)arr_end(tmp);
   while (p < p_end) {
-    *p = str_trim(*p);
-    ++p;
+    arr_push(r, str_trim(gc, *p++));
   }
+  gc_free(gcl);
   return r;
 }
 
-char *str_cjoin(Arr *a, char sep) {
-  Buf *bf = buf_new();
+char *str_cjoin(Gc *gc, Arr *a, char sep) {
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
   int first = 1;
   EACH(a, char, e)
     if (first) {
@@ -292,11 +304,14 @@ char *str_cjoin(Arr *a, char sep) {
     }
     buf_add(bf, e);
   _EACH
-  return buf_to_str(bf);
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return r;
 }
 
-char *str_join(Arr *a, char *sep) {
-  Buf *bf = buf_new();
+char *str_join(Gc *gc, Arr *a, char *sep) {
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
   int first = 1;
   EACH(a, char, e)
     if (first) {
@@ -306,11 +321,13 @@ char *str_join(Arr *a, char *sep) {
     }
     buf_add(bf, e);
   _EACH
-  return buf_to_str(bf);
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return r;
 }
 
-char *str_creplace(char *s, char old, char new) {
-  char *r = str_new(s);
+char *str_creplace(Gc *gc, char *s, char old, char new) {
+  char *r = str_new(gc, s);
   char *p = r;
   while (*p) {
     if (*p == old)
@@ -320,10 +337,11 @@ char *str_creplace(char *s, char old, char new) {
   return r;
 }
 
-char *str_replace(char *s, char *old, char *new) {
-  if (!*old) return str_new(s);
+char *str_replace(Gc *gc, char *s, char *old, char *new) {
+  if (!*old) return str_new(gc, s);
 
-  Buf *bf = buf_new();
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
   int len = strlen(old);
   int i = str_index(s, old);
   while (i != -1) {
@@ -333,28 +351,31 @@ char *str_replace(char *s, char *old, char *new) {
     i = str_index(s, old);
   }
   buf_add_buf(bf, s, strlen(s));
-  return buf_to_str(bf);
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return r;
 }
 
-char *str_vf(char *format, va_list args) {
-  int length = 0;
-  char *rs = ATOMIC(length);
+char *str_vf(Gc *gc, char *format, va_list args) {
   va_list args2;
   va_copy(args2, args);
-  int nchars = vsnprintf(rs, length, format, args);
-  if (nchars >= length) {
-    length = nchars + 1;
-    rs = ATOMIC(length);
+  char *rs = "";
+  int nchars = vsnprintf(rs, 0, format, args);
+  if (nchars >= 0) {
+    int length = nchars + 1;
+    char *rs = gc_add(gc, malloc(length));
     vsnprintf(rs, length, format, args2);
+    va_end(args2);
+    return rs;
+  } else {
+    return str_new(gc, "");
   }
-  va_end(args2);
-  return rs;
 }
 
-char *str_f(char *format, ...) {
+char *str_f(Gc *gc, char *format, ...) {
   va_list args;
   va_start(args, format);
-  char *r = str_vf(format, args);
+  char *r = str_vf(gc, format, args);
   va_end(args);
   return r;
 }
@@ -390,66 +411,66 @@ int str_runes(char *s) {
   return r;
 }
 
-static char *_str_next_rune(char *s) {
+static char *_str_next_rune(Gc *gc, char *s) {
   unsigned char b1, b2, b3, b4;
   b1 = *s++;
   if (b1) {
     if (b1 < 0xC2) {
-      return str_f("%c", b1);
+      return str_f(gc, "%c", b1);
     } else if (b1 < 0xE0) {
       b2 = *s++;
       if ((b2 & 0xC0) != 0x80) {
-        return str_f("%c", 0xFF);
+        return str_f(gc, "%c", 0xFF);
       }
-      return str_f("%c%c", b1, b2);
+      return str_f(gc, "%c%c", b1, b2);
     } else if (b1 < 0xF0) {
       b2 = *s++;
       if ((b2 & 0xC0) != 0x80 ||
           (b1 == 0xE0 && b2 < 0xA0)
       ) {
-        return str_f("%c", 0xFF);
+        return str_f(gc, "%c", 0xFF);
       }
       b3 = *s++;
       if ((b3 & 0xC0) != 0x80) {
-        return str_f("%c", 0xFF);
+        return str_f(gc, "%c", 0xFF);
       }
-      return str_f("%c%c%c", b1, b2, b3);
+      return str_f(gc, "%c%c%c", b1, b2, b3);
     } else if (b1 < 0xF5) {
       b2 = *s++;
       if (((b2 & 0xC0) != 0x80) ||
           (b1 == 0xF0 && b2 < 0x90) ||
           (b1 == 0xF4 && b2 >= 0x90)
       ) {
-        return str_f("%c", 0xFF);
+        return str_f(gc, "%c", 0xFF);
       }
       b3 = *s++;
       if ((b3 & 0xC0) != 0x80) {
-        return str_f("%c", 0xFF);
+        return str_f(gc, "%c", 0xFF);
       }
       b4 = *s++;
       if ((b4 & 0xC0) != 0x80) {
-        return str_f("%c", 0xFF);
+        return str_f(gc, "%c", 0xFF);
       }
-      return str_f("%c%c%c%c", b1, b2, b3, b4);
+      return str_f(gc, "%c%c%c%c", b1, b2, b3, b4);
     } else {
-      return str_f("%c", 0xFF);
+      return str_f(gc, "%c", 0xFF);
     }
   }
-  return str_new("");
+  return str_new(gc, "");
 }
 
-char *str_next_rune(char **rune, char *s) {
-  char *r = _str_next_rune(s);
+char *str_next_rune(Gc *gc, char **rune, char *s) {
+  char *r = _str_next_rune(gc, s);
   *rune = r;
   return s + strlen(r);
 }
 
 // Opt[unsigned]
-Opt *str_to_unicode(char *s0) {
+Opt *str_to_unicode(Gc *gc, char *s0) {
   unsigned char *s = (unsigned char *)s0;
   unsigned b1, b2, b3, b4;
   int lg = str_runes(s0) + 1;
-  unsigned *r = ATOMIC(lg * sizeof(unsigned));
+  unsigned *r = gc_add(gc, malloc(lg * sizeof(unsigned)));
   unsigned *pr = r;
   while (*s) {
     b1 = *s++;
@@ -485,8 +506,10 @@ Opt *str_to_unicode(char *s0) {
 }
 
 // Opt[char]
-Opt *str_from_unicode(unsigned *u) {
-  Buf *bf = buf_new();
+Opt *str_from_unicode(Gc *gc, unsigned *u) {
+
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
 
   while (*u) {
     unsigned code_point = *u++;
@@ -509,11 +532,14 @@ Opt *str_from_unicode(unsigned *u) {
     }
   }
 
-  return opt_new(buf_to_str(bf));
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return opt_new(r);
 }
 
-char *str_from_iso(char *s) {
-  Buf *bf = buf_new();
+char *str_from_iso(Gc *gc, char *s) {
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
   unsigned char ch = *s++;
   while (ch) {
     if(ch < 0x80) {
@@ -524,12 +550,14 @@ char *str_from_iso(char *s) {
     }
     ch = *s++;
   }
-  return buf_to_str(bf);
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return r;
 }
 
-char *str_to_upper (char *s) {
+char *str_to_upper (Gc *gc, char *s) {
   unsigned *ws = opt_eget(
-    str_to_unicode(s),
+    str_to_unicode(gc, s),
     "str_to_upper: 's' is not a valid utf8 string"
   );
 
@@ -540,14 +568,14 @@ char *str_to_upper (char *s) {
   }
 
   return opt_eget(
-    str_from_unicode(ws),
+    str_from_unicode(gc, ws),
     "str_to_upper: 'ws' is not a valid unicode string"
   );
 }
 
-char *str_to_lower (char *s) {
+char *str_to_lower (Gc *gc, char *s) {
   unsigned *ws = opt_eget(
-    str_to_unicode(s),
+    str_to_unicode(gc, s),
     "str_to_lower: 's' is not a valid utf8 string"
   );
 
@@ -558,13 +586,14 @@ char *str_to_lower (char *s) {
   }
 
   return opt_eget(
-    str_from_unicode(ws),
+    str_from_unicode(gc, ws),
     "str_to_lower: 'ws' is not a valid unicode string"
   );
 }
 
-char *str_to_escape (char *s) {
-  Buf *bf = buf_new();
+char *str_to_escape (Gc *gc, char *s) {
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
   buf_cadd(bf, '"');
   while (*s) {
     char ch = *s++;
@@ -575,17 +604,20 @@ char *str_to_escape (char *s) {
   }
   buf_cadd(bf, '"');
 
-  return buf_to_str(bf);
+  char *r = buf_to_str(gc, bf);
+  gc_free(gcl);
+  return r;
 }
 
-char *str_from_escape (char *s) {
+char *str_from_escape (Gc *gc, char *s) {
   int len = strlen(s);
   if (len < 2) {
-    return str_new(s);
+    return str_new(gc, s);
   }
 
   ++s;
-  Buf *bf = buf_new();
+  Gc *gcl = gc_new();
+  Buf *bf = buf_new(gcl);
   while (*s) {
     char ch = *s++;
     if (ch != '\\') {
@@ -595,5 +627,7 @@ char *str_from_escape (char *s) {
     }
   }
 
-  return str_left(buf_str(bf), buf_len(bf) - 1);
+  char *r = str_left(gc, buf_str(bf), buf_len(bf) - 1);
+  gc_free(gcl);
+  return r;
 }

@@ -1,19 +1,21 @@
-// Copyright 16-Oct-2018 ºDeme
+// Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Strings constructor.
+/// String constructor.
 
 #ifndef DMC_BUF_H
   #define DMC_BUF_H
+
+#include "Gc.h"
 
 ///
 typedef struct buf_Buf Buf;
 
 /// buf_new initializes a 'buf' with size 150
-Buf *buf_new(void);
+Buf *buf_new(Gc *gc);
 
 /// buf_bf_new initializes a 'buf'
-Buf *buf_bf_new(int buffer_size);
+Buf *buf_bf_new(Gc *gc, int sz);
 
 /// buf_len returns the length of the enveloped string
 int buf_len(Buf *this);
@@ -35,7 +37,7 @@ void buf_add(Buf *this, char *data);
 void buf_cadd(Buf *this, char data);
 
 /// buf_to_str returns a copy of the enveloped string
-char *buf_to_str(Buf *this);
+char *buf_to_str(Gc *gc, Buf *this);
 
 /// buf_reset resets buffer (but does not reduce its size)
 void buf_reset(Buf *this);
