@@ -2,6 +2,8 @@
 
 C utilities.
 
+v. 2019.07
+
 Some utilities from C language.
 
 These utilities depend on 'libpthread' and 'libgc' (Garbage collector)
