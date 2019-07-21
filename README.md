@@ -6,7 +6,7 @@ v. 2019.07
 
 Some utilities from C language.
 
-These utilities depend on 'libpthread' and 'libgc' (Garbage collector)
+These utilities depend on 'libpthread', 'libm' and 'libgc' (Garbage collector)
 
 ```sh
 apt-get install libgc-dev
@@ -24,7 +24,7 @@ cd dmctests
 ### Clone repository
 
 ```sh
-git clone https://github.com/dedeme/libdmc.git
+git clone https://github.com/dedeme/libdmc.git 2019.07
 ```
 
 ### Open 'libdmc' and run 'make'
@@ -56,7 +56,7 @@ void main () {
 ### Compile and execute
 
 ```sh
-gcc test.c -o test -I./include -L./lib -ldmc -lgc
+gcc test.c -o test -I./include -L./lib -ldmc -lgc -lpthread -lm
 ./test
 ```
 And console will show:
