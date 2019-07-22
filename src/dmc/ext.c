@@ -18,7 +18,7 @@ char *ext_zenity_entry(Gc *gc, char *title, char *prompt) {
     "zenity --entry --title=\"%s\" --text=\"%s\"", title, prompt
   );
   char *rt = opt_nget(sys_cmd(gcl, cmd));
-  if (!rt) EXC_ILLEGAL_STATE("Fail running zenity.", gcl);
+  if (!rt) EXC_ILLEGAL_STATE("Fail running zenity.");
 
   // Arr[char]
   Arr *parts = str_csplit_trim(gcl, rt, '\n');
@@ -39,7 +39,7 @@ void ext_zenity_msg(char *icon, char *text) {
     "zenity --info --icon-name=\"%s\" --text=\"%s\"", icon, text
   );
   if (!opt_nget(sys_cmd(gcl, cmd)))
-    EXC_ILLEGAL_STATE("Fail running zenity.", gcl)
+    EXC_ILLEGAL_STATE("Fail running zenity.")
 
   gc_free(gcl);
 }
@@ -64,13 +64,13 @@ void ext_pdf(
   if (!rt) {
     file_del(tsource);
     file_del(ttarget);
-    EXC_GENERIC("Fail running pdfPrinter.", gc)
+    EXC_GENERIC("Fail running pdfPrinter.")
   }
 
   file_del(tsource);
 
   if (!file_exists(ttarget))
-    EXC_IO(str_f(gc, "Target file '%s' not found\n%s", ttarget, rt), gc)
+    EXC_IO(str_f(gc_new(), "Target file '%s' not found\n%s", ttarget, rt))
 
   file_copy(ttarget, file_target);
   file_del(ttarget);
@@ -97,12 +97,12 @@ void ext_zip(char *source, char *target) {
   }
 
   char *rt = opt_nget(sys_cmd(gc, cmd));
-  if (!rt) EXC_ILLEGAL_STATE("Fail running zip.", gc)
+  if (!rt) EXC_ILLEGAL_STATE("Fail running zip.")
 
   file_cd(cd);
 
   if (!file_exists(tg))
-    EXC_IO(str_f(gc, "Target file '%s' not found\n%s", tg, rt), gc)
+    EXC_IO(str_f(gc, "Target file '%s' not found\n%s", tg, rt))
 
   gc_free(gc);
 }
@@ -111,14 +111,14 @@ void ext_unzip(char *source, char *target) {
   Gc *gc = gc_new();
 
   if (!file_is_directory(target))
-    EXC_IO(str_f(gc, "'%s' is not a directory", target), gc)
+    EXC_IO(str_f(gc_new(), "'%s' is not a directory", target))
 
   char *cmd = str_f(gc, "unzip -q -o %s -d %s 2>&1", source, target);
   char *rt = opt_nget(sys_cmd(gc, cmd));
-  if (!rt) EXC_ILLEGAL_STATE("Fail running unzip.", gc)
+  if (!rt) EXC_ILLEGAL_STATE("Fail running unzip.")
 
   if (*rt)
-    EXC_IO(rt, gc)
+    EXC_IO(rt)
 
   gc_free(gc);
 }

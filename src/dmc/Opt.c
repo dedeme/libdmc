@@ -24,7 +24,7 @@ int opt_is_full (Opt *this) {
 
 void *opt_get (Opt *this) {
   if (!this)
-    EXC_ILLEGAL_STATE("Option is null", gc_new())
+    EXC_ILLEGAL_STATE("Option is null")
 
   return this;
 }

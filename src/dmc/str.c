@@ -560,7 +560,7 @@ char *str_to_upper (Gc *gc, char *s) {
 
   unsigned *ws = opt_nget(str_to_unicode(gcl, s));
   if (!ws)
-    EXC_ILLEGAL_STATE("str_to_upper: 's' is not a valid utf8 string", gcl)
+    EXC_ILLEGAL_STATE("str_to_upper: 's' is not a valid utf8 string")
 
   unsigned *p = ws;
   while (*p) {
@@ -570,7 +570,7 @@ char *str_to_upper (Gc *gc, char *s) {
 
   char *r = opt_nget(str_from_unicode(gcl, ws));
   if (!r)
-    EXC_ILLEGAL_STATE("str_to_upper: 'ws' is not a valid unicode string", gcl)
+    EXC_ILLEGAL_STATE("str_to_upper: 'ws' is not a valid unicode string")
 
   char *rt = str_new(gc, r);
   gc_free(gcl);
@@ -582,7 +582,7 @@ char *str_to_lower (Gc *gc, char *s) {
 
   unsigned *ws = opt_nget(str_to_unicode(gcl, s));
   if (!ws)
-    EXC_ILLEGAL_STATE("str_to_lower: 's' is not a valid utf8 string", gcl)
+    EXC_ILLEGAL_STATE("str_to_lower: 's' is not a valid utf8 string")
 
   unsigned *p = ws;
   while (*p) {
@@ -592,7 +592,7 @@ char *str_to_lower (Gc *gc, char *s) {
 
   char *r = opt_nget(str_from_unicode(gcl, ws));
   if (!r)
-    EXC_ILLEGAL_STATE("str_to_lower: 'ws' is not a valid unicode string", gcl)
+    EXC_ILLEGAL_STATE("str_to_lower: 'ws' is not a valid unicode string")
 
   char *rt = str_new(gc, r);
   gc_free(gcl);

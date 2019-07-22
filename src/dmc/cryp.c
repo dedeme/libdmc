@@ -13,10 +13,8 @@ static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 char *cryp_genk (Gc *gc, int lg) {
-  if (lg <= 0) {
-    Gc *gcl = gc_new();
-    EXC_ILLEGAL_ARGUMENT("lg", "> 0", str_f(gcl, "%d", lg), gcl)
-  }
+  if (lg <= 0)
+    EXC_ILLEGAL_ARGUMENT("lg", "> 0", str_f(gc_new(), "%d", lg))
 
   int len = strlen(b64_base);
   char *r = gc_add(gc, malloc(lg + 1));
@@ -30,7 +28,7 @@ char *cryp_genk (Gc *gc, int lg) {
 
 char *cryp_key (Gc *gc, char *key, int lg) {
   if (!*key)
-    EXC_ILLEGAL_ARGUMENT("key", "No blank", "blank", gc_new())
+    EXC_ILLEGAL_ARGUMENT("key", "No blank", "blank")
 
   Gc *gcl = gc_new();
   char *k0 = str_f(gcl,
@@ -87,7 +85,7 @@ char *cryp_key (Gc *gc, char *key, int lg) {
 
 char *cryp_cryp (Gc *gc, char *s, char *k) {
   if (!*k)
-    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank", gc_new())
+    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank")
 
   Gc *gcl = gc_new();
   char *b64 = b64_encode(gcl, s);
@@ -111,7 +109,7 @@ char *cryp_cryp (Gc *gc, char *s, char *k) {
 
 char *cryp_decryp (Gc *gc, char *c, char *k) {
   if (!*k)
-    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank", gc_new())
+    EXC_ILLEGAL_ARGUMENT("k", "No blank", "blank")
 
   Gc *gcl = gc_new();
   Bytes *bs = b64_decode_bytes(gcl, c);

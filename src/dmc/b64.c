@@ -71,13 +71,10 @@ static Bytes *base64_decode(
   size_t input_length,
   size_t *output_length
 ) {
-  if (input_length % 4 != 0) {
-    Gc *gcl = gc_new();
+  if (input_length % 4 != 0)
     EXC_ILLEGAL_ARGUMENT(
-      "Wrong input length", "len % 4 != 0", str_f(gcl, "%d", input_length % 4),
-      gcl
+      "input length", "len % 4 != 0", str_f(gc_new(), "%d", input_length % 4)
     )
-  }
 
   *output_length = input_length / 4 * 3;
   if (data[input_length - 1] == '=') (*output_length)--;

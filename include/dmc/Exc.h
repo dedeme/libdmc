@@ -17,15 +17,6 @@ typedef struct arr_Arr Arr;
 ///
 typedef struct exc_Exc Exc;
 
-/// Returns the exception garbage collector. Example:
-///   TRY
-///     ...
-///   CATCH (e)
-///     puts(exc_msg(e));
-///     gc_free(exc_gc(e);
-///   _TRY
-Gc *exc_gc(Exc *this);
-
 /// Return exception type. Predefined types are:
 ///   exc_generic_t
 ///   exc_range_t
@@ -40,9 +31,10 @@ char *exc_msg (Exc *this);
 /// Returns Arr[char]. The exception stack trace.
 Arr *exc_stack (Exc *this);
 
-/// exc_init intializes jumps buffer. This function has to be called before
-/// using macros TRY-CATCH-FINALLY-_TRY or THROW-_THROW.
-Gc *exc_init ();
+/// exc_init set exit function. This function only can be called once.<p>
+/// Its default implementation prints in stdout them message and stack trace
+/// of 'ex'
+void exc_init (void (*exitf) (Exc *ex));
 
 /// exc_thread_init () Initializes thread data. It is intended to beeng use only
 /// by 'async_thread'.
@@ -68,9 +60,8 @@ void exc_remove ();
 ///   file   : Error file
 ///   func   : Error function
 ///   line   : Error line number
-///   gc     : Garbage collector. exc_throw call gc_free with 'gc'
 void exc_throw (
-  char *type, char *message, char *file, char *func, int line, Gc *gc
+  char *type, char *message, char *file, char *func, int line
 );
 
 ///
@@ -79,39 +70,13 @@ void exc_throw (
 ///
 #define exc_range_t "range"
 
-/// exc_range. Exception for index out of range.
-///   gc   : Garbage collector
-///   begin: Lower limit inclusive
-///   end  : Upper limit inclusive
-///   index: The index out of range (< begin and > end)
-char *exc_range (Gc *gc, int begin, int end, int index);
-
 ///
 #define exc_illegal_argument_t "argument"
-
-/// exception_illegal_argument. Exception for argument with a wrong value.
-///   gc   : Garbage collector
-///   argument_name: Name of wrong argument
-///   expected: Value expected
-///   actual: Actual value
-char *exc_illegal_argument (
-  Gc *gc, char *argument_name, char *expected, char *actual
-);
 
 ///
 #define exc_illegal_state_t "state"
 
-/// Attempt to use an object in bad condition.
-///   gc   : Garbage collector
-///   cause: Description of problem
-char *exc_illegal_state (Gc *gc, char *cause);
-
 ///
 #define exc_io_t "io"
-
-/// exception_io. Exception for Input - Output error.
-///   gc   : Garbage collector
-///   cause: Description of problem
-char *exc_io (Gc *gc, char *cause);
 
 #endif

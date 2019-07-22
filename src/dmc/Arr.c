@@ -42,7 +42,7 @@ int arr_size (Arr *this) {
 }
 
 void *arr_get (Arr *this, int ix) {
-  EXC_RANGE(ix, 0, arr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, arr_size(this) - 1)
 
   return *(this->es + ix);
 }
@@ -68,7 +68,7 @@ void arr_push (Arr *this, void *e) {
 
 void *arr_pop (Arr *this) {
   if (this->es >= this->end)
-    EXC_ILLEGAL_STATE("Array is empty", gc_new())
+    EXC_ILLEGAL_STATE("Array is empty")
 
   --this->end;
   return *this->end;
@@ -79,14 +79,14 @@ void *arr_peek (Arr *this) {
 }
 
 void arr_set (Arr *this, int ix, void *e) {
-  EXC_RANGE(ix, 0, arr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, arr_size(this) - 1)
 
   void **p = this->es + ix;
   *p = e;
 }
 
 void arr_insert (Arr *this, int ix, void *e) {
-  EXC_RANGE(ix, 0, arr_size(this), gc_new())
+  EXC_RANGE(ix, 0, arr_size(this))
 
   arr_push(this, e);
   void **p = this->end - 1;
@@ -99,7 +99,7 @@ void arr_insert (Arr *this, int ix, void *e) {
 }
 
 void arr_remove (Arr *this, int ix) {
-  EXC_RANGE(ix, 0, arr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, arr_size(this) - 1)
 
   void **p = this->es + ix;
   void **p1 = p + 1;
@@ -129,7 +129,7 @@ void arr_cat (Arr *this, Arr *other) {
 void arr_insert_arr (Arr *this, int ix, Arr *other) {
   int this_len = this->end - this->es;
   int other_len = other->end - other->es;
-  EXC_RANGE(ix, 0, this_len, gc_new())
+  EXC_RANGE(ix, 0, this_len)
   if (other_len) {
     int this_size = this->endbf - this->es;
     if (this_len + other_len > this_size) {
@@ -148,8 +148,8 @@ void arr_insert_arr (Arr *this, int ix, Arr *other) {
 
 void arr_remove_range (Arr *this, int begin, int end) {
   int sz = arr_size(this);
-  EXC_RANGE(begin, 0, sz, gc_new())
-  EXC_RANGE(end, begin, sz, gc_new())
+  EXC_RANGE(begin, 0, sz)
+  EXC_RANGE(end, begin, sz)
 
   int df = end - begin;
   if (df == 0) {
@@ -262,7 +262,7 @@ void arr_shuffle (Arr *this) {
 
 int arr_index (Arr *this, int (*pred)(void *e)) {
   void **p = this->es;
-  void **end = this->es;
+  void **end = this->end;
   while (p < end) {
     if (pred(*p++)) return (p - this->es) - 1;
   }

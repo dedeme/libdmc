@@ -3,6 +3,7 @@
 
 #include "dmc/Gc.h"
 
+// Interface for containers (Arr, Buf, etc.)
 struct gc_Bf {
   void *es;
 };
@@ -73,4 +74,24 @@ void gc_free (Gc *this) {
   free(this->os2);
 
   free(this);
+}
+
+struct gc_GcVal {
+  Gc *gc;
+  void *value;
+};
+
+GcVal *gcVal_new (Gc *gc, void *value) {
+  GcVal *this = gc_add(gc, malloc(sizeof(GcVal)));
+  this->gc = gc;
+  this->value = value;
+  return this;
+}
+
+Gc *gcVal_gc (GcVal *this) {
+  return this->gc;
+}
+
+void *gcVal_value (GcVal *this) {
+  return this->value;
 }

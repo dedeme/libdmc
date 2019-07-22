@@ -29,7 +29,7 @@ struct rnd_Box {
 
 Box *rnd_box_new(Gc *gc, Arr *a) {
   if (!arr_size(a))
-    EXC_ILLEGAL_STATE("Arr 'a' is empty", gc_new())
+    EXC_ILLEGAL_STATE("Arr 'a' is empty")
 
   Arr *va = arr_new(gc);
   EACH(a, void, e)

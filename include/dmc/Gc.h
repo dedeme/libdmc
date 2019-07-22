@@ -12,6 +12,9 @@
 typedef struct gc_Gc Gc;
 
 ///
+typedef struct gc_GcVal GcVal;
+
+///
 Gc *gc_new (void);
 
 /// 'sz' is the normal elements number of Gc buffer and 'sz_bf' the buffered
@@ -27,5 +30,14 @@ void *gc_add_bf (Gc *this, void *object);
 
 ///
 void gc_free (Gc *this);
+
+/// Tuple Gc-Value
+GcVal *gcVal_new (Gc *gc, void *value);
+
+///
+Gc *gcVal_gc (GcVal *this);
+
+///
+void *gcVal_value (GcVal *this);
 
 #endif

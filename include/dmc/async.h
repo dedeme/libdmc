@@ -15,22 +15,18 @@ pthread_t *async_new(Gc *gc);
 ///   void fn(char *tx) { puts(tx); }
 ///   async_run((FPROC)fn, "Hello");
 ///   async_join(thr); // Waits for thr.
-void async_run (pthread_t *thr, void (*fn)(void *), void *value);
+pthread_t *async_run (pthread_t *thr, void (*fn)(void *), void *value);
 
 /// Launchs 'fn' in a new thread. Example of use:
-///   pthread_t *thr = async_new(gc);
 ///   void fn(char *tx) { puts(tx); }
-///   async_run((FPROC)fn, "Hello");
-///   async_join(thr); // Waits for thr.
+///   async_run_detached((FPROC)fn, "Hello");
 void async_run_detached (void (*fn)(void *), void *value);
 
 /// Launchs 'fn' in a new thread. Example of use:
-///   pthread_t *thr = async_new(gc);
 ///   char *tx = "text";
 ///   void fn() { puts(tx); }
-///   async_run0(fn);
-///   async_join(thr); // Waits for thr.
-void async_run0 (pthread_t *thr, void (*fn)());
+///   async_join(async_run0(async_new(gc), fn));
+pthread_t *async_run0 (pthread_t *thr, void (*fn)());
 
 /// Wait until thr finishes
 void async_join (pthread_t *thr);

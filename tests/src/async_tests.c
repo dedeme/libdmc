@@ -109,7 +109,7 @@ static void barbery (void) {
 
   int is_time_out (void) {
     if (!clock)
-      EXC_ILLEGAL_STATE("Clock is 0", gc_new())
+      EXC_ILLEGAL_STATE("Clock is 0")
 
     return date_now() - clock > TIME_OPEN;
   }
@@ -282,7 +282,7 @@ void async_tests(void) {
   asyncActor_join(ac);
 */
 
-  if (1) barbery();
+  if (0) barbery();
 
   gc_free(gc);
   puts("    Finished");

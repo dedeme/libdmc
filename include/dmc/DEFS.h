@@ -221,67 +221,132 @@ typedef Js *(*FTO)(Gc *gc, void *);
 ///
 typedef void *(*FFROM)(Gc *gc, Js *);
 
-/// Macros to manage exceptions. Example:
-///   TRY
-///     ...
-///   CATCH (e)
-///     puts(exc_msg(e));
-///   _TRY
-/// NOTE: <i>CATCH block must return 'void'</i>
-#define TRY { \
-  jmp_buf *_TRY_buf = malloc(sizeof(jmp_buf)); \
-  exc_add(_TRY_buf); \
-  if (!setjmp(*_TRY_buf)) { \
-
-/// See <a href="#hp:TRY">TRY</a>
-#define CATCH(e) ;exc_remove();} else { Exc *e = exc_get();
-
-/// See <a href="#hp:TRY">TRY</a>
-#define _TRY ;exc_remove();} free (_TRY_buf);}
-
 /// Throws an Exception. Example
-///   THROW(exc_io_t, gc)
+///   THROW(exc_io_t)
 ///     "Working directory not found: %s", strerror(errno)
 ///   _THROW
 /// Parameters:
 ///   type: char *. Identifier of exception type
-///   gc: Gc *. This Gc will be freed by 'exc_throw'
-#define THROW(type, gc) { \
-  Gc *_THROW_gc = (gc); \
-  exc_throw(str_new(_THROW_gc, (type)), str_f(_THROW_gc,
+#define THROW(type) { \
+  exc_throw((type), str_f(gc_new(),
 
 ///
-#define _THROW ), __FILE__, (char *)__func__, __LINE__, _THROW_gc);}
+#define _THROW ), __FILE__, (char *)__func__, __LINE__);}
 
 /// Example:
-///   EXC_GENERIC("Fail", gc_new())
-#define EXC_GENERIC(msg, gc) \
-  THROW(exc_generic_t, gc) msg _THROW
+///   EXC_GENERIC("Fail")
+#define EXC_GENERIC(msg) \
+  THROW(exc_generic_t) msg _THROW
 
-/// Throw a range exception if v < 0 or v > 32.<br>
+/// Throw a range exception if v < 0 or v > 32.
+///   value: The index out of range (< begin and > end)
+///   min  : Lower limit inclusive
+///   max  : Upper limit inclusive
 /// Example:
-///   EXC_RANGE(v, 0, 23, gc_new())
-#define EXC_RANGE(value, min, max, gc) { \
+///   EXC_RANGE(v, 0, 23)
+#define EXC_RANGE(value, min, max) { \
     int __v = value; \
     if (__v < (min) || __v > (max)) \
-      THROW(exc_range_t, gc) exc_range(_THROW_gc, (min), (max), __v) _THROW \
+      THROW(exc_range_t) \
+        "--- Index out of range: %d out of [%d - %d]", __v, (min), (max) \
+      _THROW \
   }
 
+/// Illegal argument of variable.
+///   var     : Name of wrong argument
+///   expected: Value expected
+///   actual  : Actual value
 /// Example:
-///   EXC_ILLEGAL_ARGUMENT("Fail", "a value", "another value", gc_new())
-#define EXC_ILLEGAL_ARGUMENT(msg, expected, actual, gc) \
-  THROW(exc_illegal_argument_t, gc) \
-    exc_illegal_argument(_THROW_gc, msg, expected, actual) \
+///   EXC_ILLEGAL_ARGUMENT("my_var", "a value", "another value")
+#define EXC_ILLEGAL_ARGUMENT(var, expected, actual) \
+  THROW(exc_illegal_argument_t) \
+    "--- Illegal argument: Variable '%s'\nExpected: %s\nActual: %s", \
+    (var), (expected), (actual) \
   _THROW
 
 /// Example:
-///   EXC_ILLEGAL_STATE("Fail", gc_new())
-#define EXC_ILLEGAL_STATE(msg, gc) \
-  THROW(exc_illegal_state_t, gc) exc_illegal_state(_THROW_gc, msg) _THROW
+///   EXC_ILLEGAL_STATE("Variable not set")
+#define EXC_ILLEGAL_STATE(cause) \
+  THROW(exc_illegal_state_t) "--- Illegal state: %s", (cause) _THROW
 
 /// Example:
-///   EXC_IO("Fail", gc_new())
-#define EXC_IO(msg, gc) \
-  THROW(exc_io_t, gc) exc_io(_THROW_gc, msg) _THROW
+///   EXC_IO("File not found")
+#define EXC_IO(cause) \
+  THROW(exc_io_t) "--- Io error: %s", (cause) _THROW
+
+/// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a
+/// ILLEGAL_ARGUMENT exception, otherwise returns its value in 'type var'
+/// using 'fun'.
+/// <table><tr><td>
+///   type : type of var
+///   var  : name of new variable. It shuld be free.
+///   fun  : function [type fn (Js *)] to translate 'Js' to 'type'
+///   map  : A Map[Js]
+///   field: field key. Its value must be const char *
+/// </table>
+/// Examples:
+/// <table><tr><td>
+///   CGI_GET(int, i, js_ri, m, "index")
+///   CGI_GET(char *, a, js_rs, m, "value")
+///   CGI_GET(Arr *, a, js_ra, m, "values")
+/// </table>
+#define CGI_GET(type, var, fun, map, field) \
+  type var; \
+  { \
+    Opt *js = map_get((map), (field)); \
+    if (opt_is_empty(js))  \
+      EXC_ILLEGAL_ARGUMENT(field, "Map key", "Key not found") \
+    var = fun(opt_get(js)); \
+  }
+
+/// CGI_GET_GC read a 'field' of 'map'. If 'field' is not found produce a
+/// ILLEGAL_ARGUMENT exception, otherwise returns its value in 'type var'
+/// using 'fun'.
+/// <table><tr><td>
+///   gc   : Garbage collector to use with fun
+///   type : type of var
+///   var  : name of new variable. It shuld be free.
+///   fun  : function [type fn (Gc *, Js *)] to translate 'Js' to 'type'
+///   map  : A Map[Js]
+///   field: field key. Its value must be const char *
+/// </table>
+/// Examples:
+/// <table><tr><td>
+///   CGI_GET(int, i, js_ri, m, "index")
+///   CGI_GET(char *, a, js_rs, m, "value")
+///   CGI_GET(Arr *, a, js_ra, m, "values")
+/// </table>
+#define CGI_GET_GC(gc, type, var, fun, map, field) \
+  type var; \
+  { \
+    Opt *js = map_get((map), (field)); \
+    if (opt_is_empty(js))  \
+      EXC_ILLEGAL_ARGUMENT(field, "Map key", "Key not found") \
+    var = fun((gc), opt_get(js)); \
+  }
+
+/// Calls CGI_GET with 'var' as 'int'.
+#define CGI_GET_BOOL(var, map, field) \
+  CGI_GET(int, var, js_rb, map, field)
+
+/// Calls CGI_GET with 'var' as 'int'.
+#define CGI_GET_INT(var, map, field) \
+  CGI_GET(int, var, js_ri, map, field)
+
+/// Calls CGI_GET with 'var' as 'double'.
+#define CGI_GET_DOUBLE(var, map, field) \
+  CGI_GET(double, var, js_rd, map, field)
+
+/// Calls CGI_GET with 'var' as 'char *'.
+#define CGI_GET_STR(gc, var, map, field) \
+  CGI_GET_GC(gc, char *, var, js_rs, map, field)
+
+/// Calls CGI_GET with 'var' as 'Arr[Js]'.
+#define CGI_GET_ARR(gc, var, map, field) \
+  CGI_GET_GC(gc, Arr *, var, js_ra, map, field)
+
+/// Calls CGI_GET with 'var' as 'Map[Js]'.
+#define CGI_GET_MAP(var, map, field) \
+  CGI_GET_GC(gc, Map *, var, js_ro, map, field)
 
 #endif

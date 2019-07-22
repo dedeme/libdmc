@@ -29,7 +29,7 @@ Darr *darr_new_bf(Gc *gc, int buffer) {
 Darr *darr_left(Gc *gc, Darr *this, int ix) {
   int size = darr_size(this);
   if (ix < 0) ix = size + ix;
-  EXC_RANGE(ix, 0, size, gc_new())
+  EXC_RANGE(ix, 0, size)
 
   double *source = this->es;
   Darr *r = darr_new_bf(gc, ix);
@@ -46,7 +46,7 @@ Darr *darr_left(Gc *gc, Darr *this, int ix) {
 Darr *darr_right(Gc *gc, Darr *this, int ix) {
   int size = darr_size(this);
   if (ix < 0) ix = size + ix;
-  EXC_RANGE(ix, 0, size, gc_new())
+  EXC_RANGE(ix, 0, size)
 
   double *source = this->es + ix;
   Darr *r = darr_new_bf(gc, this->end - source);
@@ -64,8 +64,8 @@ Darr *darr_sub(Gc *gc, Darr *this, int begin, int end) {
   if (begin < 0) begin = size + begin;
   if (end < 0) end = size + end;
 
-  EXC_RANGE(begin, 0, size, gc_new());
-  EXC_RANGE(end, begin, size, gc_new());
+  EXC_RANGE(begin, 0, size);
+  EXC_RANGE(end, begin, size);
 
   double *source = this->es + begin;
   Darr *r = darr_new_bf(gc, (this->es + end) - source);
@@ -110,7 +110,7 @@ int darr_size(Darr *this) {
 }
 
 double darr_get(Darr *this, int ix) {
-  EXC_RANGE(ix, 0, darr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, darr_size(this) - 1)
 
   return *(this->es + ix);
 }
@@ -136,7 +136,7 @@ void darr_push(Darr *this, double e) {
 
 double darr_pop(Darr *this) {
   if (this->es >= this->end)
-    EXC_ILLEGAL_STATE("Array is empty", gc_new())
+    EXC_ILLEGAL_STATE("Array is empty")
 
   --this->end;
   return *this->end;
@@ -147,13 +147,13 @@ double darr_peek(Darr *this) {
 }
 
 void darr_set(Darr *this, int ix, double e) {
-  EXC_RANGE(ix, 0, darr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, darr_size(this) - 1)
 
   *(this->es + ix) = e;
 }
 
 void darr_insert(Darr *this, int ix, double e) {
-  EXC_RANGE(ix, 0, darr_size(this), gc_new())
+  EXC_RANGE(ix, 0, darr_size(this))
 
   darr_push(this, e);
   double *p = this->end - 1;
@@ -166,7 +166,7 @@ void darr_insert(Darr *this, int ix, double e) {
 }
 
 void darr_remove(Darr *this, int ix) {
-  EXC_RANGE(ix, 0, darr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, darr_size(this) - 1)
 
   double *p = this->es + ix;
   double *p1 = p + 1;
@@ -196,7 +196,7 @@ void darr_cat(Darr *this, Darr *other) {
 void darr_insert_arr(Darr *this, int ix, Darr *other) {
   int this_len = this->end - this->es;
   int other_len = other->end - other->es;
-  EXC_RANGE(ix, 0, this_len, gc_new())
+  EXC_RANGE(ix, 0, this_len)
   if (other_len) {
     int this_size = this->endbf - this->es;
     if (this_len + other_len > this_size) {
@@ -215,8 +215,8 @@ void darr_insert_arr(Darr *this, int ix, Darr *other) {
 
 void darr_remove_range(Darr *this, int begin, int end) {
   int sz = darr_size(this);
-  EXC_RANGE(begin, 0, sz, gc_new())
-  EXC_RANGE(end, begin, sz, gc_new())
+  EXC_RANGE(begin, 0, sz)
+  EXC_RANGE(end, begin, sz)
 
   int df = end - begin;
   if (df == 0) {

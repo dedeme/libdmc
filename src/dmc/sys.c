@@ -18,7 +18,7 @@ static struct {
 
 
 Gc *sys_init (char *path) {
-  Gc *gc = exc_init();
+  Gc *gc = gc_new();
   rnd_init();
 
   uid_t uid = getuid();

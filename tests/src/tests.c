@@ -19,6 +19,7 @@
 #include "date_tests.h"
 #include "ext_tests.h"
 #include "async_tests.h"
+#include "cgi_tests.h"
 
 int main () {
   Gc *gc = sys_init("libdmc_tests");
@@ -39,8 +40,9 @@ int main () {
   darr_tests();
   iarr_tests();
   date_tests();
-  ext_tests();*/
-  async_tests();
+  ext_tests();
+  async_tests();*/
+  cgi_tests();
 
   gc_free(gc);
   return 0;

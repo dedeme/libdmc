@@ -28,7 +28,7 @@ Iarr *iarr_new_bf(Gc *gc, int buffer) {
 Iarr *iarr_left(Gc *gc, Iarr *this, int ix) {
   int size = iarr_size(this);
   if (ix < 0) ix = size + ix;
-  EXC_RANGE(ix, 0, size, gc_new())
+  EXC_RANGE(ix, 0, size)
 
   int *source = this->es;
   Iarr *r = iarr_new_bf(gc, ix);
@@ -45,7 +45,7 @@ Iarr *iarr_left(Gc *gc, Iarr *this, int ix) {
 Iarr *iarr_right(Gc *gc, Iarr *this, int ix) {
   int size = iarr_size(this);
   if (ix < 0) ix = size + ix;
-  EXC_RANGE(ix, 0, size, gc_new())
+  EXC_RANGE(ix, 0, size)
 
   int *source = this->es + ix;
   Iarr *r = iarr_new_bf(gc, this->end - source);
@@ -63,8 +63,8 @@ Iarr *iarr_sub(Gc *gc, Iarr *this, int begin, int end) {
   if (begin < 0) begin = size + begin;
   if (end < 0) end = size + end;
 
-  EXC_RANGE(begin, 0, size, gc_new());
-  EXC_RANGE(end, begin, size, gc_new());
+  EXC_RANGE(begin, 0, size);
+  EXC_RANGE(end, begin, size);
 
   int *source = this->es + begin;
   Iarr *r = iarr_new_bf(gc, (this->es + end) - source);
@@ -109,7 +109,7 @@ int iarr_size(Iarr *this) {
 }
 
 int iarr_get(Iarr *this, int ix) {
-  EXC_RANGE(ix, 0, iarr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, iarr_size(this) - 1)
 
   return *(this->es + ix);
 }
@@ -135,7 +135,7 @@ void iarr_push(Iarr *this, int e) {
 
 int iarr_pop(Iarr *this) {
   if (this->es >= this->end)
-    EXC_ILLEGAL_STATE("Array is empty", gc_new())
+    EXC_ILLEGAL_STATE("Array is empty")
 
   --this->end;
   return *this->end;
@@ -146,13 +146,13 @@ int iarr_peek(Iarr *this) {
 }
 
 void iarr_set(Iarr *this, int ix, int e) {
-  EXC_RANGE(ix, 0, iarr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, iarr_size(this) - 1)
 
   *(this->es + ix) = e;
 }
 
 void iarr_insert(Iarr *this, int ix, int e) {
-  EXC_RANGE(ix, 0, iarr_size(this), gc_new())
+  EXC_RANGE(ix, 0, iarr_size(this))
 
   iarr_push(this, e);
   int *p = this->end - 1;
@@ -165,7 +165,7 @@ void iarr_insert(Iarr *this, int ix, int e) {
 }
 
 void iarr_remove(Iarr *this, int ix) {
-  EXC_RANGE(ix, 0, iarr_size(this) - 1, gc_new())
+  EXC_RANGE(ix, 0, iarr_size(this) - 1)
 
   int *p = this->es + ix;
   int *p1 = p + 1;
@@ -195,7 +195,7 @@ void iarr_cat(Iarr *this, Iarr *other) {
 void iarr_insert_arr(Iarr *this, int ix, Iarr *other) {
   int this_len = this->end - this->es;
   int other_len = other->end - other->es;
-  EXC_RANGE(ix, 0, this_len, gc_new())
+  EXC_RANGE(ix, 0, this_len)
   if (other_len) {
     int this_size = this->endbf - this->es;
     if (this_len + other_len > this_size) {
@@ -214,8 +214,8 @@ void iarr_insert_arr(Iarr *this, int ix, Iarr *other) {
 
 void iarr_remove_range(Iarr *this, int begin, int end) {
   int sz = iarr_size(this);
-  EXC_RANGE(begin, 0, sz, gc_new())
-  EXC_RANGE(end, begin, sz, gc_new())
+  EXC_RANGE(begin, 0, sz)
+  EXC_RANGE(end, begin, sz)
 
   int df = end - begin;
   if (df == 0) {

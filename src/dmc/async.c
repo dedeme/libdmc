@@ -38,10 +38,11 @@ static void *thread_run (struct async_Thread *data) {
   return NULL;
 }
 
-void async_run (pthread_t *thr, void (*fn)(void *), void *value) {
+pthread_t *async_run (pthread_t *thr, void (*fn)(void *), void *value) {
   Gc *gc = gc_new();
   struct async_Thread *data = thread_new(gc, fn, value);
   pthread_create(thr, NULL, (void *(*)(void *))thread_run, data);
+  return thr;
 }
 
 void async_run_detached (void (*fn)(void *), void *value) {
@@ -61,8 +62,9 @@ static void *thread_run0 (void (*fn)(void)) {
   return NULL;
 }
 
-void async_run0 (pthread_t *thr, void (*fn)()) {
+pthread_t *async_run0 (pthread_t *thr, void (*fn)()) {
   pthread_create(thr, NULL, (void *(*)(void *))thread_run0, fn);
+  return thr;
 }
 
 /// Wait until thr finishes
