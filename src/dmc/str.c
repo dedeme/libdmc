@@ -556,10 +556,11 @@ char *str_from_iso(Gc *gc, char *s) {
 }
 
 char *str_to_upper (Gc *gc, char *s) {
-  unsigned *ws = opt_eget(
-    str_to_unicode(gc, s),
-    "str_to_upper: 's' is not a valid utf8 string"
-  );
+  Gc *gcl = gc_new();
+
+  unsigned *ws = opt_nget(str_to_unicode(gcl, s));
+  if (!ws)
+    EXC_ILLEGAL_STATE("str_to_upper: 's' is not a valid utf8 string", gcl)
 
   unsigned *p = ws;
   while (*p) {
@@ -567,17 +568,21 @@ char *str_to_upper (Gc *gc, char *s) {
     ++p;
   }
 
-  return opt_eget(
-    str_from_unicode(gc, ws),
-    "str_to_upper: 'ws' is not a valid unicode string"
-  );
+  char *r = opt_nget(str_from_unicode(gcl, ws));
+  if (!r)
+    EXC_ILLEGAL_STATE("str_to_upper: 'ws' is not a valid unicode string", gcl)
+
+  char *rt = str_new(gc, r);
+  gc_free(gcl);
+  return rt;
 }
 
 char *str_to_lower (Gc *gc, char *s) {
-  unsigned *ws = opt_eget(
-    str_to_unicode(gc, s),
-    "str_to_lower: 's' is not a valid utf8 string"
-  );
+  Gc *gcl = gc_new();
+
+  unsigned *ws = opt_nget(str_to_unicode(gcl, s));
+  if (!ws)
+    EXC_ILLEGAL_STATE("str_to_lower: 's' is not a valid utf8 string", gcl)
 
   unsigned *p = ws;
   while (*p) {
@@ -585,10 +590,13 @@ char *str_to_lower (Gc *gc, char *s) {
     ++p;
   }
 
-  return opt_eget(
-    str_from_unicode(gc, ws),
-    "str_to_lower: 'ws' is not a valid unicode string"
-  );
+  char *r = opt_nget(str_from_unicode(gcl, ws));
+  if (!r)
+    EXC_ILLEGAL_STATE("str_to_lower: 'ws' is not a valid unicode string", gcl)
+
+  char *rt = str_new(gc, r);
+  gc_free(gcl);
+  return rt;
 }
 
 char *str_to_escape (Gc *gc, char *s) {

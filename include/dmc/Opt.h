@@ -25,9 +25,6 @@ int opt_is_full (Opt *this);
 /// Throws a illegal_state_exception_t if 'this' is empty
 void *opt_get (Opt *this);
 
-/// Throws a illegal_state_exception_t if 'this' is empty with 'msg' as message.
-void *opt_eget (Opt *this, char *msg);
-
 /// Returns 'value' if 'this' is empty.
 void *opt_oget (Opt *this, void *value);
 

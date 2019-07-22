@@ -35,7 +35,9 @@ char *file_tmp_in (Gc *gc, char *dir, char *prefix) {
     gc_free(gcl);
     return file_tmp_in(gc, dir, prefix);
   }
-  return str_new(gc, r);
+  char *rt = str_new(gc, r);
+  gc_free(gcl);
+  return rt;
 }
 
 char *file_cwd (Gc *gc) {

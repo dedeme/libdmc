@@ -9,7 +9,6 @@
 #include "dmc/Arr.h"
 #include "dmc/path.h"
 #include "dmc/DEFS.h"
-
 #include <pthread.h>
 
 // Arr[Exc]
@@ -17,7 +16,6 @@ static Arr *pool = NULL;
 static pthread_mutex_t mutex;
 
 struct exc_Exc {
-  Gc *gc;
   pthread_t thread;
   // Arr[jmp_buf]
   Arr *buf;
@@ -25,6 +23,7 @@ struct exc_Exc {
   char *msg;
   // Arr[char]
   Arr *stack;
+  Gc *gc;
 };
 
 static Exc *exc_new (pthread_t thread, jmp_buf *bf) {
@@ -102,10 +101,6 @@ Gc *exc_init () {
   return exc->gc;
 }
 
-void exc_end () {
-
-}
-
 void exc_thread_init (void) {
   if (pool) {
     pthread_mutex_lock(&mutex);
@@ -155,6 +150,7 @@ void exc_thread_end (void) {
       }
     _EACH
     if (i != -1) {
+      gc_free(((Exc *)arr_get(pool, i))->gc);
       arr_remove(pool, i);
     }
 

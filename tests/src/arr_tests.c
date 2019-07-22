@@ -112,7 +112,13 @@ void arr_tests(void) {
   EACH(ia, double, n)
     *sum += *n;
   _EACH
-  assert(*sum = 511);
+  assert(*sum == 511);
+
+  *sum = 0;
+  EACHR(ia, double, n)
+    *sum += *n;
+  _EACH
+  assert(*sum == 511);
 
   arr_remove_range(ia, 5, 8);
   arr_sort(ia, (FCMP) greater);

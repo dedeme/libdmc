@@ -13,10 +13,16 @@
 #include "bytes_tests.h"
 #include "cryp_tests.h"
 #include "file_tests.h"
+#include "dec_tests.h"
+#include "darr_tests.h"
+#include "iarr_tests.h"
+#include "date_tests.h"
+#include "ext_tests.h"
+#include "async_tests.h"
 
 int main () {
   Gc *gc = sys_init("libdmc_tests");
-
+/*
   str_tests();
   arr_tests();
   exc_tests();
@@ -28,6 +34,13 @@ int main () {
   bytes_tests();
   cryp_tests();
   file_tests();
+  dec_tests();
+  dec_tests();
+  darr_tests();
+  iarr_tests();
+  date_tests();
+  ext_tests();*/
+  async_tests();
 
   gc_free(gc);
   return 0;

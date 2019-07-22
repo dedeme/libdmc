@@ -29,13 +29,6 @@ void *opt_get (Opt *this) {
   return this;
 }
 
-void *opt_eget (Opt *this, char *msg) {
-  if (!this)
-    EXC_ILLEGAL_STATE(msg, gc_new())
-
-  return this;
-}
-
 void *opt_oget (Opt *this, void *value) {
   return this ? this : value;
 }

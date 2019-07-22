@@ -37,7 +37,7 @@ void **arr_start (Arr *this);
 /// 'arr_end' does not point to a valid element.
 void **arr_end (Arr *this);
 
-/// Adds an element at the end of 'this'. 'e' will be freed by 'this'.
+/// Adds an element at the end of 'this'.
 void arr_push (Arr *this, void *e);
 
 /// Returns and removes the last element.
@@ -55,10 +55,10 @@ void arr_insert (Arr *this, int ix, void *e);
 /// Removes an element at position ix. Buffer size of 'this' does not change.
 void arr_remove (Arr *this, int ix);
 
-/// Adds pointer to elements of 'other' to 'this'.
+/// Adds elements of 'other' to 'this'.
 void arr_cat (Arr *this, Arr *other);
 
-/// Inserts pointer to elements of 'other' at 'ix'
+/// Inserts elements of 'other' at 'ix'
 void arr_insert_arr (Arr *this, int ix, Arr *other);
 
 /// Removes elements between [begin-end). Buffer size of 'this' does not change.

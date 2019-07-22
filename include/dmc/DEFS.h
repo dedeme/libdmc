@@ -33,27 +33,27 @@ typedef struct gc_Gc Gc;
 ///
 #define _RANGE }}
 
-/// Iterates over an 'Arr'. You can access to the 'element' index with _i.
-///   a      : An Arr *
-///   type   : Element type without pointer sign (*)
-///   element: An element of type 'type'
+/// Iterates over an 'Arr'.
+///   a   : An Arr *
+///   type: Element type without pointer sign (*)
+///   e   : An element of type 'type'
 /// For example:
 ///   EACH(a, char, s) {
-///     printf("[%d] -> %s\n", _i, s);
+///     printf("%s\n", s);
 ///   } _EACH
-#define EACH(a, type, element) { \
-  Arr *__arr = (Arr *)a; \
-  size_t __size = arr_size(__arr); \
-  size_t _i; \
-  type *element; \
-  for (_i = 0; _i < __size; ++_i) { \
-    element = arr_get(__arr, _i);
+#define EACH(a, type, e) { \
+  Arr *__a = (Arr *)a; \
+  void **__p = arr_start(__a); \
+  void **__pend = arr_end(__a); \
+  type *e; \
+  while(__p < __pend) { \
+    e = *__p++;
 
-/// Iterates over an 'Arr'. You can access to the 'element' index with i.
-///   a      : An Arr *
-///   type   : Element type without pointer sign (*)
-///   e: An element of type 'type'
-///   i: Element index.
+/// Iterates over an 'Arr'. You can access to element index with i.
+///   a   : An Arr *
+///   type: Element type without pointer sign (*)
+///   e   : An element of type 'type'
+///   i   : Element index.
 /// For example:
 ///   EACH(a, char, s, i) {
 ///     printf("[%d] -> %s\n", i, s);
@@ -68,22 +68,137 @@ typedef struct gc_Gc Gc;
     ++i; \
     e = *__p++;
 
-/// Iterates over an 'Arr' in reverse order. You can access to the 'element'
-/// index with _i.
-///   a      : An Arr *
-///   fn
-///   type   : Element type without pointer sign (*)
-///   element: An element of type 'a'
+/// Iterates over an Iarr. See EACH.
+#define IEACH(a, n) { \
+  Iarr *__a = a; \
+  int *__p = iarr_start(__a); \
+  int *__pend = iarr_end(__a); \
+  int n; \
+  while(__p < __pend) { \
+    n = *__p++;
+
+/// Iterates over an Iarr. See EACH_IX.
+#define IEACH_IX(a, n, i) { \
+  Iarr *__a = a; \
+  int *__p = iarr_start(__a); \
+  int *__pend = iarr_end(__a); \
+  int n; \
+  int i = -1; \
+  while(__p < __pend) { \
+    ++i; \
+    n = *__p++;
+
+/// Iterates over a Darr. See EACH.
+#define DEACH(a, n) { \
+  Darr *__a = a; \
+  double *__p = darr_start(__a); \
+  double *__pend = darr_end(__a); \
+  double n; \
+  while(__p < __pend) { \
+    n = *__p++;
+
+/// Iterates over a Darr. See EACH_IX
+#define DEACH_IX(a, n, i) { \
+  Darr *__a = a; \
+  double *__p = darr_start(__a); \
+  double *__pend = darr_end(__a); \
+  double n; \
+  int i = -1; \
+  while(__p < __pend) { \
+    ++i; \
+    n = *__p++;
+
+/// Iterates over an It. See EACH.
+#define EACHI(it, type, e) { \
+  It *__it = (It *)it; \
+  type *e; \
+  while (it_has_next(__it)) { \
+    e = it_next(__it);
+
+/// Iterates over an It. See EACH_IX.
+#define EACHI_IX(it, type, e, i) { \
+  It *__it = (It *)it; \
+  int i = -1; \
+  type *e; \
+  while (it_has_next(__it)) { \
+    ++i; \
+    e = it_next(__it);
+
+/// Iterates over an 'Arr' in reverse order.
+///   a   : An Arr *
+///   type: Element type without pointer sign (*)
+///   e   : An element of type 'a'
 /// For example:
 ///   EACHR(a, char, s) {
-///     printf("[%d] -> %s\n", _i, s);
+///     printf("%s\n", s);
 ///   } _EACH
-#define EACHR(a, type, element) { \
-  Arr *__arr = (Arr *)a; \
-  size_t _i = arr_size(__arr); \
-  type *element; \
-  while (_i) { \
-    element = arr_get(__arr, --_i);
+#define EACHR(a, type, e) { \
+  Arr *__a = (Arr *)a; \
+  void **__pstart = arr_start(__a); \
+  void **__p = arr_end(__a); \
+  type *e; \
+  while(__p > __pstart) { \
+    e = *(--__p);
+
+/// Iterates over an 'Arr' in reverse order. You can access to the 'element'
+/// index with i.
+///   a   : An Arr *
+///   type: Element type without pointer sign (*)
+///   e   : An element of type 'a'
+///   i   : Index of element 'e'
+/// For example:
+///   EACHR(a, char, s) {
+///     printf("[%d] -> %s\n", i, s);
+///   } _EACH
+#define EACHR_IX(a, type, e) { \
+  Arr *__a = (Arr *)a; \
+  void **__pstart = arr_start(__a); \
+  void **__p = arr_end(__a); \
+  int i = __p - __pstart; \
+  type *e; \
+  while(__p > __pstart) { \
+    --i; \
+    e = *(--__p);
+
+/// Iterates over an Iarr. See EACH.
+#define IEACHR(a, n) { \
+  Iarr *__a = (Iarr *)a; \
+  int *__pstart = iarr_start(__a); \
+  int *__p = iarr_end(__a); \
+  int n; \
+  while(__p > __pstart) { \
+    n = *(--__p);
+
+/// Iterates over an Iarr. See EACH_IX.
+#define IEACHR_IX(a, n, i) { \
+  Iarr *__a = (Iarr *)a; \
+  int *__pstart = iarr_start(__a); \
+  int *__p = iarr_end(__a); \
+  int i = __p - __pstart; \
+  int n; \
+  while(__p > __pstart) { \
+    --i; \
+    n = *(--__p);
+
+/// Iterates over a Darr. See EACH.
+#define DEACHR(a, n) { \
+  Darr *__a = (Darr *)a; \
+  double *__pstart = darr_start(__a); \
+  double *__p = darr_end(__a); \
+  double n; \
+  while(__p > __pstart) { \
+    n = *(--__p);
+
+/// Iterates over a Darr. See EACH_IX
+#define DEACHR_IX(a, n, i) { \
+  Darr *__a = (Darr *)a; \
+  double *__pstart = darr_start(__a); \
+  double *__p = darr_end(__a); \
+  int i = __p - __pstart; \
+  double n; \
+  while(__p > __pstart) { \
+    --i; \
+    n = *(--__p);
 
 /// Finalizes an EACHL, EACH or a EACHR
 #define _EACH }}

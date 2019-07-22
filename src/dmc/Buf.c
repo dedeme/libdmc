@@ -18,8 +18,7 @@ Buf *buf_new(Gc *gc) {
 Buf *buf_bf_new(Gc *gc, int sz) {
   Buf *this = gc_add_bf(gc, malloc(sizeof(Buf)));
   this->size = sz - 1;
-  this->str = malloc(sz);
-  memset(this->str, 0, sz);
+  this->str = calloc(1, sz);
   this->length = 0;
   return this;
 }
@@ -39,7 +38,10 @@ void buf_add_buf (Buf *this, char *data, int length) {
           this->size += this->size;
       }
       int memsize = this->size + 1;
-      this->str = realloc(this->str, memsize);
+      char *s = calloc(1, memsize);
+      memcpy(s, this->str, this->length);
+      free(this->str);
+      this->str = s;
   }
   memcpy(this->str + this->length, data, length);
   this->length = ixend;
