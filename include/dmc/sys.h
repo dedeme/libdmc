@@ -14,7 +14,7 @@
 /// Initializates a normal program and call 'rnd_init()'.<br>
 /// After call this function 'sys_home' and 'sys_user' are available.<p>
 /// It creates the user directory in "~/.dmCApp/" + 'path'
-Gc *sys_init (char *path);
+void sys_init (Gc *gc, char *path);
 
 ///
 char *sys_home (void);

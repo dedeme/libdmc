@@ -179,6 +179,7 @@ static Opt *check_user(Gc *gc, char *id, char *key) {
     }
   }_EACH
 
+  gc_free(gcl);
   return r;
 }
 
@@ -305,6 +306,7 @@ static void add_session(
 
   arr_push(sessions, js_wa(gc, new_row));
   write_sessions(sessions);
+  gc_free(gc);
 }
 
 // In session.db:

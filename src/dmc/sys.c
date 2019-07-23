@@ -17,8 +17,7 @@ static struct {
 } sys;
 
 
-Gc *sys_init (char *path) {
-  Gc *gc = gc_new();
+void sys_init (Gc *gc, char *path) {
   rnd_init();
 
   uid_t uid = getuid();
@@ -26,7 +25,6 @@ Gc *sys_init (char *path) {
   sys.home = path_cat(gc, udata->pw_dir, ".dmCApp", path, NULL);
   sys.uname = str_new(gc, udata->pw_name);
   file_mkdir(sys.home);
-  return gc;
 }
 
 char *sys_home (void) {

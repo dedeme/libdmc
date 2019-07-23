@@ -10,15 +10,15 @@
 
 // Map [Js]
 Map *rp_new(Gc *gc, char *key, char *rp) {
-  Gc *gcl = gc_new();
+  GCL_NEW
   rp = cryp_decryp(gcl, rp, key);
-  // Map[Js]
-  return js_ro(gc, (Js *)rp);
+
+  return GCL_CLEAN(js_ro(gc, (Js *)rp));
 }
 
 void cgi_tests(void) {
   puts("Cgi tests");
-  Gc *gc = gc_new();
+  GC_NEW
 
   cgi_init(gc, "data", 10);
 
@@ -114,6 +114,6 @@ void cgi_tests(void) {
   assert(!*level);
   assert(!*session_id);
 
-  gc_free(gc);
+  GC_FREE
   puts("    Finished");
 }
