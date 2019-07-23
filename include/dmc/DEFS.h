@@ -282,11 +282,11 @@ typedef void *(*FFROM)(Gc *gc, Js *);
 
 #define GCL_FREE gc_free(gcl);
 
-#define GC_MALLOC (type) gc_add(gc, malloc(sizeof(type)))
+#define GC_MALLOC(type) gc_add(gc, malloc(sizeof(type)))
 
-#define GC_RET (value) gc_clean(gc, (value));
+#define GC_RET(value) gc_clean(gc, (value));
 
-#define GCL_RET (value) gc_clean(gcl, (value));
+#define GCL_RET(value) gc_clean(gcl, (value));
 
 
 /// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a
