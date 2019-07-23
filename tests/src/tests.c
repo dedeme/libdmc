@@ -28,7 +28,7 @@ int main () {
   arr_tests();
   exc_tests();
   js_tests();
-  it_tests();
+*/  it_tests();/*
   map_tests();
   b64_tests();
   buf_tests();
@@ -41,8 +41,8 @@ int main () {
   iarr_tests();
   date_tests();
   ext_tests();
-  async_tests();*/
-  cgi_tests();
+  async_tests()
+  cgi_tests();*/
 
   gc_free(gc);
   return 0;

@@ -1,6 +1,8 @@
 // Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Functions using external programs.
+
 #ifndef DMC_EXT_H
   #define DMC_EXT_H
 

@@ -1,6 +1,8 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// String utilities.
+
 #ifndef DMC_STR_H
   #define DMC_STR_H
 

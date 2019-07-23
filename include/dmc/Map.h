@@ -1,7 +1,7 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Map structure
+/// Map structure.
 
 #ifndef DMC_MAP_H
   #define DMC_MAP_H

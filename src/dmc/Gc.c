@@ -76,6 +76,11 @@ void gc_free (Gc *this) {
   free(this);
 }
 
+void *gc_clean (Gc *this, void *value) {
+  gc_free(this);
+  return value;
+}
+
 struct gc_GcVal {
   Gc *gc;
   void *value;

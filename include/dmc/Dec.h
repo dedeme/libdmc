@@ -1,7 +1,7 @@
 // Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Decimal number and numeric utilities
+/// Decimal number and numeric utilities.
 
 #ifndef DMC_DEC_H
   #define DMC_DEC_H

@@ -1,7 +1,7 @@
 // Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// B64 encoder - decoder
+/// B64 encoder - decoder.
 
 #ifndef DMC_B64_H
   #define DMC_B64_H

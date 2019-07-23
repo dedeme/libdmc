@@ -1,7 +1,7 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Garbage collector
+/// Garbage collector.
 
 #ifndef DMC_GC_H
   #define DMC_GC_H
@@ -30,6 +30,9 @@ void *gc_add_bf (Gc *this, void *object);
 
 ///
 void gc_free (Gc *this);
+
+/// Calls gc_free(this) and returns value
+void *gc_clean (Gc *this, void *value);
 
 /// Tuple Gc-Value
 GcVal *gcVal_new (Gc *gc, void *value);

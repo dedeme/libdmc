@@ -1,7 +1,7 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Global definitions
+/// Global definitions.
 
 #ifndef DMC_DEFS_H
   #define DMC_DEFS_H
@@ -273,6 +273,21 @@ typedef void *(*FFROM)(Gc *gc, Js *);
 ///   EXC_IO("File not found")
 #define EXC_IO(cause) \
   THROW(exc_io_t) "--- Io error: %s", (cause) _THROW
+
+#define GC_NEW Gc *gc = gc_new();
+
+#define GCL_NEW Gc *gcl = gc_new();
+
+#define GC_FREE gc_free(gc);
+
+#define GCL_FREE gc_free(gcl);
+
+#define GC_MALLOC (type) gc_add(gc, malloc(sizeof(type)))
+
+#define GC_RET (value) gc_clean(gc, (value));
+
+#define GCL_RET (value) gc_clean(gcl, (value));
+
 
 /// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a
 /// ILLEGAL_ARGUMENT exception, otherwise returns its value in 'type var'

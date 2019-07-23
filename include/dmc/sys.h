@@ -1,6 +1,11 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Utilities for managing globals values.<br>
+/// A way to initializes system is:
+///   sys_init("app_name");
+///   sys_locale("es_ES.utf8");
+
 #ifndef DMC_SYS_H
   #define DMC_SYS_H
 

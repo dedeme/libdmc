@@ -166,7 +166,7 @@ void it_tests() {
   assert(it_index(it_unary(gc, "a"), (FPRED)eqz) == -1);
   assert(it_index(mk2(gc), (FPRED)eqz) == -1);
 
-  assert(!it_contains(it_empty(gc), (FPRED)eq0));
+  assert(!it_contains(arr_to_it(gc, arr_new(gc)), (FPRED)eq0));
   assert(!it_contains(it_unary(gc, "a"), (FPRED)eq0));
   assert(!it_contains(it_empty(gc), (FPRED)eqa));
   assert(it_contains(it_unary(gc, "a"), (FPRED)eqa));

@@ -1,6 +1,8 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Generator of random numbers.
+
 #ifndef DMC_RND_H
   #define DMC_RND_H
 

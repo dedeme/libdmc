@@ -1,7 +1,7 @@
 // Copyright 22-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities for HTML conections between client - server
+/// Utilities for HTML conections between client - server.
 
 #ifndef DMC_CGI_H
   #define DMC_CGI_H

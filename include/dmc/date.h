@@ -1,7 +1,7 @@
 // Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities for managing dates
+/// Utilities for managing dates.
 
 #ifndef DMC_DATE_H
   #define DMC_DATE_H

@@ -1,7 +1,7 @@
 // Copyright 20-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Tuples of values
+/// Tuples of values.
 
 #ifndef DMC_TP_H
   #define DMC_TP_H

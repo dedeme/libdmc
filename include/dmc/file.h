@@ -1,7 +1,7 @@
 // Copyright 21-Jul-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities for managing files
+/// Utilities for managing files.
 
 #ifndef DMC_FILE_H
   #define DMC_FILE_H
