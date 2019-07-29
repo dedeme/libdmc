@@ -1,5 +1,7 @@
 # libdmc
 
+NOTE: Closed. Use of manual Garbage Collector results cumbersome.
+
 C utilities.
 
 Some utilities from C language.
