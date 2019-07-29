@@ -172,7 +172,7 @@ void arr_insert_arr (Arr *this, int ix, Arr *other) {
       }
       s = other->es;
       t = this->es + ix;
-      limit = other->endbf;
+      limit = other->end;
       while (s < limit) {
         *t++ = *s++;
       }
