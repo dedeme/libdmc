@@ -25,11 +25,43 @@ static void *async_thread_run (struct async_Thread *data) {
   return NULL;
 }
 
+static void *async_thread_run0 (void (*fn)(void)) {
+  exc_thread_init();
+  fn();
+  exc_thread_end();
+  return NULL;
+}
+
 pthread_t *async_thread (void (*fn)(void *), void *value) {
   pthread_t *thr = MALLOC(pthread_t);
   struct async_Thread *data = async_thread_new(fn, value);
   pthread_create(thr, NULL, (FCOPY)async_thread_run, data);
   return thr;
+}
+
+pthread_t *async_thread0 (void (*fn)(void)) {
+  pthread_t *thr = MALLOC(pthread_t);
+  pthread_create(thr, NULL, (FCOPY)async_thread_run0, fn);
+  return thr;
+}
+
+void async_thread_detached (void (*fn)(void *), void *value) {
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+  pthread_t *thr = MALLOC(pthread_t);
+  struct async_Thread *data = async_thread_new(fn, value);
+  pthread_create(thr, &attr, (FCOPY)async_thread_run, data);
+}
+
+void async_thread_detached0 (void (*fn)(void)) {
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+  pthread_t *thr = MALLOC(pthread_t);
+  pthread_create(thr, &attr, (FCOPY)async_thread_run0, fn);
 }
 
 /// Wait until thr finishes
@@ -113,7 +145,7 @@ AsyncActor *asyncActor_new (int millis) {
   this->active = 1;
   this->live = 1;
 
-  async_thread((FPROC)actor_cycle, this);
+  async_thread_detached((FPROC)actor_cycle, this);
 
   return this;
 }
@@ -153,7 +185,7 @@ struct async_AsyncTimer {
 static void timer_cycle(AsyncTimer *this) {
   struct async_Thread *task = this->task;
   while (this->active) {
-    async_thread(task->fn, task->value);
+    async_thread_detached(task->fn, task->value);
     sys_sleep(this->millis);
   }
 }
@@ -164,7 +196,7 @@ AsyncTimer *asyncTimer_new (void (*fn)(void *), void *value, int millis) {
   this->millis = millis;
   this->active = 1;
 
-  async_thread((FPROC)timer_cycle, this);
+  async_thread_detached((FPROC)timer_cycle, this);
 
   return this;
 }

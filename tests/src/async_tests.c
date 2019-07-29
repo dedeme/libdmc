@@ -8,7 +8,7 @@
 #include "dmc/rnd.h"
 
 static void barbery (void) {
-  int TIME_MAX_CLIENT_CREATE = 3000; // millis
+  int TIME_MAX_CLIENT_CREATE = 2000; // millis
   int TIME_MIN_CLIENT_CREATE = 200; // millis
   int TIME_HAIR_CUT = 1800; // millis
   int TIME_OPEN = 120; // seconds
@@ -241,7 +241,15 @@ void async_tests(void) {
 
   asyncActor_join(ac);
 */
-
+/*
+  void fn2(void *null) { sys_sleep(10000);}
+  REPEAT(1000000)
+    async_thread_detached(fn2, NULL);
+  _REPEAT
+  puts ("All thread run");
+  char c = getchar();
+  printf("%c|\n", c);
+*/
   if (0) barbery();
 
   puts("    Finished");

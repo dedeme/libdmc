@@ -13,11 +13,31 @@
 #include "dmc/std.h"
 #include <pthread.h>
 
-/// Launchs 'fn' in a new thread. Example of use:
+/// Launchs 'fn' in a new joinable thread. Example of use:
 ///   void fn(char *tx) { puts(tx); }
 ///   pthread_t *thr = async_thread((FPROC)fn, "Hello");
 ///   async_join(thr); // Waits for thr.
+/// NOTA: After calling 'async_thread' is mandatory to call 'async_join' to
+/// free resources.
 pthread_t *async_thread (void (*fn)(void *), void *value);
+
+/// Launchs 'fn' in a new joinable thread. Example of use:
+///   void fn() { puts("Here"); }
+///   pthread_t *thr = async_thread0(fn);
+///   async_join(thr); // Waits for thr.
+/// NOTA: After calling 'async_thread0' is mandatory to call 'async_join' to
+/// free resources.
+pthread_t *async_thread0 (void (*fn)(void));
+
+/// Launch 'fn' in a new thread. Example of use:
+///   void fn(char *tx) { puts(tx); }
+///   async_thread_detached((FPROC)fn, "Hello");
+void async_thread_detached (void (*fn)(void *), void *value);
+
+/// Launch 'fn' in a new thread. Example of use:
+///   void fn(char *tx) { puts("Here"); }
+///   async_thread_detached0(fn);
+void async_thread_detached0 (void (*fn)(void));
 
 /// Wait until thr finishes
 void async_join (pthread_t *thr);
