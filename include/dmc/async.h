@@ -7,11 +7,11 @@
 #ifndef DMC_ASYNC_H
   #define DMC_ASYNC_H
 
+#include <pthread.h>
 /// Necesary definition for multithreading garbage collector.
-#define GC_LINUX_THREADS
+#define GC_THREADS
 #include "gc.h"
 #include "dmc/std.h"
-#include <pthread.h>
 
 /// Launchs 'fn' in a new joinable thread. Example of use:
 ///   void fn(char *tx) { puts(tx); }
