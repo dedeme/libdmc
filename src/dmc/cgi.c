@@ -1,8 +1,7 @@
-// Copyright 22-Jul-2019 ºDeme
+// Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/cgi.h"
-
 #include "dmc/rnd.h"
 #include "dmc/cryp.h"
 #include "dmc/date.h"
@@ -22,8 +21,8 @@ struct cgi_Session {
   char *con_id;
 };
 
-static CgiSession *cgiSession_new(Gc *gc, char *com_key, char *con_id) {
-  CgiSession *this = gc_add(gc, malloc(sizeof(CgiSession)));
+static CgiSession *cgiSession_new(char *com_key, char *con_id) {
+  CgiSession *this = MALLOC(CgiSession);
   this->com_key = com_key;
   this->con_id = con_id;
   return this;
@@ -56,75 +55,59 @@ static void put_user(char *user, char *key, char *level);
 static void write_sessions(Arr *sessions);
 
 
-void cgi_init(Gc *gc, char *home, time_t t_expiration) {
-  if (cgi_null) return;
-
+void cgi_init(char *home, time_t t_expiration) {
   rnd_init();
 
-  cgi_null = gc_add(gc, malloc(sizeof(Cgi)));
+  cgi_null = MALLOC(Cgi);
 
-  cgi_null->fkey = cryp_key(gc, deme_key, strlen(deme_key));
+  cgi_null->fkey = cryp_key(deme_key, strlen(deme_key));
   cgi_null->key = opt_empty();
-  cgi_null->home = str_new(gc, home);
+  cgi_null->home = str_new(home);
   cgi_null->t_expiration = t_expiration;
 
   if (!file_exists(home)) {
     file_mkdir(home);
   }
 
-  Gc *gcl = gc_new();
-  char *fusers = path_cat(gcl, home, "users.db", NULL);
+  char *fusers = path_cat(home, "users.db", NULL);
   if (!file_exists(fusers)) {
     // Arr[char]
-    Arr *a = arr_new(gcl);
+    Arr *a = arr_new();
     write_users(a);
     put_user("admin", deme_key, "0");
     write_sessions(a);
   }
-  gc_free(gcl);
 }
 
 // User ----------------------------------------------------
 
 // users is Arr[char]
 static void write_users(Arr *users) {
-  Gc *gc = gc_new();
-  char *path = path_cat(gc, cgi_null->home, "users.db", NULL);
+  char *path = path_cat(cgi_null->home, "users.db", NULL);
   // Arr[Js]
-  Arr *tmp = arr_from_it(gc, it_map(gc, arr_to_it(gc, users), (FCOPY)js_ws));
-  char *js = (char *)js_wa(gc, tmp);
-  js = cryp_cryp(gc, js, cgi_null->fkey);
+  Arr *tmp = arr_from_it(it_map(arr_to_it(users), (FCOPY)js_ws));
+  char *js = (char *)js_wa(tmp);
+  js = cryp_cryp(js, cgi_null->fkey);
 
   file_write(path, js);
-  gc_free(gc);
 }
 
 // Returns Arr[char]
-static Arr *read_users(Gc *gc) {
-  Gc *gcl = gc_new();
-  char *path = path_cat(gcl, cgi_null->home, "users.db", NULL);
-  char *tx = file_read(gcl, path);
-  tx = cryp_decryp(gcl, tx, cgi_null->fkey);
+static Arr *read_users(void) {
+  char *path = path_cat(cgi_null->home, "users.db", NULL);
+  char *tx = file_read(path);
+  tx = cryp_decryp(tx, cgi_null->fkey);
 
-  // Arr[char]
-  Arr *r = arr_new(gc);
-  EACH(js_ra(gcl, (Js *)tx), Js, js)
-    arr_push(r, js_rs(gc, js));
-  _EACH
-
-  gc_free(gcl);
-  return r;
+  return arr_from_it(it_map(arr_to_it(js_ra((Js *)tx)), (FCOPY)js_rs));
 }
 
 // Users is Arr[char]
 static void remove_user(Arr *users, char *user) {
   // ------------------------------------------------------------------------ //
   int pred(char *row) {                                                       //
-    Gc *gc = gc_new();                                                                   //
     // Arr[char]                                                              //
-    Arr *parts = str_csplit(gc, row, ':');                                    //
+    Arr *parts = str_csplit(row, ':');                                        //
     int r = str_eq(user, arr_get(parts, 0));                                  //
-    gc_free(gc);                                                              //
     return r;                                                                 //
   }                                                                           //
   // ------------------------------------------------------------------------ //
@@ -135,80 +118,69 @@ static void remove_user(Arr *users, char *user) {
 }
 
 static void del_user(char *user) {
-  Gc *gc = gc_new();
   // Arr[char]
-  Arr *users = read_users(gc);
+  Arr *users = read_users();
   remove_user(users, user);
   write_users(users);
-  gc_free(gc);
 }
 
 
 static void put_user(char *user, char *key, char *level) {
-  Gc *gc = gc_new();
   // Arr[char]
-  Arr *users = read_users(gc);
+  Arr *users = read_users();
   remove_user(users, user);
-  char *kkey = cryp_key(gc, key, klen);
+  char *kkey = cryp_key(key, klen);
   arr_push(
     users,
-    str_cat(gc, user, ":", kkey, ":", level, NULL)
+    str_cat(user, ":", kkey, ":", level, NULL)
   );
   write_users(users);
-  gc_free(gc);
 }
 
 // Returns level of "id" (Opt[char])
-static Opt *check_user(Gc *gc, char *id, char *key) {
-  Gc *gcl = gc_new();
-  char *kkey = cryp_key(gcl, key, klen);
+static Opt *check_user(char *id, char *key) {
+  char *kkey = cryp_key(key, klen);
 
   // Arr[char]
-  Arr *users = read_users(gcl);
+  Arr *users = read_users();
 
   Opt *r = opt_empty();
   EACH(users, char, udata) {
     // Arr[char]
-    Arr *parts = str_csplit(gcl, udata, ':');
+    Arr *parts = str_csplit(udata, ':');
     if (
       str_eq(arr_get(parts, 0), id) &&
       str_eq(arr_get(parts, 1), kkey)
     ) {
-      r = opt_new(str_new(gc, arr_get(parts, 2)));
+      r = opt_new(arr_get(parts, 2));
       break;
     }
   }_EACH
 
-  gc_free(gcl);
   return r;
 }
 
 static int change_level(char *user, char *level) {
   // ------------------------------------------------------------------------ //
   int pred(char *row) {                                                       //
-    Gc *gc = gc_new();                                                        //
     // Arr[char]                                                              //
-    Arr *parts = str_csplit(gc, row, ':');                                    //
-    int r = str_eq(user, arr_get(parts, 0));                                  //
-    gc_free(gc);                                                              //
-    return r;                                                                 //
+    Arr *parts = str_csplit(row, ':');                                        //
+    return str_eq(user, arr_get(parts, 0));                                   //
   }                                                                           //
   // ------------------------------------------------------------------------ //
 
-  Gc *gc = gc_new();
   // Arr[char]
-  Arr *users = read_users(gc);
+  Arr *users = read_users();
   int ix = arr_index(users, (FPRED)pred);
 
   if (ix == -1) {
-    gc_free(gc);
     return 0;
   }
 
   char *row = arr_get(users, ix);
   // Arr[char]
-  Arr *parts = str_csplit(gc, row, ':');
-  char *new_row = str_cat(gc,
+  Arr *parts = str_csplit(row, ':');
+  char *new_row = str_cat(
     arr_get(parts, 0), ":",
     arr_get(parts, 1), ":",
     level, NULL
@@ -216,39 +188,33 @@ static int change_level(char *user, char *level) {
   arr_set(users, ix, new_row);
   write_users(users);
 
-  gc_free(gc);
   return 1;
 }
 
 static int change_pass(char *user, char *old_pass, char *new_pass) {
   // ------------------------------------------------------------------------ //
   int pred(char *row) {                                                       //
-    Gc *gc = gc_new();                                                        //
-    char *kold = cryp_key(gc, old_pass, klen);                                //
+    char *kold = cryp_key(old_pass, klen);                                    //
     // Arr[char]                                                              //
-    Arr *parts = str_csplit(gc, row, ':');                                    //
-    int r = str_eq(arr_get(parts, 0), user) &&                                //
+    Arr *parts = str_csplit(row, ':');                                        //
+    return str_eq(arr_get(parts, 0), user) &&                                 //
             str_eq(arr_get(parts, 1), kold);                                  //
-    gc_free(gc);                                                              //
-    return r;                                                                 //
   }                                                                           //
   // ------------------------------------------------------------------------ //
 
-  Gc *gc = gc_new();
   // Arr[char]
-  Arr *users = read_users(gc);
+  Arr *users = read_users();
   int ix = arr_index(users, (FPRED)pred);
 
   if (ix == -1) {
-    gc_free(gc);
     return 0;
   }
 
-  char *knew = cryp_key(gc, new_pass, klen);
+  char *knew = cryp_key(new_pass, klen);
   char *row = arr_get(users, ix);
   // Arr[char]
-  Arr *parts = str_csplit(gc, row, ':');
-  char *new_row = str_cat(gc,
+  Arr *parts = str_csplit(row, ':');
+  char *new_row = str_cat(
     arr_get(parts, 0), ":",
     knew, ":",
     arr_get(parts, 2), NULL
@@ -256,7 +222,6 @@ static int change_pass(char *user, char *old_pass, char *new_pass) {
   arr_set(users, ix, new_row);
   write_users(users);
 
-  gc_free(gc);
   return 1;
 }
 
@@ -264,83 +229,68 @@ static int change_pass(char *user, char *old_pass, char *new_pass) {
 
 // sessions is Arr[Js] (Where Js is a json array)
 static void write_sessions(Arr *sessions) {
-  Gc *gc = gc_new();
-  char *path = path_cat(gc, cgi_null->home, "sessions.db", NULL);
-  char *data = (char *)js_wa(gc, sessions);
-  data = cryp_cryp(gc, data, cgi_null->fkey);
+  char *path = path_cat(cgi_null->home, "sessions.db", NULL);
+  char *data = (char *)js_wa(sessions);
+  data = cryp_cryp(data, cgi_null->fkey);
   file_write(path, data);
-  gc_free(gc);
 }
 
 // Returns Arr[Js] (Where Js is a json array)
-static Arr *read_sessions_new(Gc *gc) {
-  Gc *gcl = gc_new();
-  char *path = path_cat(gcl, cgi_null->home, "sessions.db", NULL);
-  char *data = file_read(gcl, path);
-  data = cryp_decryp(gcl, data, cgi_null->fkey);
-  // Arr[Js]
-  Arr *r = js_ra(gc, (Js*)data);
-  gc_free(gcl);
-  return r;
+static Arr *read_sessions_new(void) {
+  char *path = path_cat(cgi_null->home, "sessions.db", NULL);
+  char *data = file_read(path);
+  data = cryp_decryp(data, cgi_null->fkey);
+  return js_ra((Js*)data);
 }
 
 // If expiration is 0 tNoExpiration is used
 static void add_session(
   char *session_id, char *user, char *key, time_t expiration
 ) {
-  Gc *gc = gc_new();
   // Arr[Js] (Where Js is a json array)
-  Arr *sessions = read_sessions_new(gc);
+  Arr *sessions = read_sessions_new();
 
   time_t lapse = expiration ? expiration : t_no_expiration;
   time_t time = date_now() + lapse;
 
   // Arr[Js]
-  Arr *new_row = arr_new(gc);
-  arr_push(new_row,  js_ws(gc, session_id));  //0
-  arr_push(new_row,  js_ws(gc, user));        //1
-  arr_push(new_row,  js_ws(gc, key));         //2
-  arr_push(new_row,  js_ws(gc, ""));          //3
-  arr_push(new_row,  date_to_js(gc, time));   //4
-  arr_push(new_row,  date_to_js(gc, lapse));  //5
+  Arr *new_row = arr_new();
+  arr_push(new_row,  js_ws(session_id));  //0
+  arr_push(new_row,  js_ws(user));        //1
+  arr_push(new_row,  js_ws(key));         //2
+  arr_push(new_row,  js_ws(""));          //3
+  arr_push(new_row,  date_to_js(time));   //4
+  arr_push(new_row,  date_to_js(lapse));  //5
 
-  arr_push(sessions, js_wa(gc, new_row));
+  arr_push(sessions, js_wa(new_row));
   write_sessions(sessions);
-  gc_free(gc);
 }
 
 // In session.db:
 // Fields are: sessionId:key:time:lapse
 // Return is Opt[CgiSession]
-static Opt *read_session(Gc *gc, char *session_id) {
+static Opt *read_session(char *session_id) {
   time_t now = date_now();
 
   // ------------------------------------------------------------------------ //
   // jsrow is a Js(Arr[Js])                                                   //
   int filter(Js *jsrow) {                                                     //
-    Gc *gc = gc_new();                                                        //
     // Arr[Js]                                                                //
-    Arr *row = js_ra(gc, jsrow);                                              //
-    int r = (date_from_js(gc, arr_get(row, 4)) >= now);                       //
-    gc_free(gc);                                                              //
-    return r;                                                                 //
+    Arr *row = js_ra(jsrow);                                                  //
+    return (date_from_js(arr_get(row, 4)) >= now);                            //
   }                                                                           //
                                                                               //
   // jsrow is a Js(Arr[Js])                                                   //
   int pred(Js *jsrow) {                                                       //
-    Gc *gc = gc_new();                                                        //
     // Arr[js]                                                                //
-    Arr *row = js_ra(gc, jsrow);                                              //
-    char *s_id = js_rs(gc, arr_get(row, 0));                                  //
-    int r = str_eq(s_id, session_id);                                         //
-    gc_free(gc);                                                              //
-    return r;                                                                 //
+    Arr *row = js_ra(jsrow);                                                  //
+    char *s_id = js_rs(arr_get(row, 0));                                      //
+    return str_eq(s_id, session_id);                                          //
   }                                                                           //
   // ------------------------------------------------------------------------ //
 
-  Gc *gcl = gc_new();
   // Arr[Js] (Where Js is a json array)
-  Arr *sessions = read_sessions_new(gcl);
+  Arr *sessions = read_sessions_new();
 
   arr_filter(sessions, (FPRED)filter);
 
@@ -349,19 +299,18 @@ static Opt *read_session(Gc *gc, char *session_id) {
   Opt *r = opt_empty();
   if (ix != -1) {
     // Arr[js]
-    Arr *row = js_ra(gcl, arr_get(sessions, ix));
-    char *com_key = js_rs(gc, arr_get(row, 2));
-    char *con_id = js_rs(gc, arr_get(row, 3));
-    r = opt_new(cgiSession_new(gc, com_key, con_id));
+    Arr *row = js_ra(arr_get(sessions, ix));
+    char *com_key = js_rs(arr_get(row, 2));
+    char *con_id = js_rs(arr_get(row, 3));
+    r = opt_new(cgiSession_new(com_key, con_id));
 
     arr_set(row, 4, date_to_js(
-      gcl, date_now() + date_from_js(gcl, arr_get(row, 5))
+      date_now() + date_from_js(arr_get(row, 5))
     ));
-    arr_set(sessions, ix, js_wa(gcl, row));
+    arr_set(sessions, ix, js_wa(row));
   }
 
   write_sessions(sessions);
-  gc_free(gcl);
   return r;
 }
 
@@ -369,55 +318,45 @@ static void del_session(char *session_id) {
   // ------------------------------------------------------------------------ //
   // jsrow is a Js(Arr[Js])                                                   //
   int pred(Js *jsrow) {                                                       //
-    Gc *gc = gc_new();                                                        //
     // Arr[js]                                                                //
-    Arr *row = js_ra(gc, jsrow);                                              //
-    char *s_id = js_rs(gc, arr_get(row, 0));                                  //
-    int r = str_eq(s_id, session_id);                                         //
-    gc_free(gc);                                                              //
-    return r;                                                                 //
+    Arr *row = js_ra(jsrow);                                                  //
+    char *s_id = js_rs(arr_get(row, 0));                                      //
+    return str_eq(s_id, session_id);                                          //
   }                                                                           //
   // ------------------------------------------------------------------------ //
 
-  Gc *gc = gc_new();
   // Arr[Js] (Where Js is a json array)
-  Arr *sessions = read_sessions_new(gc);
+  Arr *sessions = read_sessions_new();
   int ix = arr_index(sessions, (FPRED)pred);
 
   if (ix != -1) {
     arr_remove(sessions, ix);
     write_sessions(sessions);
   }
-  gc_free(gc);
 }
 
 static void set_connection_id(char *session_id, char *con_id) {
   // ------------------------------------------------------------------------ //
   // jsrow is a Js(Arr[Js])                                                   //
   int pred(Js *jsrow) {                                                       //
-    Gc *gc = gc_new();                                                        //
     // Arr[js]                                                                //
-    Arr *row = js_ra(gc, jsrow);                                              //
-    char *s_id = js_rs(gc, arr_get(row, 0));                                  //
-    int r = str_eq(s_id, session_id);                                         //
-    gc_free(gc);                                                              //
-    return r;                                                                 //
+    Arr *row = js_ra(jsrow);                                                  //
+    char *s_id = js_rs(arr_get(row, 0));                                      //
+    return str_eq(s_id, session_id);                                          //
   }                                                                           //
   // ------------------------------------------------------------------------ //
 
-  Gc *gc = gc_new();
   // Arr[Js] (Where Js is a json array)
-  Arr *sessions = read_sessions_new(gc);
+  Arr *sessions = read_sessions_new();
   int ix = arr_index(sessions, (FPRED)pred);
 
   if (ix != -1) {
     // Arr[js]
-    Arr *row = js_ra(gc, arr_get(sessions, ix));
-    arr_set(row, 3, js_ws(gc, con_id));
-    arr_set(sessions, ix, js_wa(gc, row));
+    Arr *row = js_ra(arr_get(sessions, ix));
+    arr_set(row, 3, js_ws(con_id));
+    arr_set(sessions, ix, js_wa(row));
     write_sessions(sessions);
   }
-  gc_free(gc);
 }
 
 // Public interface ----------------------------------------
@@ -441,175 +380,155 @@ void cgi_set_key(char *k) {
 }
 
 // Returns Opt[CgiSession]
-Opt *cgi_get_session(Gc *gc, char *session_id) {
+Opt *cgi_get_session(char *session_id) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  return read_session(gc, session_id);
+  return read_session(session_id);
 }
 
 char *cgi_add_user(
-  Gc *gc,
   char *admin, char *akey,
   char *user, char *ukey, char *level
 ){
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
   // Map[Js]
-  Map *m = map_new(gcl);
+  Map *m = map_new();
   // Opt[char]
-  Opt *alevel = check_user(gcl, admin, akey);
+  Opt *alevel = check_user(admin, akey);
   if (opt_is_full(alevel) && str_eq(opt_get(alevel), "0")) {
     put_user(user, ukey, level);
-    map_put(m, "ok", js_wb(gcl, 1));
+    map_put(m, "ok", js_wb(1));
   } else {
-    map_put(m, "ok", js_wb(gcl, 0));
+    map_put(m, "ok", js_wb(0));
   }
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  return cgi_ok(m);
 }
 
-char *cgi_del_user(Gc *gc, char *admin, char *akey, char *user) {
+char *cgi_del_user(char *admin, char *akey, char *user) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
   // Map[Js]
-  Map *m = map_new(gcl);
+  Map *m = map_new();
   // Opt[char]
-  Opt *alevel = check_user(gcl, admin, akey);
+  Opt *alevel = check_user(admin, akey);
   if (opt_is_full(alevel) && str_eq(opt_get(alevel), "0")) {
     del_user(user);
-    map_put(m, "ok", js_wb(gcl, 1));
+    map_put(m, "ok", js_wb(1));
   } else {
-    map_put(m, "ok", js_wb(gcl, 0));
+    map_put(m, "ok", js_wb(0));
   }
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  return cgi_ok(m);
 }
 
 char *cgi_change_level(
-  Gc *gc, char *admin, char *akey, char *user, char *level
+  char *admin, char *akey, char *user, char *level
 ) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
   // Map[Js]
-  Map *m = map_new(gcl);
+  Map *m = map_new();
   // Opt[char]
-  Opt *alevel = check_user(gcl, admin, akey);
+  Opt *alevel = check_user(admin, akey);
   if (opt_is_full(alevel) && str_eq(opt_get(alevel), "0")) {
     if (change_level(user, level)) {
-      map_put(m, "ok", js_wb(gcl, 1));
+      map_put(m, "ok", js_wb(1));
     } else {
-      map_put(m, "ok", js_wb(gcl, 0));
+      map_put(m, "ok", js_wb(0));
     }
   } else {
-    map_put(m, "ok", js_wb(gcl, 0));
+    map_put(m, "ok", js_wb(0));
   }
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  return cgi_ok(m);
 }
 
-char *cgi_change_pass(Gc *gc, char *user, char *key, char *new_key) {
+char *cgi_change_pass(char *user, char *key, char *new_key) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
   // Map[Js]
-  Map *m = map_new(gcl);
+  Map *m = map_new();
   if (change_pass(user, key, new_key)) {
-    map_put(m, "ok", js_wb(gcl, 1));
+    map_put(m, "ok", js_wb(1));
   } else {
-    map_put(m, "ok", js_wb(gcl, 0));
+    map_put(m, "ok", js_wb(0));
   }
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  return cgi_ok(m);
 }
 
-char *cgi_del_session(Gc *gc, char *session_id) {
+char *cgi_del_session(char *session_id) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
   del_session(session_id);
-  return cgi_empty(gc);
+  return cgi_empty();
 }
 
-char *cgi_authentication(Gc *gc, char *user, char *key, int expiration) {
+char *cgi_authentication(char *user, char *key, int expiration) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
-
   // Map[Js]
-  Map *m = map_new(gcl);
+  Map *m = map_new();
 
   // Opt[char]
-  Opt *level = check_user(gcl, user, key);
+  Opt *level = check_user(user, key);
   if (opt_is_full(level)) {
-    char *session_id = cryp_genk(gcl, klen);
-    char *key = cryp_genk(gcl, klen);
+    char *session_id = cryp_genk(klen);
+    char *key = cryp_genk(klen);
     add_session(
       session_id, user, key, expiration ? cgi_null->t_expiration : 0
     );
-    map_put(m, "level", js_ws(gcl, opt_get(level)));
-    map_put(m, "sessionId", js_ws(gcl, session_id));
-    map_put(m, "key", js_ws(gcl, key));
+    map_put(m, "level", js_ws(opt_get(level)));
+    map_put(m, "sessionId", js_ws(session_id));
+    map_put(m, "key", js_ws(key));
   } else {
-    map_put(m, "level", js_ws(gcl, ""));
-    map_put(m, "sessionId", js_ws(gcl, ""));
-    map_put(m, "key", js_ws(gcl, ""));
+    map_put(m, "level", js_ws(""));
+    map_put(m, "sessionId", js_ws(""));
+    map_put(m, "key", js_ws(""));
   }
 
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  return cgi_ok(m);
 }
 
-char *cgi_connect(Gc *gc, char *session_id) {
+char *cgi_connect(char *session_id) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
   // Map[Js]
-  Map *m = map_new(gcl);
+  Map *m = map_new();
 
-  set_connection_id(session_id, cryp_genk(gcl, klen));
+  set_connection_id(session_id, cryp_genk(klen));
 
   char *com_key = "";
   char *con_id = "";
   // Opt[CgiSession]
-  Opt *cgiss = read_session(gcl, session_id);
+  Opt *cgiss = read_session(session_id);
   if (opt_is_full(cgiss)) {
     CgiSession *ss = opt_get(cgiss);
     com_key = ss->com_key;
     con_id = ss->con_id;
   }
 
-  map_put(m, "key", js_ws(gcl, com_key));
-  map_put(m, "connectionId", js_ws(gcl, con_id));
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  map_put(m, "key", js_ws(com_key));
+  map_put(m, "connectionId", js_ws(con_id));
+  return cgi_ok(m);
 }
 
 // data is Map[Js]
-char *cgi_ok(Gc *gc, Map *data) {
+char *cgi_ok(Map *data) {
   if (!cgi_null)
     EXC_ILLEGAL_STATE("'cgi' has not been intialized")
 
-  Gc *gcl = gc_new();
-  char *msg = (char *)js_wo(gcl, data);
-  char *key = opt_nget(cgi_null->key);
-  if (!key) EXC_ILLEGAL_STATE("Cgi->key is not set")
-  char *r = cryp_cryp(gc, msg, key);
+  char *msg = (char *)js_wo(data);
+  return cryp_cryp(
+    msg,
+    opt_eget(cgi_null->key, "Cgi->key is not set")
+  );
 
 /*
   // To debug
@@ -620,85 +539,60 @@ char *cgi_ok(Gc *gc, Map *data) {
 
 //  fputs(msg, stdout);
 */
-
-  gc_free(gcl);
-  return r;
 }
 
-char *cgi_empty(Gc *gc) {
-  Gc *gcl = gc_new();
-  char *r = cgi_ok(gc, map_new(gcl));
-  gc_free(gcl);
-  return r;
+char *cgi_empty(void) {
+  return cgi_ok(map_new());
 }
 
-char *cgi_error(Gc *gc, char *msg) {
-  Gc *gcl = gc_new();
+char *cgi_error(char *msg) {
   // Map[Js]
-  Map *m = map_new(gcl);
-  map_put(m, "error", js_ws(gcl, msg));
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  Map *m = map_new();
+  map_put(m, "error", js_ws(msg));
+  return cgi_ok(m);
 }
 
-char *cgi_expired(Gc *gc) {
-  Gc *gcl = gc_new();
+char *cgi_expired(void) {
   // Map[Js]
-  Map *m = map_new(gcl);
-  map_put(m, "expired", js_wb(gcl, 1));
-  char *r = cgi_ok(gc, m);
-  gc_free(gcl);
-  return r;
+  Map *m = map_new();
+  map_put(m, "expired", js_wb(1));
+  return cgi_ok(m);
 }
 
-// fn_data is Tp[Map[Js] *(*fn)(Map[Js] *rq), GcVal[Map[Js]]]
-static void long_run(Tp *fn_ctx) {
-  Map *(*lrun)(Map *) = tp_e1(fn_ctx);
-  GcVal *ctx = tp_e2(fn_ctx);
-  Gc *gc = gcVal_gc(ctx);
-  Map *rq = gcVal_value(ctx);
-  CGI_GET_STR(gc, long_run_file, rq, "longRunFile")
+// fn_data is Tp3[Map[Js] *(*fn)(void *ctx, Map[Js] *rq), void, Map[Js]]
+static void long_run(Tp3 *fn_v_rq) {
+  Map *(*lrun)(void *, Map *) = tp3_e1(fn_v_rq);
+  void *ctx = tp3_e2(fn_v_rq);
+  Map *rq = tp3_e3(fn_v_rq);
+  CGI_GET_STR(long_run_file, rq, "longRunFile")
 
   // Map[js]
-  Map *rp = lrun(rq);
-  map_put(rp, "longRunEnd", js_wb(gc, 1));
+  Map *rp = lrun(ctx, rq);
+  map_put(rp, "longRunEnd", js_wb(1));
 
-  // Generate a tmp file to reduce latence time in write 'long_run_file'
-  char *tmp = file_tmp(gc, "dmc_cgi_long_run");
-  file_write(tmp, (char *)js_wo(gc, rp));
+  char *tmp = file_tmp("dmc_cgi_long_run");
+  file_write(tmp, (char *)js_wo(rp));
   file_rename(tmp, long_run_file);
-
-  gc_free(gc);
 }
 
-// All Maps are Map[Js]. ctx is GcVal[Map[Js]]
-char *cgi_long_run(Gc *gc, Map *(*fn)(Map *rq), GcVal *ctx) {
-  Gc *gcl = gc_new();
+// All Maps are Map[Js]
+Map *cgi_long_run(Map *(*fn)(void *ctx, Map *rq), void *ctx, Map *rq) {
+  CGI_GET_STR(long_run_file, rq, "longRunFile")
   // Map[Js]
-  Map *rq = gcVal_value(ctx);
-  CGI_GET_STR(gcl, long_run_file, rq, "longRunFile")
-
-  // Map[Js]
-  Map *rp = map_new(gcl);
+  Map *rp = map_new();
   if (*long_run_file) {
     if (file_exists(long_run_file)) {
-      rp = js_ro(gcl, (Js *)file_read(gcl, long_run_file));
-      map_put(rp, "longRunEnd", js_wb(gcl, 1));
+      rp = js_ro((Js *)file_read(long_run_file));
+      map_put(rp, "longRunEnd", js_wb(1));
       file_del(long_run_file);
     } else {
-      map_put(rp, "longRunEnd", js_wb(gcl, 0));
+      map_put(rp, "longRunEnd", js_wb(0));
     }
   } else {
-    long_run_file = file_tmp(gcl, "dmc_cgi_long_run");
-
-    map_put(rq, "longRunFile", (Js *)js_ws(gcVal_gc(ctx), long_run_file));
-    async_run_detached((FPROC)long_run, tp_new(gcVal_gc(ctx), fn, ctx));
-
-    map_put(rp, "longRunFile", (Js *)js_ws(gcl, long_run_file));
+    Js *long_run_file = js_ws(file_tmp("dmc_cgi_long_run"));
+    map_put(rq, "longRunFile", long_run_file);
+    map_put(rp, "longRunFile", long_run_file);
+    async_thread((FPROC)long_run, tp3_new(fn, ctx, rq));
   }
-
-  char *r = cgi_ok(gc, rp);
-  gc_free(gcl);
-  return r;
+  return rp;
 }

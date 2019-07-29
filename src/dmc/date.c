@@ -1,8 +1,7 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/date.h"
-#include "dmc/std.h"
 #include "dmc/Dec.h"
 #include <sys/time.h>
 
@@ -54,32 +53,26 @@ static time_t _date_from_sep (char *d, char *m, char *y) {
 }
 
 time_t date_from_iso_sep (char *date, char sep) {
-  Gc *gc = gc_new();
   // Arr[char]
-  Arr *parts = str_csplit(gc, date, sep);
+  Arr *parts = str_csplit(date, sep);
   if (arr_size(parts) != 3) {
-    gc_free(gc);
     return 0;
   }
   time_t r = _date_from_sep(
     arr_get(parts, 0), arr_get(parts, 1), arr_get(parts, 2)
   );
-  gc_free(gc);
   return r;
 }
 
 time_t date_from_us_sep (char *date, char sep) {
-  Gc *gc = gc_new();
   // Arr[char]
-  Arr *parts = str_csplit(gc, date, sep);
+  Arr *parts = str_csplit(date, sep);
   if (arr_size(parts) != 3) {
-    gc_free(gc);
     return 0;
   }
   time_t r = _date_from_sep(
     arr_get(parts, 1), arr_get(parts, 0), arr_get(parts, 2)
   );
-  gc_free(gc);
   return r;
 }
 
@@ -112,58 +105,58 @@ int date_year(time_t this) {
   return localtime(&this)->tm_year + 1900;
 }
 
-char *date_f(Gc *gc, time_t this, char *template) {
+char *date_f(time_t this, char *template) {
   char *s, *rs;
   struct tm *t = localtime(&this);
   int size = 126;
   while (1) {
-    rs = calloc(size, 1); // calloc ok
+    rs = (char *)calloc(size, 1); // calloc ok
     if (strftime (rs, size, template, t)) {
-      s = str_new(gc, rs);
-      free(rs);
+      s = str_new(rs);
+      free(rs); // free ok
       break;
     }
-    free(rs);
+    free(rs); // free ok
     size += size;
   }
   return s;
 }
 
-char *date_to_str(Gc *gc, time_t this) {
-  return date_f(gc, this, "%Y%m%d");
+char *date_to_str(time_t this) {
+  return date_f(this, "%Y%m%d");
 }
 
-char *date_to_iso(Gc *gc, time_t this) {
-  return date_f(gc, this, "%d/%m/%Y");
+char *date_to_iso(time_t this) {
+  return date_f(this, "%d/%m/%Y");
 }
 
-char *date_to_us(Gc *gc, time_t this) {
-  return date_f(gc, this, "%m/%d/%Y");
+char *date_to_us(time_t this) {
+  return date_f(this, "%m/%d/%Y");
 }
 
-Js *date_to_js(Gc *gc, time_t this) {
-  return (Js *)js_wl(gc, this);
+Js *date_to_js(time_t this) {
+  return (Js *)js_wl(this);
 }
 
-time_t date_from_js(Gc *gc, Js *js) {
+time_t date_from_js(Js *js) {
   return js_rl(js);
 }
 
-DateTm *date_tm_now (Gc *gc) {
-  DateTm *r = gc_add(gc, malloc(sizeof(DateTm)));
+DateTm *date_tm_now () {
+  DateTm *r = MALLOC(DateTm);
   gettimeofday (r, NULL);
   return r;
 }
 
-DateTm *date_tm_tdf (Gc *gc, DateTm *t1, DateTm *t2) {
-  DateTm *r = gc_add(gc, malloc(sizeof(DateTm)));
+DateTm *date_tm_tdf (DateTm *t1, DateTm *t2) {
+  DateTm *r = MALLOC(DateTm);
   r->tv_sec = t1->tv_sec - t2->tv_sec;
   r->tv_usec = t1->tv_usec - t2->tv_usec;
   return r;
 }
 
-DateTm *date_tm_add (Gc *gc, DateTm *t, int millis) {
-  DateTm *r = gc_add(gc, malloc(sizeof(DateTm)));
+DateTm *date_tm_add (DateTm *t, int millis) {
+  DateTm *r = MALLOC(DateTm);
   long int m = t->tv_usec + millis * 1000;
   time_t s = m / 1000000;
 
@@ -173,10 +166,6 @@ DateTm *date_tm_add (Gc *gc, DateTm *t, int millis) {
 }
 
 int date_tm_df (DateTm *t1, DateTm *t2) {
-  Gc *gc = gc_new();
-  DateTm *r = date_tm_tdf(gc, t1, t2);
-  int rt = r->tv_sec * 1000 + r->tv_usec / 1000;
-  gc_free(gc);
-  return rt;
+  DateTm *r = date_tm_tdf(t1, t2);
+  return r->tv_sec * 1000 + r->tv_usec / 1000;
 }
-

@@ -1,13 +1,13 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities for managing dates.
+/// Utilities for managing dates
 
 #ifndef DMC_DATE_H
   #define DMC_DATE_H
 
 #include <time.h>
-#include "Js.h"
+#include "dmc/std.h"
 
 /// date_new makes a new time_t.
 ///   this  : New time_t
@@ -139,22 +139,22 @@ int date_year (time_t this);
 ///          minute offset from UTC). (SU)
 ///   %Z     The timezone name or abbreviation.
 ///   %%     A literal '%' character.
-char *date_f (Gc *gc, time_t this, char *template);
+char *date_f (time_t this, char *template);
 
 /// date_to_str returns a string in format yyyymmdd
-char *date_to_str (Gc *gc, time_t this);
+char *date_to_str (time_t this);
 
 /// date_to_iso returns a string in format dd/mm/yyyy
-char *date_to_iso (Gc *gc, time_t this);
+char *date_to_iso (time_t this);
 
 /// date_to_us returns a string in format mm/dd/yyyy
-char *date_to_us (Gc *gc, time_t this);
+char *date_to_us (time_t this);
 
 ///
-Js *date_to_js (Gc *gc, time_t this);
+Js *date_to_js (time_t this);
 
 ///
-time_t date_from_js (Gc *gc, Js *js);
+time_t date_from_js (Js *js);
 
 ///
 typedef struct timeval DateTm;
@@ -163,13 +163,13 @@ typedef struct timeval DateTm;
 ///   struct timeval has following fields:
 ///     time_t tv_sec Seconds
 ///     long int tv_usecs Microseconds (0 - 999999)
-DateTm *date_tm_now (Gc *gc);
+DateTm *date_tm_now ();
 
 /// Returns t1 - t2
-DateTm *date_tm_tdf (Gc *gc, DateTm *t1, DateTm *t2);
+DateTm *date_tm_tdf (DateTm *t1, DateTm *t2);
 
 /// Adds 'millis' milliseconds to 't'. 'millis' can be negative:
-DateTm *date_tm_add (Gc *gc, DateTm *t, int millis);
+DateTm *date_tm_add (DateTm *t, int millis);
 
 /// Returns t1 - t2 in milliseconds
 int date_tm_df (DateTm *t1, DateTm *t2);

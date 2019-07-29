@@ -1,13 +1,11 @@
-// Copyright 20-Jul-2019 ºDeme
+// Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Arr.h"
-#include <string.h>
-#include "dmc/DEFS.h"
+#include "string.h"
+
 #include "dmc/std.h"
-#include "dmc/Exc.h"
 #include "dmc/rnd.h"
-#include "dmc/It.h"
 
 struct arr_Arr {
   void **es;
@@ -15,25 +13,28 @@ struct arr_Arr {
   void **endbf;
 };
 
-Arr *arr_new (Gc *gc) {
-  return arr_new_bf(gc, 15);
+Arr *arr_new () {
+  return arr_bf_new(15);
 }
 
-Arr *arr_new_bf (Gc *gc, int sz) {
-  Arr *this = gc_add_bf(gc, malloc(sizeof(Arr)));
-  void **es = malloc(sz * sizeof(void *));
+Arr *arr_bf_new (int buffer) {
+  Arr *this = MALLOC(Arr);
+  void **es = GC_MALLOC(buffer * sizeof(void *));
   this->es = es;
   this->end = es;
-  this->endbf = es + sz;
+  this->endbf = es + buffer;
   return this;
 }
 
-Arr *arr_copy (Gc *gc, Arr *this) {
-  int len = this->end - this->es;
+Arr *arr_copy (Arr *this) {
   int buffer = this->endbf - this->es;
-  Arr *r = arr_new_bf(gc, buffer * sizeof(void *));
-  r->end = r->es + len;
-  memcpy(r->es, this->es, len * sizeof(void *));
+  int bf_size = buffer * sizeof(void *);
+  Arr *r = MALLOC(Arr);
+  void **es = GC_MALLOC(bf_size);
+  r->es = es;
+  r->end = es + (this->end - this->es);
+  r->endbf = es + buffer;
+  memcpy(es, this->es, bf_size);
   return r;
 }
 
@@ -59,7 +60,7 @@ void arr_push (Arr *this, void *e) {
   if (this->end == this->endbf) {
     int size = this->endbf - this->es;
     int new_size = size + size;
-    this->es = realloc(this->es, new_size * sizeof(void *));
+    this->es = GC_REALLOC(this->es, new_size * sizeof(void *));
     this->end = this->es + size;
     this->endbf = this->es + new_size;
   }
@@ -115,34 +116,67 @@ void arr_cat (Arr *this, Arr *other) {
   if (other_len) {
     int this_len = this->end - this->es;
     int this_size = this->endbf - this->es;
-    if (this_len + other_len > this_size){
+    if (this_len + other_len >= this_size){
       int new_size = this_size + other_len;
-      this->es = realloc(this->es, new_size * sizeof(void *));
+      this->es = GC_REALLOC(this->es, new_size * sizeof(void *));
       this->end = this->es + this_len;
       this->endbf = this->es + new_size;
     }
-    memcpy(this->end, other->es, other_len * sizeof(void *));
-    this->end += other_len;
+    void **s = other->es;
+    void **t = this->end;
+    REPEAT(other_len)
+      *t++ = *s++;
+    _REPEAT
+    this->end = t;
   }
 }
 
 void arr_insert_arr (Arr *this, int ix, Arr *other) {
-  int this_len = this->end - this->es;
-  int other_len = other->end - other->es;
+  const int this_len = this->end - this->es;
   EXC_RANGE(ix, 0, this_len)
+
+  int other_len = other->end - other->es;
   if (other_len) {
     int this_size = this->endbf - this->es;
-    if (this_len + other_len > this_size) {
-      int new_size = this_size + other_len;
-      this->es = realloc(this->es, new_size * sizeof(void *));
-      this->end = this->es + this_len;
-      this->endbf = this->es + new_size;
+    int new_size = this_size;
+    if (this_len + other_len >= this_size){
+      new_size = this_size + other_len;
+
+      void **es = GC_MALLOC(new_size * sizeof(void *));
+      void **end = es;
+
+      void **p = this->es;
+      void **pend = p + ix;
+      while (p < pend) {
+        *end++ = *p++;
+      }
+      void **p2 = other->es;
+      void **p2end = other->end;
+      while (p2 < p2end) {
+        *end++ = *p2++;
+      }
+      pend = this->end;
+      while (p < pend) {
+        *end++ = *p++;
+      }
+
+      this->es = es;
+      this->end = end;
+      this->endbf = es + new_size;
+    } else {
+      void **s = this->end - 1;
+      void **t = s + other_len;
+      void **limit = this->es + ix;
+      while (s >= limit) {
+        *t-- = *s--;
+      }
+      s = other->es;
+      t = this->es + ix;
+      limit = other->endbf;
+      while (s < limit) {
+        *t++ = *s++;
+      }
     }
-    memcpy(
-      this->es + ix + other_len, this->es + ix, (this_len - ix) * sizeof(void *)
-    );
-    memcpy(this->es + ix, other->es, other_len * sizeof(void *));
-    this->end += other_len;
   }
 }
 
@@ -166,13 +200,14 @@ void arr_remove_range (Arr *this, int begin, int end) {
 }
 
 void arr_clear (Arr *this) {
-  arr_clear_bf(this, 15);
+  arr_bf_clear(this, 15);
 }
 
-void arr_clear_bf (Arr *this, int sz) {
-  this->es = realloc(this->es, sz * sizeof(void *));
-  this->end = this->es;
-  this->endbf = this->es + sz;
+void arr_bf_clear (Arr *this, int buffer) {
+  void **es = GC_MALLOC(buffer * sizeof(void *));
+  this->es = es;
+  this->end = es;
+  this->endbf = es + buffer;
 }
 
 void arr_reverse (Arr *this) {
@@ -191,12 +226,10 @@ void arr_sort (Arr *this, int (*greater)(void *, void *)) {
     if (size < 2) {
       return;
     }
-
-    Gc *gc = gc_new();
     int mid1 = size / 2;
     int mid2 = size - mid1;
-    void **a1 = gc_add(gc, malloc(mid1 * sizeof(void *)));
-    void **a2 = gc_add(gc, malloc(mid2 * sizeof(void *)));
+    void **a1 = ATOMIC(mid1 * sizeof(void *));
+    void **a2 = ATOMIC(mid2 * sizeof(void *));
     void **pa = a;
     void **pa1 = a1;
     void **pa2 = a2;
@@ -242,7 +275,6 @@ void arr_sort (Arr *this, int (*greater)(void *, void *)) {
         ++ia1;
       }
     }
-    gc_free(gc);
   }
   sort(this->es, this->end - this->es);
 }
@@ -261,12 +293,14 @@ void arr_shuffle (Arr *this) {
 }
 
 int arr_index (Arr *this, int (*pred)(void *e)) {
-  void **p = this->es;
-  void **end = this->end;
-  while (p < end) {
-    if (pred(*p++)) return (p - this->es) - 1;
-  }
-  return -1;
+  int ix = -1;
+  EACH_IX(this, void, e, i)
+    if (pred(e)) {
+      ix = i;
+      break;
+    }
+  _EACH
+  return ix;
 }
 
 void arr_filter (Arr *this, int (*pred)(void *e)) {
@@ -298,45 +332,42 @@ static Opt *to_it_next(arr_to_it_O *o) {                                      //
   }                                                                           //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *arr_to_it (Gc *gc, Arr *this) {
-  arr_to_it_O *o = gc_add(gc, malloc(sizeof(arr_to_it_O)));
+It *arr_to_it (Arr *this) {
+  arr_to_it_O *o = MALLOC(arr_to_it_O);
   o->es = this->es;
   o->n = arr_size(this);
   o->i = 0;
-  return it_new(gc, o, (it_Next)to_it_next);
+  return it_new(o, (it_Next)to_it_next);
 }
 
-Arr *arr_from_it (Gc *gc, It *it) {
-  Arr *r = arr_new(gc);
+Arr *arr_from_it (It *it) {
+  Arr *r = arr_new();
   while (it_has_next(it)) {
     arr_push(r, it_next(it));
   }
   return r;
 }
 
-Js *arr_to_js (Gc *gc, Arr *this, Js *(*to)(Gc *gc, void *e)) {
-  Gc *gcl = gc_new();
+Js *arr_to_js (Arr *this, Js *(*to)(void *e)) {
   // Arr[Js]
-  Arr *a = arr_new(gcl);
+  Arr *a = arr_new();
   void **p = this->es;
   void **end = this->end;
   while (p < end) {
-    arr_push(a, to(gcl, *p++));
+    arr_push(a, to(*p++));
   }
-  Js *r = js_wa(gc, a);
-  gc_free(gcl);
+  Js *r = js_wa(a);
   return r;
 }
 
-Arr *arr_from_js (Gc *gc, Js *js, void *(*from)(Gc *gc, Js *jse)) {
-  Arr *this = arr_new(gc);
-  Gc *gcl = gc_new();
+Arr *arr_from_js (Js *js, void *(*from)(Js *jse)) {
+  Arr *this = arr_new();
   // Arr[Js]
-  Arr *a = js_ra(gcl, js);
+  Arr *a = js_ra(js);
   void **p = a->es;
   void **end = a->end;
   while (p < end) {
-    arr_push(this, from(gc, *p++));
+    arr_push(this, from(*p++));
   }
   return this;
 }

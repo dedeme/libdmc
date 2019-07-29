@@ -4,7 +4,7 @@ C utilities.
 
 Some utilities from C language.
 
-These utilities depend on 'libpthread' and '-libm'
+These utilities depend on 'libpthread', 'libm' and 'libgc' (Garbage collector)
 
 ```sh
 apt-get install libgc-dev
@@ -54,7 +54,7 @@ void main () {
 ### Compile and execute
 
 ```sh
-gcc test.c -o test -I./include -L./lib -ldmc -lpthread -lm
+gcc test.c -o test -I./include -L./lib -ldmc -lgc -lpthread -lm
 ./test
 ```
 And console will show:

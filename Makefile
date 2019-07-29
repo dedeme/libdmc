@@ -10,4 +10,4 @@ lib/lib$(LIB).a : $(OBJECTS)
 obj/%.o : src/dmc/%.c include/dmc/%.h
 	if [ ! -e obj ];then mkdir obj;fi
 	gcc $(CFLAGS) -c $< -o $@ -Iinclude \
-	-lpthread -lm
+	-lgc -lpthread -lm

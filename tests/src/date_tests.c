@@ -1,4 +1,4 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "date_tests.h"
@@ -7,27 +7,26 @@
 
 void date_tests(void) {
   puts("Date tests");
-  Gc *gc = gc_new();
 
   time_t d = date_now();
   char *s = NULL;
-  s = date_to_str(gc, d);
+  s = date_to_str(d);
   assert(8 == strlen(s));
   d = date_new(2, 4, 2010);
-  s = date_to_str(gc, d);
+  s = date_to_str(d);
   assert(str_eq(s, "20100402"));
-  s = date_to_iso(gc, d);
+  s = date_to_iso(d);
   assert(str_eq(s, "02/04/2010"));
   d = date_from_str("19881231");
-  s = date_to_str(gc, d);
+  s = date_to_str(d);
   assert(str_eq(s, "19881231"));
-  s = date_to_us(gc, d);
+  s = date_to_us(d);
   assert(str_eq(s, "12/31/1988"));
   d = date_from_iso("01/02/2020");
-  s = date_to_str(gc, d);
+  s = date_to_str(d);
   assert(str_eq(s, "20200201"));
   d = date_from_us("02/01/2020");
-  s = date_to_str(gc, d);
+  s = date_to_str(d);
   assert(str_eq(s, "20200201"));
   time_t d1 = date_new(29, 2, 2013);
   time_t d2 = date_new(6, 3, 2013);
@@ -73,11 +72,11 @@ void date_tests(void) {
   assert(date_eq(date_from_us("02/01/2015"),
     date_from_us_sep("02/1/15", '/')));
 
-  DateTm *t = date_tm_now(gc);
-  assert(date_tm_df(date_tm_add(gc, date_tm_add(gc, t, 25), -25), t) == 0);
-  assert(date_tm_df(date_tm_add(gc, date_tm_add(gc, t, 25), -30), t) == -5);
-  assert(date_tm_df(date_tm_add(gc, date_tm_add(gc, t, 25), -20), t) == 5);
+  DateTm *t = date_tm_now();
+  assert(date_tm_df(date_tm_add(date_tm_add(t, 25), -25), t) == 0);
+  assert(date_tm_df(date_tm_add(date_tm_add(t, 25), -30), t) == -5);
+  assert(date_tm_df(date_tm_add(date_tm_add(t, 25), -20), t) == 5);
 
-  gc_free(gc);
   puts("    Finished");
 }
+

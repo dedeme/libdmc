@@ -1,4 +1,4 @@
-// Copyright 20-Jul-2019 ºDeme
+// Copyright 17-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/rnd.h"
@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "dmc/DEFS.h"
+#include "dmc/sys.h"
 #include "dmc/Exc.h"
 #include "dmc/str.h"
 
@@ -27,17 +28,17 @@ struct rnd_Box {
   Arr *a;
 };
 
-Box *rnd_box_new(Gc *gc, Arr *a) {
+Box *rnd_box_new(Arr *a) {
   if (!arr_size(a))
     EXC_ILLEGAL_STATE("Arr 'a' is empty")
 
-  Arr *va = arr_new(gc);
+  Arr *va = arr_new();
   EACH(a, void, e)
     arr_push(va, e);
   _EACH
   arr_shuffle(va);
 
-  Box *this = gc_add(gc, malloc(sizeof(Box)));
+  Box *this = malloc(sizeof(Box));
   this->i = 0;
   this->size = arr_size(va);
   this->a = va;
@@ -52,4 +53,3 @@ void *rnd_box_next(Box *this) {
   }
   return arr_get(this->a, this->i++);
 }
-

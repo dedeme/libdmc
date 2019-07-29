@@ -1,14 +1,15 @@
-// Copyright 20-Jul-2019 ºDeme
+// Copyright 30-May-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
-
-#include "dmc/It.h"
 #include <stdio.h>
+
+#include <gc.h>
 #include "dmc/It.h"
 #include "dmc/Opt.h"
 #include "dmc/str.h"
 #include "dmc/Exc.h"
 #include "dmc/Arr.h"
 #include "dmc/Tp.h"
+#include "dmc/Tp3.h"
 #include "dmc/DEFS.h"
 
 struct it_It {
@@ -17,19 +18,20 @@ struct it_It {
   Opt *(*next)(void *o);
 };
 
-It *it_new(Gc *gc, void *o, Opt *(*next)(void *o)) {
-  It *this = gc_add(gc, malloc(sizeof(It)));
+It *it_new(
+  void *o,
+  Opt *(*next)(void *o)
+) {
+  It *this = MALLOC(It);
   this->o = o;
   this->next = next;
   this->e = next(o);
   return this;
 }
 
-// -------------------------------------------------------------------------- //
-static Opt *empty_next(void *o) { return opt_empty(); }                       //
-// -------------------------------------------------------------------------- //
-It *it_empty (Gc *gc) {
-  return it_new(gc, NULL, (it_Next)empty_next);
+static Opt *empty_next (void *o) { return opt_empty(); }
+It *it_empty (void) {
+  return it_new(opt_empty(), empty_next);
 }
 
 // -------------------------------------------------------------------------- //
@@ -40,21 +42,20 @@ typedef struct {                                                              //
 static Opt *unary_next(it_unary_O *o) {                                       //
   if (o->is_first) {                                                          //
     o->is_first = 0;                                                          //
-    return opt_new(o->e);                                                     //                      //
+    return opt_new(o->e);                                                     //
   }                                                                           //
-  return opt_empty();                                                         //        //
+  return opt_empty();                                                         //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_unary (Gc *gc, void *e) {
-  it_unary_O *o = gc_add(gc, malloc(sizeof(it_unary_O)));
+It *it_unary (void *e) {
+  it_unary_O *o = MALLOC(it_unary_O);
   o->e = e;
   o->is_first = 1;
-  return it_new(gc, o, (it_Next)unary_next);
+  return it_new(o, (it_Next)unary_next);
 }
 
 // -------------------------------------------------------------------------- //
 typedef struct {                                                              //
-  Gc *gc;                                                                     //
   int i;                                                                      //
   int end;                                                                    //
 } it_range_O;                                                                 //
@@ -63,21 +64,20 @@ static Opt *range_next (it_range_O *o) {                                      //
   if (i >= o->end) {                                                          //
     return opt_empty();                                                       //
   }                                                                           //
-  int *r = gc_add(o->gc, malloc(sizeof(int)));                                //
+  int *r = ATOMIC(sizeof(int));                                               //
   *r = i;                                                                     //
   return opt_new(r);                                                          //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_range (Gc *gc, int begin, int end) {
-  it_range_O *o = gc_add(gc, malloc(sizeof(it_range_O)));
-  o->gc = gc;
+It *it_range (int begin, int end) {
+  it_range_O *o = MALLOC(it_range_O);
   o->i = begin;
   o->end = end;
-  return it_new(gc, o, (it_Next)range_next);
+  return it_new(o, (it_Next)range_next);
 }
 
-It *it_range0 (Gc *gc, int end) {
-  return it_range(gc, 0, end);
+It *it_range0 (int end) {
+  return it_range(0, end);
 }
 
 int it_has_next (It *this) {
@@ -98,12 +98,12 @@ void *it_peek (It *this) {
   return opt_get(this->e);
 }
 
-It *it_add(Gc *gc, It *this, void *element) {
-  return it_cat(gc, this, it_unary(gc, element));
+It *it_add(It *this, void *element) {
+  return it_cat(this, it_unary(element));
 }
 
-It *it_add0(Gc *gc, It *this, void *element) {
-  return it_cat(gc, it_unary(gc, element), this);
+It *it_add0(It *this, void *element) {
+  return it_cat(it_unary(element), this);
 }
 
 // -------------------------------------------------------------------------- //
@@ -116,11 +116,11 @@ static Opt *cat_next (it_cat_O *o) {                                          //
     : (it_has_next(o->it2)) ? it_onext(o->it2) : opt_empty();                 //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_cat (Gc *gc, It *this, It *another) {
-  it_cat_O *o = gc_add(gc, malloc(sizeof(it_cat_O)));
+It *it_cat (It *this, It *another) {
+  it_cat_O *o = MALLOC(it_cat_O);
   o->it1 = this;
   o->it2 = another;
-  return it_new(gc, o, (it_Next)cat_next);
+  return it_new(o, (it_Next)cat_next);
 }
 
 // -------------------------------------------------------------------------- //
@@ -137,12 +137,12 @@ static Opt *take_next (it_take_O *o) {                                        //
   else return opt_empty();                                                    //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_take (Gc *gc, It *this, size_t n) {
-  it_take_O *o = gc_add(gc, malloc(sizeof(it_take_O)));
+It *it_take (It *this, size_t n) {
+  it_take_O *o = MALLOC(it_take_O);
   o->it = this;
   o->n = n;
   o->i = 0;
-  return it_new(gc, o, (it_Next)take_next);
+  return it_new(o, (it_Next)take_next);
 }
 
 // -------------------------------------------------------------------------- //
@@ -155,21 +155,21 @@ static Opt *takef_next (it_takef_O *o) {                                      //
     ? it_onext(o->it) : opt_empty();                                          //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_takef (Gc *gc, It *this, int (*predicate)(void *e)) {
-  it_takef_O *o = gc_add(gc, malloc(sizeof(it_takef_O)));
+It *it_takef (It *this, int (*predicate)(void *e)) {
+  it_takef_O *o = MALLOC(it_takef_O);
   o->it = this;
   o->f = predicate;
-  return it_new(gc, o, (it_Next)takef_next);
+  return it_new(o, (it_Next)takef_next);
 }
 
-It *it_drop (Gc *gc, It *this, size_t n) {
+It *it_drop (It *this, size_t n) {
   size_t i = 0;
   while (it_has_next(this) && i++ < n)
     it_next(this);
   return this;
 }
 
-It *it_dropf (Gc *gc, It *this, int (*predicate)(void *e)) {
+It *it_dropf (It *this, int (*predicate)(void *e)) {
   while (it_has_next(this) && predicate(it_peek(this)))
     it_next(this);
   return this;
@@ -189,96 +189,81 @@ static Opt *filter_next (it_filter_O *o) {                                    //
   }                                                                           //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_filter (Gc *gc, It *this, int (*predicate)(void *e)) {
-  it_filter_O *o = gc_add(gc, malloc(sizeof(it_filter_O)));
+It *it_filter (It *this, int (*predicate)(void *e)) {
+  it_filter_O *o = MALLOC(it_filter_O);
   o->it = this;
   o->f = predicate;
-  return it_new(gc, o, (it_Next)filter_next);
+  return it_new(o, (it_Next)filter_next);
 }
 
 // -------------------------------------------------------------------------- //
 typedef struct {                                                              //
-  Gc *gc;                                                                     //
   It *it;                                                                     //
-  void *(*f)(Gc *gc, void *);                                                 //
+  void *(*f)(void *);                                                         //
 } it_map_O;                                                                   //
 static Opt *map_next (it_map_O *o) {                                          //
-  return it_has_next(o->it)                                                   //
-    ? opt_new(o->f(o->gc, it_next(o->it)))                                    //
-    : opt_empty()                                                             //
-  ;                                                                           //
+  return it_has_next(o->it) ? opt_new(o->f(it_next(o->it))) : opt_empty();    //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_map (Gc *gc, It *this, void *(*converter)(Gc *gc, void *e)) {
-  it_map_O *o = gc_add(gc, malloc(sizeof(it_map_O)));
-  o->gc = gc;
+It *it_map (It *this, void *(*converter)(void *e)) {
+  it_map_O *o = MALLOC(it_map_O);
   o->it = this;
   o->f = converter;
-  return it_new(gc, o, (it_Next)map_next);
+  return it_new(o, (it_Next)map_next);
 }
 
 // -------------------------------------------------------------------------- //
 typedef struct {                                                              //
-  Gc *gc;                                                                     //
   It *it;                                                                     //
   int is_first;                                                               //
-  void *(*f1)(Gc *gc, void *);                                                //
-  void *(*f)(Gc *gc, void *);                                                 //
+  void *(*f1)(void *);                                                        //
+  void *(*f)(void *);                                                         //
 } it_map2_O;                                                                  //
 static Opt *map2_next(it_map2_O *o) {                                         //
   if (!it_has_next(o->it)) return opt_empty();                                //
   if (o->is_first) {                                                          //
     o->is_first = 0;                                                          //
-    return opt_new(o->f1(o->gc, it_next(o->it)));                             //
+    return opt_new(o->f1(it_next(o->it)));                                    //
   }                                                                           //
-  return opt_new(o->f(o->gc, it_next(o->it)));                                //
+  return opt_new(o->f(it_next(o->it)));                                       //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_map2 (
-  Gc *gc,
-  It *this,
-  void *(*conv1)(Gc *gc, void *e),
-  void *(*conv2)(Gc *gc, void *e)
-) {
-  it_map2_O *o = gc_add(gc, malloc(sizeof(it_map2_O)));
-  o->gc = gc;
+It *it_map2 (It *this, void *(*conv1)(void *e), void *(*conv2)(void *e)) {
+  it_map2_O *o = MALLOC(it_map2_O);
   o->it = this;
   o->is_first = 1;
   o->f1 = conv1;
   o->f = conv2;
-  return it_new(o->gc, o, (it_Next)map2_next);
+  return it_new(o, (it_Next)map2_next);
 }
 
 // -------------------------------------------------------------------------- //
 typedef struct {                                                              //
-  Gc *gc;                                                                     //
   It *it1;                                                                    //
   It *it2;                                                                    //
 } it_zip_O;                                                                   //
 static Opt *zip_next(it_zip_O *o) {                                           //
   return it_has_next(o->it1) && it_has_next(o->it2)                           //
-    ? opt_new(tp_new(o->gc, it_next(o->it1), it_next(o->it2)))                //
+    ? opt_new(tp_new(it_next(o->it1), it_next(o->it2)))                       //
     : opt_empty();                                                            //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_zip (Gc *gc, It *it1, It *it2) {
-  it_zip_O *o = gc_add(gc, malloc(sizeof(it_zip_O)));
-  o->gc = gc;
+It *it_zip (It *it1, It *it2) {
+  it_zip_O *o = MALLOC(it_zip_O);
   o->it1 = it1;
   o->it2 = it2;
-  return it_new(gc, o, (it_Next)zip_next);
+  return it_new(o, (it_Next)zip_next);
 }
 
 // -------------------------------------------------------------------------- //
 typedef struct {                                                              //
-  Gc *gc;                                                                     //
   It *it1;                                                                    //
   It *it2;                                                                    //
   It *it3;                                                                    //
 } it_zip3_O;                                                                  //
 static Opt *zip3_next(it_zip3_O *o) {                                         //
   return it_has_next(o->it1) && it_has_next(o->it2) && it_has_next(o->it3)    //
-    ? opt_new(tp3_new(o->gc,                                                  //
+    ? opt_new(tp3_new(                                                        //
         it_next(o->it1),                                                      //
         it_next(o->it2),                                                      //
         it_next(o->it3)                                                       //
@@ -286,26 +271,25 @@ static Opt *zip3_next(it_zip3_O *o) {                                         //
     : opt_empty();                                                            //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_zip3 (Gc *gc, It *it1, It *it2, It *it3) {
-  it_zip3_O *o = gc_add(gc, malloc(sizeof(it_zip3_O)));
-  o->gc = gc;
+It *it_zip3 (It *it1, It *it2, It *it3) {
+  it_zip3_O *o = MALLOC(it_zip3_O);
   o->it1 = it1;
   o->it2 = it2;
   o->it3 = it3;
 
-  return it_new(gc, o, (it_Next)zip3_next);
+  return it_new(o, (it_Next)zip3_next);
 }
 
-It *it_reverse (Gc *gc, It *this) {
-  Arr *a = arr_from_it(gc, this);
+It *it_reverse (It *this) {
+  Arr *a = arr_from_it(this);
   arr_reverse(a);
-  return arr_to_it(gc, a);
+  return arr_to_it(a);
 }
 
-It *it_sort (Gc *gc, It *this, int (*comparator)(void *, void *)) {
-  Arr *a = arr_from_it(gc, this);
+It *it_sort (It *this, int (*comparator)(void *, void *)) {
+  Arr *a = arr_from_it(this);
   arr_sort(a, comparator);
-  return arr_to_it(gc, a);
+  return arr_to_it(a);
 }
 
 void it_each (It *this, void (*f)(void *e)) {
@@ -377,11 +361,20 @@ Opt *it_find (It *this, int (*predicate)(void *e)) {
   return opt_empty();
 }
 
-Arr *it_to (Gc *gc, It *this) {
-  return arr_from_it (gc, this);
+void *it_ofind (It *this, void *option, int (*predicate)(void *e)) {
+  while(it_has_next(this)) {
+    void *next = it_next(this);
+    if (predicate(next)) {
+      return opt_new(next);
+    }
+  }
+  return option;
 }
 
-It *it_from (Gc *gc, Arr *a) {
-  return arr_to_it(gc, a);
+Arr *it_to (It *this) {
+  return arr_from_it (this);
 }
 
+It *it_from (Arr *a) {
+  return arr_to_it(a);
+}

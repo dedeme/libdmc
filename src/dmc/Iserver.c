@@ -1,8 +1,7 @@
-// Copyright 22-Jul-2019 ºDeme
+// Copyright 01-May-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Iserver.h"
-#include "dmc/std.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -19,8 +18,8 @@ struct iserver_Rq {
 };
 
 // msg and host are Opt[char]
-static IserverRq *iserverRq_new (Gc *gc, int sock, Opt *msg, Opt *host) {
-  IserverRq *this = gc_add(gc, malloc(sizeof(IserverRq)));
+static IserverRq *iserverRq_new (int sock, Opt *msg, Opt *host) {
+  IserverRq *this = MALLOC(IserverRq);
   this->sock = sock;
   this->msg = msg;
   this->host = host;
@@ -45,7 +44,7 @@ char *iserverRq_host (IserverRq *this) {
 
 char *iserverRq_write (IserverRq *this, char *response) {
   if (this->sock < 0 || opt_is_empty(this->msg))
-    return "No request has been read";
+    EXC_ILLEGAL_STATE("No request has been read")
 
   int sock = this->sock;
   char *p = response;
@@ -53,7 +52,7 @@ char *iserverRq_write (IserverRq *this, char *response) {
   int nbytes;
   while ((nbytes = write(sock, p, len)) != 0) {
     if (nbytes < 0 && errno == EINTR) {
-      return "Error 'EINTR' writing response";
+      return str_f("Error '%s' writing response", strerror(errno));
     }
     p += nbytes;
     len -= nbytes;
@@ -68,21 +67,21 @@ struct iserver_Iserver {
   fd_set *active_fd_set;
 };
 
-Iserver *iserver_new (Gc *gc, int port) {
+Iserver *iserver_new (int port) {
   int sock;
-  struct sockaddr_in name;
+  struct sockaddr_in *name = MALLOC(struct sockaddr_in);
 
   sock = socket(PF_INET, SOCK_STREAM, 0);
   if (sock < 0)
     EXC_IO("Fail creating socket");
 
-  name.sin_family = AF_INET;
-  name.sin_port = htons(port);
-  name.sin_addr.s_addr = htonl(INADDR_ANY);
-  if (bind(sock, (struct sockaddr *) &name, sizeof(name)) < 0)
+  name->sin_family = AF_INET;
+  name->sin_port = htons(port);
+  name->sin_addr.s_addr = htonl(INADDR_ANY);
+  if (bind(sock, (struct sockaddr *) name, sizeof(*name)) < 0)
     EXC_IO("Fail binding socket");
 
-  fd_set *active_fd_set = gc_add(gc, malloc(sizeof(fd_set)));
+  fd_set *active_fd_set = MALLOC(fd_set);
 
   if (listen (sock, 1) < 0)
     EXC_IO("Fail listenning sock")
@@ -90,13 +89,13 @@ Iserver *iserver_new (Gc *gc, int port) {
   FD_ZERO (active_fd_set);
   FD_SET (sock, active_fd_set);
 
-  Iserver *this = gc_add(gc, malloc(sizeof(Iserver)));
+  Iserver *this = MALLOC(Iserver);
   this->sock = sock;
   this->active_fd_set = active_fd_set;
   return this;
 }
 
-IserverRq *iserver_read (Gc *gc, Iserver *this) {
+IserverRq *iserver_read (Iserver *this) {
   int sock = this->sock;
   fd_set *read_fd_set = this->active_fd_set;
 
@@ -106,11 +105,11 @@ IserverRq *iserver_read (Gc *gc, Iserver *this) {
   int rs = select (FD_SETSIZE, read_fd_set, NULL, NULL, &timeout);
 
   if (rs < 0) {
-    return iserverRq_new(gc, -1, opt_new("Fail in server select"), opt_empty());
+    return iserverRq_new(-1, opt_new("Fail in server select"), opt_empty());
   }
   if (!FD_ISSET(sock, read_fd_set)) {
     FD_SET (sock, read_fd_set);
-    return iserverRq_new(gc, 0, opt_empty(), opt_empty());
+    return iserverRq_new(0, opt_empty(), opt_empty());
   }
 
   struct sockaddr_in clientname;
@@ -118,12 +117,11 @@ IserverRq *iserver_read (Gc *gc, Iserver *this) {
   int new = accept(sock, (struct sockaddr *) &clientname, &size);
   if (new < 0) {
     return iserverRq_new(
-      gc, -1, opt_new("Fail accepting connection"), opt_empty()
+      -1, opt_new("Fail accepting connection"), opt_empty()
     );
   }
 
-  Gc *gcl = gc_new();
-  Buf *bf = buf_new(gcl);
+  Buf *bf = buf_new();
   int SIZE = 8192;
   char buffer[SIZE];
   int nbytes;
@@ -132,9 +130,8 @@ IserverRq *iserver_read (Gc *gc, Iserver *this) {
     if (nbytes < 0) {
       close(new);
       FD_CLR (new, read_fd_set);
-      gc_free(gcl);
       return iserverRq_new(
-        gc, -1, opt_new("Fail reading client connection"), opt_empty()
+        -1, opt_new("Fail reading client connection"), opt_empty()
       );
     }
 
@@ -144,13 +141,10 @@ IserverRq *iserver_read (Gc *gc, Iserver *this) {
   }
 
   FD_CLR (new, read_fd_set);
-  IserverRq *r =  iserverRq_new(gc,
-    new, opt_new(buf_to_str(gc, bf)),
-    opt_new(str_new(gc, inet_ntoa(clientname.sin_addr)))
+  return iserverRq_new(
+    new, opt_new(buf_to_str(bf)),
+    opt_new(str_new(inet_ntoa(clientname.sin_addr)))
   );
-
-  gc_free(gcl);
-  return r;
 }
 
 void iserver_close (Iserver *this) {
@@ -158,5 +152,4 @@ void iserver_close (Iserver *this) {
     EXC_IO("Fail closing socket");
   FD_CLR (this->sock, this->active_fd_set);
 }
-
 

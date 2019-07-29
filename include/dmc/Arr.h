@@ -1,12 +1,13 @@
-// Copyright 20-Jul-2019 ºDeme
+// Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Array structure.
+/// Array structure.<p>
+/// This structure is owner of its elements and frees them with 'arr_free".
 
 #ifndef DMC_ARR_H
   #define DMC_ARR_H
 
-#include "Gc.h"
+#include "DEFS.h"
 
 typedef struct js_Js Js;
 
@@ -15,14 +16,14 @@ typedef struct it_It It;
 ///
 typedef struct arr_Arr Arr;
 
-/// Creates a new Array with a buffer of 15 elements.
-Arr *arr_new (Gc *gc);
+/// Creates a new Array with buffer size of 15 elements.
+Arr *arr_new (void);
 
-/// 'sz' must be > 0.
-Arr *arr_new_bf (Gc *gc, int sz);
+/// buffer must be > 0.
+Arr *arr_bf_new (int buffer);
 
 /// Returns a new array with elements of 'this'.
-Arr *arr_copy (Gc *gc, Arr *this);
+Arr *arr_copy (Arr *this);
 
 ///
 int arr_size (Arr *this);
@@ -37,7 +38,7 @@ void **arr_start (Arr *this);
 /// 'arr_end' does not point to a valid element.
 void **arr_end (Arr *this);
 
-/// Adds an element at the end of 'this'.
+/// Adds an element at the end of 'this'. 'e' will be freed by 'this'.
 void arr_push (Arr *this, void *e);
 
 /// Returns and removes the last element.
@@ -55,10 +56,10 @@ void arr_insert (Arr *this, int ix, void *e);
 /// Removes an element at position ix. Buffer size of 'this' does not change.
 void arr_remove (Arr *this, int ix);
 
-/// Adds elements of 'other' to 'this'.
+/// Adds pointer to elements of 'other' to 'this'.
 void arr_cat (Arr *this, Arr *other);
 
-/// Inserts elements of 'other' at 'ix'
+/// Inserts pointer to elements of 'other' at 'ix'
 void arr_insert_arr (Arr *this, int ix, Arr *other);
 
 /// Removes elements between [begin-end). Buffer size of 'this' does not change.
@@ -68,7 +69,7 @@ void arr_remove_range (Arr *this, int begin, int end);
 void arr_clear (Arr *this);
 
 /// Removes every element of 'this'.
-void arr_clear_bf (Arr *this, int sz);
+void arr_bf_clear (Arr *this, int buffer);
 
 /// Reverses elements of 'this'
 void arr_reverse (Arr *this);
@@ -89,15 +90,15 @@ int arr_index (Arr *this, int (*pred)(void *e));
 void arr_filter (Arr *this, int (*pred)(void *e));
 
 /// Creates an iterator over 'this'
-It *arr_to_it (Gc *gc, Arr *this);
+It *arr_to_it (Arr *this);
 
 /// Creates an Arr from 'it'
-Arr *arr_from_it (Gc *gc, It *it);
+Arr *arr_from_it (It *it);
 
 /// Returns a Js from an element of 'this'
-Js *arr_to_js (Gc *gc, Arr *this, Js *(*to)(Gc *gc, void *e));
+Js *arr_to_js (Arr *this, Js *(*to)(void *e));
 
 /// Parses a Js to an element of 'this'.<br>
-Arr *arr_from_js (Gc *gc, Js *js, void *(*from)(Gc *gc, Js *jse));
+Arr *arr_from_js (Js *js, void *(*from)(Js *jse));
 
 #endif

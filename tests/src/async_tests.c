@@ -1,4 +1,4 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 29-Apr-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "async_tests.h"
@@ -7,56 +7,40 @@
 #include "dmc/date.h"
 #include "dmc/rnd.h"
 
-struct Client {
-  Gc *gc;
-  int n;
-};
-static struct Client *client_new (int n) {
-  Gc *gc = gc_new();
-  struct Client *this = gc_add(gc, malloc(sizeof(struct Client)));
-  this->gc = gc;
-  this->n = n;
-  return this;
-}
-
 static void barbery (void) {
-  Gc *gc = gc_new();
-
-  int TIME_MAX_CLIENT_CREATE = 2000; // millis
+  int TIME_MAX_CLIENT_CREATE = 3000; // millis
   int TIME_MIN_CLIENT_CREATE = 200; // millis
   int TIME_HAIR_CUT = 1800; // millis
-  int TIME_OPEN = 15; // seconds
+  int TIME_OPEN = 120; // seconds
 
   int is_closed = 1;
   int is_occupy = 0;
 
-  AsyncActor *actor = asyncActor_new(gc, 50);
+  AsyncActor *actor = asyncActor_new(50);
 
   int corder = 1;
   int SIT_C = 5;
-  // Opt [struct Client]
-  Opt *client_sits[SIT_C];
+  int client_sits[SIT_C];
   int order_sits[SIT_C];
-  // Opt [struct Client]
-  Opt **cp = client_sits;
+  int *cp = client_sits;
   int *op = order_sits;
   REPEAT(SIT_C)
-    *cp++ = opt_empty();
+    *cp++ = 0;
     *op++ = 0;
   _REPEAT
 
   int barbery_is_empty (void) {
-    Opt **cp = client_sits;
+    int *cp = client_sits;
     REPEAT(SIT_C)
-      if (opt_is_empty(*cp++)) return 1;
+      if (*cp++) return 0;
     _REPEAT
-    return 0;
+    return 1;
   }
 
-  int get_a_sit (struct Client *client) {
+  int get_a_sit (int *client) {
     RANGE0(i, SIT_C)
-      if (opt_is_empty(client_sits[i])) {
-        client_sits[i] = opt_new(client);
+      if (!client_sits[i]) {
+        client_sits[i] = *client;
         order_sits[i] = corder++;
         return 1;
       };
@@ -64,12 +48,12 @@ static void barbery (void) {
     return 0;
   }
 
-  // Opt[Client]
-  Opt *get_client (void) {
+  // Opt[int]
+  Opt *get_client () {
     int sel = -1;
     int sel_order = 0;
     RANGE0(i, SIT_C)
-      if (opt_is_full(client_sits[i])) {
+      if (client_sits[i]) {
         if (sel < 0 || order_sits[i] < sel_order) {
           sel = i;
           sel_order = order_sits[i];
@@ -80,25 +64,21 @@ static void barbery (void) {
       return opt_empty();
     }
 
-    Opt *r = client_sits[sel];
+    int *r = ATOMIC(sizeof(int));
+    *r = client_sits[sel];
 
-    client_sits[sel] = opt_empty();
+    client_sits[sel] = 0;
 
-    return r;
+    return opt_new(r);
   }
 
-  char *sits_to_str (Gc *gc) {
-    Gc *gcl = gc_new();
+  char *sits_to_str (void) {
     // Arr[char]
-    Arr *cs = arr_new(gcl);
+    Arr *cs = arr_new();
     RANGE0(i, SIT_C)
-      struct Client *cl = opt_nget(client_sits[i]);
-      arr_push(cs, str_f(gcl, "%d", cl ? cl->n : 0));
+      arr_push(cs, str_f("%d", client_sits[i]));
     _RANGE
-
-    char *r = str_f(gc, "[%s]", str_join(gcl, cs, ", "));
-    gc_free(gcl);
-    return r;
+    return str_f("[%s]", str_join(cs, ", "));
   }
 
   time_t clock = 0;
@@ -110,7 +90,6 @@ static void barbery (void) {
   int is_time_out (void) {
     if (!clock)
       EXC_ILLEGAL_STATE("Clock is 0")
-
     return date_now() - clock > TIME_OPEN;
   }
 
@@ -125,35 +104,29 @@ static void barbery (void) {
 
   void watch_sites(void *(hair_cut)(int *c)) {
     bmsg("Watching for clients");
-    struct Client *client = opt_nget(get_client());
-    if (is_time_out()){
-      is_closed = 1;
-      if (!client) {
+    // Opt[int]
+    Opt *client = get_client();
+    if (opt_is_empty(client)) {
+      if (is_time_out()) {
+        is_closed = 1;
         asyncActor_end(actor);
         bmsg("No clientes and time out: Barbery closed");
-        return;
+      } else {
+        is_occupy = 0;
+        bmsg("No clients: sleeping");
       }
-    }
-    if (!client) {
-      is_occupy = 0;
-      bmsg("No clients: sleeping");
       return;
     }
-    Gc *gc = gc_new();
     bmsg("Taking a client");
-    puts(sits_to_str(gc));
+    puts(sits_to_str());
     is_occupy = 1;
-    async_run_detached((FPROC)hair_cut, client);
-    gc_free(gc);
+    async_thread((FPROC)hair_cut, opt_get(client));
   }
 
-  void hair_cut (struct Client *client) {
-    Gc *gc = gc_new();
-    bmsg(str_f(gc, "Start cutting hair to %d", client->n));
+  void hair_cut (int *client) {
+    bmsg(str_f("Start cutting hair to %d", *client));
     sys_sleep(TIME_HAIR_CUT);
-    bmsg(str_f(gc, "End cutting hair to %d", client->n));
-    gc_free(client->gc);
-    gc_free(gc);
+    bmsg(str_f("End cutting hair to %d", *client));
     asyncActor_run(actor, (FPROC)watch_sites, hair_cut);
   }
 
@@ -163,44 +136,41 @@ static void barbery (void) {
 
   int clientc = 1;
 
-  void cmsg(struct Client *client, char *msg) {
-    printf("Client %d: %s\n", client->n, msg);
+  void cmsg(int *client, char *msg) {
+    printf("Client %d: %s\n", *client, msg);
   }
 
-  struct Client *mk_client () {
-    struct Client *this = client_new(clientc++);
+  int *mk_client () {
+    int *this = ATOMIC(sizeof(int));
+    *this = clientc++;
     cmsg(this, "Created");
     return this;
   }
 
-  void client_run (struct Client *client) {
+  void client_run (int *client) {
     if (is_closed) {
       cmsg(client, "Go away because barbery is closed");
-      gc_free(client->gc);
       return;
     }
 
-    Gc *gc = gc_new();
     if (barbery_is_empty()) {
       if (is_occupy) {
         get_a_sit(client);
         cmsg(client, "Take a sit");
-        puts(sits_to_str(gc));
+        puts(sits_to_str());
       } else {
         cmsg(client, "Calling to barber");
         is_occupy = 1;
-        async_run_detached((FPROC)hair_cut, client);
+        async_thread((FPROC)hair_cut, client);
       }
     } else {
       if (get_a_sit(client)) {
         cmsg(client, "Take a sit");
-        puts(sits_to_str(gc));
+        puts(sits_to_str());
       } else {
         cmsg(client, "Go away because there is no sit");
-        gc_free(client->gc);
       }
     }
-    gc_free(gc);
   }
 
   clock_init();
@@ -220,21 +190,15 @@ static void barbery (void) {
     --delay;
   }
 
-  AsyncTimer *timer_clients = asyncTimer_new(gc, 50);
-  asyncTimer_run(timer_clients, create_clients, NULL);
+  AsyncTimer *timer_clients = asyncTimer_new(create_clients, NULL, 50);
 
-  AsyncTimer *timer_clock = asyncTimer_new(gc, 50);
-
-  void end_clients (void *null) {
-    sys_sleep(3000);
-    asyncTimer_end(timer_clients);
-  }
+  AsyncTimer *timer_clock = NULL;
 
   void timer_clock_end (void *null_value) {
     if (is_time_out()) {
-      async_run_detached(end_clients, NULL);
+      puts("Time out");
+      asyncTimer_end(timer_clients);
       barber_end();
-      puts("Barbery closed");
       asyncTimer_end(timer_clock);
     }
   }
@@ -243,24 +207,20 @@ static void barbery (void) {
     asyncActor_run(actor, timer_clock_end, NULL);
   }
 
-  asyncTimer_run(timer_clock, clock_control, NULL);
+  timer_clock = asyncTimer_new(clock_control, NULL, 50);
 
   asyncActor_join(actor);
-
-  gc_free(gc);
 }
 
 void async_tests(void) {
   puts("Async tests");
-  Gc *gc = gc_new();
-
 /*
   void fn(char *tx) { puts(tx); }
-  pthread_t *thr = async_new(gc);
-  async_run(thr, (FPROC)fn, "Hello");
+  pthread_t *thr = async_thread((FPROC)fn, "Hello");
   async_join(thr);
 
-  AsyncActor *ac = asyncActor_new(gc, 50);
+
+  AsyncActor *ac = asyncActor_new(50);
   void task (void *null) {
     puts("--------");
     RANGE0(i, 10)
@@ -268,7 +228,7 @@ void async_tests(void) {
       sys_sleep(10);
     _RANGE
   }
-  void end (void *th) {
+  void end (void *null) {
     asyncActor_end(ac);
   }
   asyncActor_run(ac, task, NULL);
@@ -284,7 +244,5 @@ void async_tests(void) {
 
   if (0) barbery();
 
-  gc_free(gc);
   puts("    Finished");
 }
-

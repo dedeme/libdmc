@@ -1,16 +1,21 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Functions using external programs.
+/// Functions using external programs
 
 #ifndef DMC_EXT_H
   #define DMC_EXT_H
 
-#include "Gc.h"
+#include "Schd.h"
 
 /// ext_wget calls "wget -q -O - <i>url</i>" and returns the text read.<br>
 /// If the reading fails, it returns an empty string.
-char *ext_wget(Gc *gc, char *url);
+char *ext_wget(char *url);
+
+/// ext_wget calls asynchronically "wget -q -O - <i>url</i>" and returns the
+/// text read in 'fn'.<br>
+/// If the reading fails, it returns an empty string.
+void ext_awget(Schd *sc, void (*fn)(char *html), char *url);
 
 /// ext_zenity_entry reads a text using GUI. It calls:
 ///   zenity --entry --title=<i>title</i> --text=<i>prompt</i>
@@ -18,7 +23,7 @@ char *ext_wget(Gc *gc, char *url);
 /// If user clicks on cancel, it returns an empty string.<br>
 /// It is posible set a default text adding in promp:
 ///   \" --entry-text \"<i>text_to_add</i>
-char *ext_zenity_entry(Gc *gc, char *title, char *prompt);
+char *ext_zenity_entry(char *title, char *prompt);
 
 /// ext_zenity_msg shows a message box. It calls:
 ///   zenity --notification --window-icon=<i>type</i> --text=<i>text</i>

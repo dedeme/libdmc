@@ -1,32 +1,30 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "darr_tests.h"
+#include "iarr_tests.h"
 #include <assert.h>
 #include "dmc/Darr.h"
 
 void darr_tests(void) {
   puts("Darr tests");
-  Gc *gc = gc_new();
-
-  Darr *ia = darr_new_bf(gc, 1);
+  Darr *ia = darr_bf_new(1);
 
   assert(darr_size(ia) == 0);
 
-  Js *js = darr_to_js(gc, ia);
-  Darr *ia2 = darr_from_js(gc, js);
+  Js *js = darr_to_js(ia);
+  Darr *ia2 = darr_from_js(js);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_copy(gc, ia);
+  ia2 = darr_copy(ia);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_left(gc, ia, 0);
+  ia2 = darr_left(ia, 0);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_right(gc, ia, 0);
+  ia2 = darr_right(ia, 0);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_sub(gc, ia, 0, 0);
+  ia2 = darr_sub(ia, 0, 0);
   assert(darr_eq(ia, ia2, 0.0001));
 
   darr_push(ia, 1.);
@@ -35,33 +33,33 @@ void darr_tests(void) {
   assert(darr_get(ia, 1) == 2);
   assert(darr_size(ia) == 2);
 
-  js = darr_to_js(gc, ia);
-  ia2 = darr_from_js(gc, js);
+  js = darr_to_js(ia);
+  ia2 = darr_from_js(js);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_copy(gc, ia);
+  ia2 = darr_copy(ia);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_left(gc, ia, 1);
+  ia2 = darr_left(ia, 1);
   assert(darr_get(ia2, 0) == 1);
   assert(darr_size(ia2) == 1);
 
-  ia2 = darr_right(gc, ia, 1);
+  ia2 = darr_right(ia, 1);
   assert(darr_get(ia2, 0) == 2);
   assert(darr_size(ia2) == 1);
 
-  ia2 = darr_sub(gc, ia, 0, 2);
+  ia2 = darr_sub(ia, 0, 2);
   assert(darr_eq(ia, ia2, 0.0001));
 
-  ia2 = darr_sub(gc, ia, 0, 1);
+  ia2 = darr_sub(ia, 0, 1);
   assert(darr_get(ia2, 0) == 1);
   assert(darr_size(ia2) == 1);
 
-  ia2 = darr_sub(gc, ia, 1, 2);
+  ia2 = darr_sub(ia, 1, 2);
   assert(darr_get(ia2, 0) == 2);
   assert(darr_size(ia2) == 1);
 
-  ia2 = darr_new(gc);
+  ia2 = darr_new();
   darr_cat(ia, ia2);
   assert(darr_get(ia, 0) == 1);
   assert(darr_get(ia, 1) == 2);
@@ -120,16 +118,6 @@ void darr_tests(void) {
   _EACH
   assert(sum == 511);
 
-  sum = 0;
-  int count = 0;
-  int sz = darr_size(ia) - 1;
-  DEACHR_IX(ia, n, i)
-    sum += n;
-    count += i;
-  _EACH
-  assert(sum == 511);
-  assert(count == (sz + sz * sz) / 2);
-
   darr_remove_range(ia, 5, 8);
   darr_sort(ia);
   darr_reverse(ia);
@@ -147,12 +135,10 @@ void darr_tests(void) {
   assert(darr_get(ia, darr_size(ia) - 4) == 101);
   assert(darr_get(ia, darr_size(ia) - 5) == 101);
 
-  darr_clear(ia);
+  ia = darr_new();
   darr_sort(ia);
   darr_reverse(ia);
   assert(darr_size(ia) == 0);
 
-  gc_free(gc);
   puts("    Finished");
 }
-

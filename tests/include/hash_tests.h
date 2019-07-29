@@ -1,14 +1,11 @@
-// Copyright 20-Jul-2019 ºDeme
+// Copyright 23-Apr-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Tests entry
-
-#ifndef TESTS_H
-  #define TESTS_H
+#ifndef HASH_TESTS_H
+  #define HASH_TESTS_H
 
 #include "dmc/std.h"
 
 ///
-int main ();
-
+void hash_tests ();
 #endif

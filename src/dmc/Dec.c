@@ -1,4 +1,4 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Dec.h"
@@ -26,8 +26,8 @@ double _dec_round(double dbl) {
   :         0.000000000000001;
 }
 
-Dec *dec_new(Gc *gc, double n, int scale) {
-  Dec *this = gc_add(gc, malloc(sizeof(Dec)));
+Dec *dec_new(double n, int scale) {
+  Dec *this = MALLOC(Dec);
   this->n = n >= 0 ? n + _dec_round(n) : n - _dec_round(n);
   this->scale = scale < 0 ? 0 : scale > 10 ? 10 : scale;
   int mul = 1;
@@ -47,16 +47,13 @@ int dec_scale(Dec *this) {
   return this->scale;
 }
 
-char *dec_to_str(Gc *gc, Dec *this) {
-  Gc *gcl = gc_new();
+char *dec_to_str(Dec *this) {
   double n = this->n;
-  char *scale = str_f(gcl, "%d", this->scale);
-  char *r = str_f(gcl, str_cat(gcl, "%.", scale, "f", NULL), n);
+  char *scale = str_f("%d", this->scale);
+  char *r = str_f(str_cat("%.", scale, "f", NULL), n);
   if (*r == '-' && dec_eq(n, 0.0)) {
-    r = str_right(gcl, r, 1);
+    r = str_right(r, 1);
   }
-  r = str_new(gc, r);
-  gc_free(gcl);
   return r;
 }
 
@@ -86,15 +83,12 @@ int dec_digits(const char *s) {
   return 1;
 }
 
-char *dec_regularize_iso(Gc *gc, char *s) {
-  Gc *gcl = gc_new();
-  char *r = str_creplace(gc, str_replace(gcl, s, ".", ""), ',', '.');
-  gc_free(gcl);
-  return r;
+char *dec_regularize_iso(char *s) {
+  return str_creplace(str_replace(s, ".", ""), ',', '.');
 }
 
-char *dec_regularize_us(Gc *gc, char *s) {
-  return str_replace(gc, s, ",", "");
+char *dec_regularize_us(char *s) {
+  return str_replace(s, ",", "");
 }
 
 int dec_number(char *s) {
@@ -120,23 +114,19 @@ int dec_number(char *s) {
   return 1;
 }
 
-Js *dec_to_js(Gc *gc, Dec *this) {
-  Gc *gcl = gc_new();
-  Arr *a = arr_new(gcl);
-  arr_push(a, js_wd(gcl, this->n));
-  arr_push(a, js_wi(gcl, this->scale));
-  Js *r = js_wa(gc, a);
-  gc_free(gcl);
+Js *dec_to_js(Dec *this) {
+  Arr *a = arr_new();
+  arr_push(a, js_wd(this->n));
+  arr_push(a, js_wi(this->scale));
+  Js *r = js_wa(a);
   return r;
 }
 
-Dec *dec_from_js(Gc *gc, Js *js) {
-  Gc *gcl = gc_new();
-  Dec *this = gc_add(gc, malloc(sizeof(Dec)));
-  Arr *a = js_ra(gcl, js);
+Dec *dec_from_js(Js *js) {
+  Dec *this = MALLOC(Dec);
+  Arr *a = js_ra(js);
   this->n = js_rd(arr_get(a, 0));
   this->scale = js_ri(arr_get(a, 1));
-  gc_free(gcl);
   return this;
 }
 

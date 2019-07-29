@@ -1,9 +1,9 @@
-// Copyright 20-Jul-2019 ºDeme
+// Copyright 16-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Buf.h"
-#include <string.h>
-#include "dmc/str.h"
+#include "dmc/std.h"
+#include "string.h"
 
 struct buf_Buf{
   char *str;
@@ -11,14 +11,15 @@ struct buf_Buf{
   int size;
 };
 
-Buf *buf_new(Gc *gc) {
-  return buf_bf_new(gc, 250);
+Buf *buf_new(void) {
+  return buf_bf_new(151);
 }
 
-Buf *buf_bf_new(Gc *gc, int sz) {
-  Buf *this = gc_add_bf(gc, malloc(sizeof(Buf)));
-  this->size = sz - 1;
-  this->str = calloc(1, sz);
+Buf *buf_bf_new(int buffer_size) {
+  Buf *this = MALLOC(Buf);
+  this->size = buffer_size - 1;
+  this->str = ATOMIC(buffer_size);
+  memset(this->str, 0, buffer_size);
   this->length = 0;
   return this;
 }
@@ -38,10 +39,10 @@ void buf_add_buf (Buf *this, char *data, int length) {
           this->size += this->size;
       }
       int memsize = this->size + 1;
-      char *s = calloc(1, memsize);
-      memcpy(s, this->str, this->length);
-      free(this->str);
-      this->str = s;
+      char *newstr = ATOMIC(memsize);
+      memset(newstr, 0, memsize);
+      memcpy(newstr, this->str, this->length);
+      this->str = newstr;
   }
   memcpy(this->str + this->length, data, length);
   this->length = ixend;
@@ -55,8 +56,8 @@ void buf_cadd (Buf *this, char data) {
   buf_add_buf(this, &data, 1);
 }
 
-char *buf_to_str(Gc *gc, Buf *this) {
-  return str_new(gc, this->str);
+char *buf_to_str (Buf *this) {
+  return str_new(this->str);
 }
 
 void buf_reset(Buf *this) {

@@ -1,12 +1,13 @@
-// Copyright 21-Jul-2019 ºDeme
+// Copyright 16-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Structure for working with bytes. Example:
-///   Bytes *bs = bytes_new(gc);
+///   Bytes *bs = bytes_new();
 ///   const unsigned char bss[] = {0, 23, 116, 225};
 ///   bytes_add_bytes(bs, bss, 4);
-///   char b41 = b41_encodeBytes(gc, bs);
+///   char b41 = b41_encodeBytes(bs);
 ///   assert(!strcmp("RRoixx", b41));
+///   bytes_free(bs);
 
 #ifndef DMC_BYTES_H
   #define DMC_BYTES_H
@@ -17,16 +18,16 @@
 typedef struct bytes_Bytes Bytes;
 
 ///
-Bytes *bytes_new(Gc *gc);
+Bytes *bytes_new(void);
 
 ///
-Bytes *bytes_new_bf(Gc *gc, int length);
+Bytes *bytes_bf_new(int length);
 
 /// Returns a new allocated 'Bytes' whitch is copy of 'bs'
-Bytes *bytes_from_bytes(Gc *gc, unsigned char *bs, int length);
+Bytes *bytes_from_bytes(unsigned char *bs, int length);
 
 /// Returns a 'Bytes' whitch is copy of 's' without the ending zero.
-Bytes *bytes_from_str(Gc *gc, char *s);
+Bytes *bytes_from_str(char *s);
 
 ///
 unsigned char *bytes_bs(Bytes *this);
@@ -44,9 +45,9 @@ void bytes_add(Bytes *this, Bytes *another);
 void bytes_add_str(Bytes *this, char *s);
 
 ///
-Js *bytes_to_js(Gc *gc, Bytes *this);
+Js *bytes_to_js(Bytes *this);
 
 ///
-Bytes *bytes_from_js(Gc *gc, Js *js);
+Bytes *bytes_from_js(Js *js);
 
 #endif
