@@ -34,11 +34,6 @@ pthread_t *async_thread0 (void (*fn)(void));
 ///   async_thread_detached((FPROC)fn, "Hello");
 void async_thread_detached (void (*fn)(void *), void *value);
 
-/// Launch 'fn' in a new thread. Example of use:
-///   void fn(char *tx) { puts("Here"); }
-///   async_thread_detached0(fn);
-void async_thread_detached0 (void (*fn)(void));
-
 /// Wait until thr finishes
 void async_join (pthread_t *thr);
 
@@ -54,6 +49,10 @@ void asyncActor_run (AsyncActor *this, void (*fn)(void *), void *value);
 /// Executes 'fn(value)' synchronicaly. This function stops the program
 /// until 'fn' is finished.
 void asyncActor_wait (AsyncActor *this, void (*fn)(void *), void *value);
+
+/// Executes 'fn(value)' synchronicaly. This function stops the program
+/// until 'fn' is finished.
+void asyncActor_wait0 (AsyncActor *this, void (*fn)(void));
 
 /// Finalizes 'this'. 'this' also will finish is pendant jobs.
 void asyncActor_end (AsyncActor *this);

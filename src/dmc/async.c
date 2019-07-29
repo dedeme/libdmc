@@ -55,15 +55,6 @@ void async_thread_detached (void (*fn)(void *), void *value) {
   pthread_create(thr, &attr, (FCOPY)async_thread_run, data);
 }
 
-void async_thread_detached0 (void (*fn)(void)) {
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
-  pthread_t *thr = MALLOC(pthread_t);
-  pthread_create(thr, &attr, (FCOPY)async_thread_run0, fn);
-}
-
 /// Wait until thr finishes
 void async_join (pthread_t *thr) {
   pthread_join(*thr, NULL);
@@ -164,6 +155,11 @@ void asyncActor_wait (AsyncActor *this, void (*fn)(void *), void *value) {
       sys_sleep(50);
     }
   }
+}
+
+void asyncActor_wait0 (AsyncActor *this, void (*fn)(void)) {
+  void fn2 (void *null) { fn(); }
+  asyncActor_wait(this, fn2, NULL);
 }
 
 void asyncActor_end (AsyncActor *this) {
