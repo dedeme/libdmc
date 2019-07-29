@@ -214,6 +214,17 @@ void darr_remove_range(Darr *this, int begin, int end) {
   this->endbf = left->endbf;
 }
 
+void darr_clear (Darr *this) {
+  darr_bf_clear(this, 15);
+}
+
+void darr_bf_clear (Darr *this, int buffer) {
+  double *es = ATOMIC(buffer * sizeof(double));
+  this->es = es;
+  this->end = es;
+  this->endbf = es + buffer;
+}
+
 void darr_reverse(Darr *this) {
   double *p = this->es;
   double *end = this->end - 1;

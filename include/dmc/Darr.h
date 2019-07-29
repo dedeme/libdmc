@@ -65,6 +65,12 @@ void darr_insert_arr(Darr *this, int ix, Darr *other);
 /// If begin or end are < 0 then is changed to 'darr_size - itsValue'
 void darr_remove_range(Darr *this, int begin, int end);
 
+/// Removes every element of 'this'. Buffer size is equals to 15.
+void darr_clear (Darr *this);
+
+/// Removes every element of 'this'.
+void darr_bf_clear (Darr *this, int buffer);
+
 ///
 void darr_reverse(Darr *this);
 

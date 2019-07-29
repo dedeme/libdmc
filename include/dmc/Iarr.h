@@ -65,6 +65,12 @@ void iarr_insert_arr(Iarr *this, int ix, Iarr *other);
 /// If begin or end are < 0 then is changed to 'iarr_size - itsValue'
 void iarr_remove_range(Iarr *this, int begin, int end);
 
+/// Removes every element of 'this'. Buffer size is equals to 15.
+void iarr_clear (Iarr *this);
+
+/// Removes every element of 'this'.
+void iarr_bf_clear (Iarr *this, int buffer);
+
 ///
 void iarr_reverse(Iarr *this);
 

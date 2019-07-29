@@ -230,6 +230,17 @@ void iarr_remove_range(Iarr *this, int begin, int end) {
   this->endbf = left->endbf;
 }
 
+void iarr_clear (Iarr *this) {
+  iarr_bf_clear(this, 15);
+}
+
+void iarr_bf_clear (Iarr *this, int buffer) {
+  int *es = ATOMIC(buffer * sizeof(int));
+  this->es = es;
+  this->end = es;
+  this->endbf = es + buffer;
+}
+
 void iarr_reverse(Iarr *this) {
   int *p = this->es;
   int *end = this->end - 1;
