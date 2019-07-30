@@ -12,7 +12,7 @@ static void barbery (void) {
 
   // Constants -----------------------------------
 
-  int TIME_MAX_CLIENT_CREATE = 3000;
+  int TIME_MAX_CLIENT_CREATE = 2000;
   int TIME_MIN_CLIENT_CREATE = 200;
   int TIME_HAIR_CUT = 1800;
   int TIME_OPEN = 120000;
@@ -216,7 +216,7 @@ static void barbery (void) {
 void schd_tests(void) {
   puts("Schd tests");
 
-/*
+
   Schd *sc = schd_new();
 
   puts ("before");
@@ -232,13 +232,13 @@ void schd_tests(void) {
   }
   schd_loop(sc, (FLOOP)finterval, vinterval, 500);
 
-  void fcmd (char *page) {
+  void fcmd (void *null, char *page) {
     puts(page);
   }
-  ext_awget(sc, fcmd, "http://www.invertia.com");
+  ext_awget(sc, fcmd, NULL, "http://www.invertia.com");
 
   schd_start(sc);
-*/
+
 
   if (0) barbery();
 

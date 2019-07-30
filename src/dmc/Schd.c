@@ -148,31 +148,39 @@ void schd_end (Schd *this) {
   this->active = 0;
 }
 
-// tp is Tp[
-//          Tp3[FILE *popen, void (*fn)(char *), char *fdata],
-//          char *fcontrol];
-static void fcmd (Tp *tp, SchdTask *tk) {
-  if (file_exists(tp_e2(tp))) {
-    Tp3 *tp3 = (Tp3 *)tp_e1(tp);
+// tp is Tp3[
+//   Tp3[FILE *popen, void (*fn)(char *), char *fdata],
+//   char *fcontrol
+//   void *ctx];
+static void fcmd (Tp3 *tp, SchdTask *tk) {
+  if (file_exists(tp3_e2(tp))) {
+    Tp3 *tp3 = (Tp3 *)tp3_e1(tp);
     fclose((FILE *)tp3_e1(tp3));
-    void (*fn)(char *) = tp3_e2(tp3);
-    fn(file_read(tp3_e3(tp3)));
-    file_del(tp_e2(tp));
+    void (*fn)(void *, char *) = tp3_e2(tp3);
+    fn(tp3_e3(tp), file_read(tp3_e3(tp3)));
+    file_del(tp3_e2(tp));
     file_del(tp3_e3(tp3));
     schdTask_del(tk);
   }
 }
 
-void schd_cmd (Schd *this, void (*fn)(char *result), char *cmd) {
+void schd_cmd (
+  Schd *this, void (*fn)(void *ctx, char *result), void *ctx, char *cmd
+) {
   char *fdata = file_tmp("dmc_schd");
   char *fcontrol = file_tmp("dmc_schd");
   char *c = str_f("%s > %s 2>&1; touch %s", cmd, fdata, fcontrol);
   FILE *f = popen(c, "r");
   if (!f) {
-    fn("");
+    fn(ctx, "");
     file_del(fdata);
     file_del(fcontrol);
     return;
   }
-  schd_loop(this, (FLOOP)fcmd, tp_new(tp3_new(f, fn, fdata), fcontrol), 50);
+  schd_loop(
+    this,
+    (FLOOP)fcmd,
+    tp3_new(tp3_new(f, fn, fdata), fcontrol, ctx),
+    50
+  );
 }

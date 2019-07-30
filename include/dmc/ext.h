@@ -13,9 +13,11 @@
 char *ext_wget(char *url);
 
 /// ext_wget calls asynchronically "wget -q -O - <i>url</i>" and returns the
-/// text read in 'fn'.<br>
+/// text read in the parameter 'html' of 'fn'.<br>
 /// If the reading fails, it returns an empty string.
-void ext_awget(Schd *sc, void (*fn)(char *html), char *url);
+void ext_awget(
+  Schd *sc, void (*fn)(void *ctx, char *html), void *ctx, char *url
+);
 
 /// ext_zenity_entry reads a text using GUI. It calls:
 ///   zenity --entry --title=<i>title</i> --text=<i>prompt</i>

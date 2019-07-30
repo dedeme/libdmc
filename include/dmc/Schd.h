@@ -49,7 +49,15 @@ void schd_start (Schd *this);
 /// Ends 'this' when the current task finishes
 void schd_end (Schd *this);
 
-///
-void schd_cmd (Schd *this, void (*fn)(char *result), char *cmd);
+/// Execute a system command and its result is send to 'fn'
+///   this: Scheduler
+///   fn: Call back with 2 arguments:
+///       ctx: Context. It is which is passed to 'schd_cmd?
+///       result: Message send for 'cmd' to stdout and stderror
+///   ctx: Context to receive-send application data.
+///   cmd: System command.
+void schd_cmd (
+  Schd *this, void (*fn)(void *ctx, char *result), void *ctx, char *cmd
+);
 
 #endif

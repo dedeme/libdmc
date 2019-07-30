@@ -56,8 +56,8 @@ int main(int argc, char *argv[]) {
   date_tests();
   ext_tests();
   cgi_tests();
-*/  async_tests();
-/*  schd_tests();
+  async_tests();*/
+  schd_tests();/*
   iserver_tests(0);
   exc_tests();
 */
