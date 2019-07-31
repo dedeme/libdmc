@@ -14,20 +14,12 @@
 #include "dmc/std.h"
 
 /// Launchs 'fn' in a new joinable thread. Example of use:
-///   void fn(char *tx) { puts(tx); }
-///   pthread_t *thr = async_thread((FPROC)fn, "Hello");
-///   async_join(thr); // Waits for thr.
-/// NOTA: After calling 'async_thread' is mandatory to call 'async_join' to
-/// free resources.
-pthread_t *async_thread (void (*fn)(void *), void *value);
-
-/// Launchs 'fn' in a new joinable thread. Example of use:
 ///   void fn() { puts("Here"); }
 ///   pthread_t *thr = async_thread0(fn);
 ///   async_join(thr); // Waits for thr.
-/// NOTA: After calling 'async_thread0' is mandatory to call 'async_join' to
+/// NOTA: After calling 'async_thread' is mandatory to call 'async_join' to
 /// free resources.
-pthread_t *async_thread0 (void (*fn)(void));
+pthread_t *async_thread (void (*fn)(void));
 
 /// Launch 'fn' in a new thread. Example of use:
 ///   void fn(char *tx) { puts(tx); }
@@ -48,11 +40,7 @@ void asyncActor_run (AsyncActor *this, void (*fn)(void *), void *value);
 
 /// Executes 'fn(value)' synchronicaly. This function stops the program
 /// until 'fn' is finished.
-void asyncActor_wait (AsyncActor *this, void (*fn)(void *), void *value);
-
-/// Executes 'fn(value)' synchronicaly. This function stops the program
-/// until 'fn' is finished.
-void asyncActor_wait0 (AsyncActor *this, void (*fn)(void));
+void asyncActor_wait (AsyncActor *this, void (*fn)(void));
 
 /// Finalizes 'this'. 'this' also will finish is pendant jobs.
 void asyncActor_end (AsyncActor *this);

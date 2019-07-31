@@ -30,7 +30,6 @@ int schd_exists (Schd *this, SchdTask *task);
 ///   NOTES:
 ///     * The task can be stopped with 'schd_del'
 ///     * The first execution of 'fn' is immedate.
-///     * 'millis' is forced to be at least 4 milliseconds.
 SchdTask *schd_loop (
   Schd *this,
   void (*fn)(void *value, SchdTask *tk),

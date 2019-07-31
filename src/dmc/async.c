@@ -32,14 +32,7 @@ static void *async_thread_run0 (void (*fn)(void)) {
   return NULL;
 }
 
-pthread_t *async_thread (void (*fn)(void *), void *value) {
-  pthread_t *thr = MALLOC(pthread_t);
-  struct async_Thread *data = async_thread_new(fn, value);
-  pthread_create(thr, NULL, (FCOPY)async_thread_run, data);
-  return thr;
-}
-
-pthread_t *async_thread0 (void (*fn)(void)) {
+pthread_t *async_thread (void (*fn)(void)) {
   pthread_t *thr = MALLOC(pthread_t);
   pthread_create(thr, NULL, (FCOPY)async_thread_run0, fn);
   return thr;
@@ -147,19 +140,15 @@ void asyncActor_run (AsyncActor *this, void (*fn)(void *), void *value) {
   }
 }
 
-void asyncActor_wait (AsyncActor *this, void (*fn)(void *), void *value) {
+void asyncActor_wait (AsyncActor *this, void (*fn)(void)) {
+  void fn2 (void *null) { fn(); }
   if (this->active) {
-    struct async_AThread *task = async_athread_new(fn, value);
+    struct async_AThread *task = async_athread_new(fn2, NULL);
     add_task(this, task);
     while (task->waiting) {
       sys_sleep(50);
     }
   }
-}
-
-void asyncActor_wait0 (AsyncActor *this, void (*fn)(void)) {
-  void fn2 (void *null) { fn(); }
-  asyncActor_wait(this, fn2, NULL);
 }
 
 void asyncActor_end (AsyncActor *this) {

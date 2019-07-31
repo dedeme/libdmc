@@ -7,7 +7,7 @@
 #include "dmc/Exc.h"
 #include "dmc/async.h"
 
-static void fn (void *null) {
+static void fn () {
   int v = -1;
 
   TRY
@@ -44,7 +44,7 @@ void exc_tests(void) {
 
 //  THROW(exc_generic_t) "FAIL" _THROW
 
-  async_join(async_thread(fn, NULL));
+  async_join(async_thread(fn));
 
   puts("    Finished");
 }

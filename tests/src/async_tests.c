@@ -120,7 +120,7 @@ static void barbery (void) {
     bmsg("Taking a client");
     puts(sits_to_str());
     is_occupy = 1;
-    async_thread((FPROC)hair_cut, opt_get(client));
+    async_thread_detached((FPROC)hair_cut, opt_get(client));
   }
 
   void hair_cut (int *client) {
@@ -161,7 +161,7 @@ static void barbery (void) {
       } else {
         cmsg(client, "Calling to barber");
         is_occupy = 1;
-        async_thread((FPROC)hair_cut, client);
+        async_thread_detached((FPROC)hair_cut, client);
       }
     } else {
       if (get_a_sit(client)) {
@@ -214,9 +214,10 @@ static void barbery (void) {
 
 void async_tests(void) {
   puts("Async tests");
+
 /*
-  void fn(char *tx) { puts(tx); }
-  pthread_t *thr = async_thread((FPROC)fn, "Hello");
+  void fn() { puts("Hello"); }
+  pthread_t *thr = async_thread(fn);
   async_join(thr);
 
 
@@ -234,7 +235,8 @@ void async_tests(void) {
   asyncActor_run(ac, task, NULL);
   puts("Main thread 1");
 
-  asyncActor_wait(ac, task, NULL);
+  void fn2 () { task(NULL); }
+  asyncActor_wait(ac, fn2);
   puts("Main thread 2");
 
   asyncActor_run(ac, end, NULL);

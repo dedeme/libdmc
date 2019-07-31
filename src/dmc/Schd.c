@@ -106,7 +106,7 @@ SchdTask *schd_loop (
   void *value,
   int millis
 ) {
-  if (millis < 4) millis = 4;
+  if (millis < 0) millis = 0;
 
   SchdTask *tk = schd_Task_new(this, date_tm_now(), (FPROC)finterval, NULL);
 

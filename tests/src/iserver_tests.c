@@ -28,7 +28,7 @@ static void run_server (Iserver *is) {
   }
 }
 
-static void run_client (void *null) {
+static void run_client () {
   RANGE0(n, 3)
     char *rq = (n < 2) ? str_f("hello %d", n) : "end";
     printf("Cliend-sending: %s\n", rq);
@@ -46,8 +46,9 @@ void iserver_tests(int active) {
   if (active) {
     Iserver *is = iserver_new(8888);
 
-    async_thread((FPROC)run_server, is);
-    pthread_t *th = async_thread(run_client, NULL);
+    void fn () { run_server(is); }
+    async_thread(fn);
+    pthread_t *th = async_thread(run_client);
 
     async_join(th);
   }
