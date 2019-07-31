@@ -592,7 +592,7 @@ Map *cgi_long_run(Map *(*fn)(void *ctx, Map *rq), void *ctx, Map *rq) {
     Js *long_run_file = js_ws(file_tmp("dmc_cgi_long_run"));
     map_put(rq, "longRunFile", long_run_file);
     map_put(rp, "longRunFile", long_run_file);
-    async_thread((FPROC)long_run, tp3_new(fn, ctx, rq));
+    async_thread_detached((FPROC)long_run, tp3_new(fn, ctx, rq));
   }
   return rp;
 }
