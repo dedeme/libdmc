@@ -17,6 +17,13 @@ Iarr *iarr_new(void);
 /// buffer must be > 0
 Iarr *iarr_bf_new(int buffer);
 
+/// Creates a new array from a C array. For example:
+///   Iarr *a = iarr_new_c(3, (int[]){2, 0, 4});
+/// If 'size' is less than C array length, result is ok (only will be
+/// used 'size' first elements); but if 'size' is greater, the result is
+/// undetermined.
+Iarr *iarr_new_c (int size, int *es);
+
 /// If ix is < 0 then is changed to 'iarr_size - ix'
 Iarr *iarr_left(Iarr *this, int ix);
 

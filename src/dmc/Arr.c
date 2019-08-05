@@ -26,6 +26,35 @@ Arr *arr_bf_new (int buffer) {
   return this;
 }
 
+Arr *arr_new_from (void *e, ...) {
+  va_list args;
+  void *tmp;
+
+  Arr *this = arr_new();
+  arr_push(this, e);
+
+  va_start(args, e);
+  tmp = va_arg(args, void *);
+  while (tmp) {
+    arr_push(this, tmp);
+    tmp = va_arg(args, void *);
+  }
+  va_end(args);
+
+  return this;
+}
+
+Arr *arr_new_c (int size, void **es) {
+  int buffer = size + size;
+  int bf_size = buffer * sizeof(void *);
+  Arr *this = MALLOC(Arr);
+  this->es = GC_MALLOC(bf_size);
+  this->end = this->es + size;
+  this->endbf = this->es + buffer;
+  memcpy(this->es, es, bf_size);
+  return this;
+}
+
 Arr *arr_copy (Arr *this) {
   int buffer = this->endbf - this->es;
   int bf_size = buffer * sizeof(void *);

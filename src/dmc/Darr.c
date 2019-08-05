@@ -27,6 +27,16 @@ Darr *darr_bf_new(int buffer) {
   return this;
 }
 
+Darr *darr_new_c (int size, double *es) {
+  int buffer = size + size;
+  int bf_size = buffer * sizeof(double);
+  Darr *this = MALLOC(Darr);
+  this->es = ATOMIC(bf_size);
+  this->end = this->es + size;
+  this->endbf = this->es + buffer;
+  memcpy(this->es, es, bf_size);
+  return this;
+}
 
 Darr *darr_left(Darr *this, int ix) {
   EXC_RANGE(ix, 0, darr_size(this))

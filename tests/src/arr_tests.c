@@ -1,7 +1,7 @@
 // Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "iarr_tests.h"
+#include "arr_tests.h"
 #include <assert.h>
 #include "dmc/Arr.h"
 
@@ -151,11 +151,21 @@ void arr_tests(void) {
   assert(*(double *)arr_get(ia3, 3) == 2);
   assert(*(double *)arr_get(ia3, 4) == 1);
 
-
   ia = arr_new();
   arr_sort(ia, (FCMP) greater);
   arr_reverse(ia);
   assert(arr_size(ia) == 0);
+
+  Arr *sa = arr_new_from("a", "b", NULL);
+  assert(arr_size(sa) == 2);
+  assert(str_eq(arr_get(sa, 0), "a"));
+  assert(str_eq(arr_get(sa, 1), "b"));
+
+  sa = arr_new_c(3, (void *[]){"c", "d", "e"});
+  assert(arr_size(sa) == 3);
+  assert(str_eq(arr_get(sa, 0), "c"));
+  assert(str_eq(arr_get(sa, 1), "d"));
+  assert(str_eq(arr_get(sa, 2), "e"));
 
   puts("    Finished");
 }

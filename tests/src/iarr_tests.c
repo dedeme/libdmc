@@ -141,5 +141,11 @@ void iarr_tests(void) {
   iarr_reverse(ia);
   assert(iarr_size(ia) == 0);
 
+  ia = iarr_new_c(3, (int[]){2, 0, 4});
+  assert(iarr_size(ia) == 3);
+  assert(iarr_get(ia, 0) == 2);
+  assert(iarr_get(ia, 1) == 0);
+  assert(iarr_get(ia, 2) == 4);
+
   puts("    Finished");
 }

@@ -16,7 +16,6 @@ Iarr *iarr_new(void) {
   return iarr_bf_new(15);
 }
 
-///
 Iarr *iarr_bf_new(int buffer) {
   Iarr *this = MALLOC(Iarr);
   int *es = ATOMIC(buffer * sizeof(int));
@@ -26,6 +25,16 @@ Iarr *iarr_bf_new(int buffer) {
   return this;
 }
 
+Iarr *iarr_new_c (int size, int *es) {
+  int buffer = size + size;
+  int bf_size = buffer * sizeof(int);
+  Iarr *this = MALLOC(Iarr);
+  this->es = ATOMIC(bf_size);
+  this->end = this->es + size;
+  this->endbf = this->es + buffer;
+  memcpy(this->es, es, bf_size);
+  return this;
+}
 
 Iarr *iarr_left(Iarr *this, int ix) {
   EXC_RANGE(ix, 0, iarr_size(this))

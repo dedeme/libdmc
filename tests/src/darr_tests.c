@@ -140,5 +140,11 @@ void darr_tests(void) {
   darr_reverse(ia);
   assert(darr_size(ia) == 0);
 
+  ia = darr_new_c(3, (double[]){1.0, 1.8, 1.3});
+  assert(darr_size(ia) == 3);
+  assert(darr_get(ia, 0) == 1.0);
+  assert(darr_get(ia, 1) == 1.8);
+  assert(darr_get(ia, 2) == 1.3);
+
   puts("    Finished");
 }

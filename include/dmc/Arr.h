@@ -19,8 +19,18 @@ typedef struct arr_Arr Arr;
 /// Creates a new Array with buffer size of 15 elements.
 Arr *arr_new (void);
 
-/// buffer must be > 0.
+/// 'buffer' must be > 0.
 Arr *arr_bf_new (int buffer);
+
+/// Creates a new array from several elements.
+Arr *arr_new_from (void *e, ...);
+
+/// Creates a new array from a C array. For example:
+///   Arr *a = arr_new_c(3, (void *[]){"c", "d", "e"});
+/// If 'size' is less than C array length, result is ok (only will be
+/// used 'size' first elements); but if 'size' is greater, the result is
+/// undetermined.
+Arr *arr_new_c (int size, void **es);
 
 /// Returns a new array with elements of 'this'.
 Arr *arr_copy (Arr *this);

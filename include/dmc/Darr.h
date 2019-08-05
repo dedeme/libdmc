@@ -17,6 +17,13 @@ Darr *darr_new(void);
 /// buffer must be > 0
 Darr *darr_bf_new(int buffer);
 
+/// Creates a new array from a C array. For example:
+///   Darr *a = darr_new_c(3, (double[]){1.0, 1.8, 1.3});
+/// If 'size' is less than C array length, result is ok (only will be
+/// used 'size' first elements); but if 'size' is greater, the result is
+/// undetermined.
+Darr *darr_new_c (int size, double *es);
+
 /// If ix is < 0 then is changed to 'darr_size - ix'
 Darr *darr_left(Darr *this, int ix);
 
