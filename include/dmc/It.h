@@ -121,6 +121,16 @@ Arr *it_to (It *this);
 /// Creates an It from 'a'
 It *it_from (Arr *a);
 
+/// Returns two arrays: 'dup' with duplicates values (only one case) and
+/// 'rest' with every element of 'this', but duplicates. One exemple of
+/// duplicates is in 'rest'.
+void it_duplicates (
+  Arr **dup,
+  Arr **rest,
+  It *this,
+  int (feq)(void *e1, void *e2)
+);
+
 #endif
 
 

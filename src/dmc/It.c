@@ -378,3 +378,27 @@ Arr *it_to (It *this) {
 It *it_from (Arr *a) {
   return arr_to_it(a);
 }
+
+void it_duplicates (
+  Arr **dup,
+  Arr **rest,
+  It *this,
+  int (feq)(void *e1, void *e2)
+) {
+  Arr *d = arr_new();
+  Arr *r = arr_new();
+  void fn (void *e1) {
+    int fcontains (void *e2) { return feq(e1, e2); }
+    if (it_contains(it_from(r), fcontains)) {
+      if (!it_contains(it_from(d), fcontains)) {
+        arr_push(d, e1);
+      }
+    } else {
+      arr_push(r, e1);
+    }
+  }
+  it_each(this, fn);
+
+  *dup = d;
+  *rest = r;
+}
