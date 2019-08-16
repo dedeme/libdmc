@@ -332,7 +332,7 @@ int arr_index (Arr *this, int (*pred)(void *e)) {
   return ix;
 }
 
-void arr_filter (Arr *this, int (*pred)(void *e)) {
+void arr_filter_in (Arr *this, int (*pred)(void *e)) {
   void **p = this->es;
   void **end = this->end;
   void **new_end = p;
@@ -343,6 +343,68 @@ void arr_filter (Arr *this, int (*pred)(void *e)) {
     ++p;
   }
   this->end = new_end;
+}
+
+Arr *arr_take (Arr *this, int n) {
+  return arr_from_it(it_take(arr_to_it(this), n));
+}
+
+Arr *arr_takef (Arr *this, int (*predicate)(void *e)) {
+  return arr_from_it(it_takef(arr_to_it(this), predicate));
+}
+
+Arr *arr_drop (Arr *this, int n) {
+  return arr_from_it(it_drop(arr_to_it(this), n));
+}
+
+Arr *arr_dropf (Arr *this, int (*predicate)(void *e)) {
+  return arr_from_it(it_dropf(arr_to_it(this), predicate));
+}
+
+Arr *arr_filter_to (Arr *this, int (*predicate)(void *e)) {
+  return arr_from_it(it_filter(arr_to_it(this), predicate));
+}
+
+Arr *arr_map (Arr *this, void *(*converter)(void *e)) {
+  return arr_from_it(it_map(arr_to_it(this), converter));
+}
+
+Arr *arr_map2 (Arr *this, void *(*conv1)(void *e), void *(*conv2)(void *e)) {
+  return arr_from_it(it_map2(arr_to_it(this), conv1, conv2));
+}
+
+Arr *arr_zip (Arr *a1, Arr *a2) {
+  return arr_from_it(it_zip(arr_to_it(a1), arr_to_it(a2)));
+}
+
+Arr *arr_zip3 (Arr *a1, Arr *a2, Arr *a3) {
+  return arr_from_it(it_zip3(arr_to_it(a1), arr_to_it(a2), arr_to_it(a3)));
+}
+
+Tp *arr_unzip (Arr *this) {
+  Arr *a1 = arr_new();
+  Arr *a2 = arr_new();
+  EACH(this, Tp, tp) {
+    arr_push(a1, tp_e1(tp));
+    arr_push(a2, tp_e2(tp));
+  }_EACH
+  return tp_new(a1, a2);
+}
+
+Tp3 *arr_unzip3 (Arr *this) {
+  Arr *a1 = arr_new();
+  Arr *a2 = arr_new();
+  Arr *a3 = arr_new();
+  EACH(this, Tp3, tp) {
+    arr_push(a1, tp3_e1(tp));
+    arr_push(a2, tp3_e2(tp));
+    arr_push(a2, tp3_e3(tp));
+  }_EACH
+  return tp3_new(a1, a2, a3);
+}
+
+Tp *arr_duplicates (Arr *this, int (feq)(void *e1, void *e2)) {
+  return it_duplicates(arr_to_it(this), feq);
 }
 
 // -------------------------------------------------------------------------- //

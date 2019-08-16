@@ -6,18 +6,9 @@
 #ifndef DMC_EXT_H
   #define DMC_EXT_H
 
-#include "Schd.h"
-
 /// ext_wget calls "wget -q -O - <i>url</i>" and returns the text read.<br>
 /// If the reading fails, it returns an empty string.
 char *ext_wget(char *url);
-
-/// ext_wget calls asynchronically "wget -q -O - <i>url</i>" and returns the
-/// text read in the parameter 'html' of 'fn'.<br>
-/// If the reading fails, it returns an empty string.
-void ext_awget(
-  Schd *sc, void (*fn)(void *ctx, char *html), void *ctx, char *url
-);
 
 /// ext_zenity_entry reads a text using GUI. It calls:
 ///   zenity --entry --title=<i>title</i> --text=<i>prompt</i>

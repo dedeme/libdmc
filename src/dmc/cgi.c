@@ -292,7 +292,7 @@ static Opt *read_session(char *session_id) {
   // Arr[Js] (Where Js is a json array)
   Arr *sessions = read_sessions_new();
 
-  arr_filter(sessions, (FPRED)filter);
+  arr_filter_in(sessions, (FPRED)filter);
 
   int ix = arr_index(sessions, (FPRED)pred);
   // Opt[CgiSession]

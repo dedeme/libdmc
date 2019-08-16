@@ -8,6 +8,8 @@
   #define DMC_ARR_H
 
 #include "DEFS.h"
+#include "Tp.h"
+#include "Tp3.h"
 
 typedef struct js_Js Js;
 
@@ -96,8 +98,47 @@ void arr_shuffle (Arr *this);
 /// with 'pred', or -1 if such element does not exist.
 int arr_index (Arr *this, int (*pred)(void *e));
 
-/// arr_filter removes every element which returns 'false' with 'pred'.
-void arr_filter (Arr *this, int (*pred)(void *e));
+/// arr_filter_in removes every element which returns 'false' with 'pred'.
+void arr_filter_in (Arr *this, int (*pred)(void *e));
+
+/// Returns a new Arr. See it_take
+Arr *arr_take (Arr *this, int n);
+
+/// Returns a new Arr. See it_takef
+Arr *arr_takef (Arr *this, int (*predicate)(void *e));
+
+/// Returns a new Arr. See it_drop
+Arr *arr_drop (Arr *this, int n);
+
+/// Returns a new Arr. See it_dropf
+Arr *arr_dropf (Arr *this, int (*predicate)(void *e));
+
+/// Returns a new Arr. See it_filter
+Arr *arr_filter_to (Arr *this, int (*predicate)(void *e));
+
+/// Returns a new Arr. See it_map
+Arr *arr_map (Arr *this, void *(*converter)(void *e));
+
+/// Returns a new Arr. See it_map2
+Arr *arr_map2 (Arr *this, void *(*conv1)(void *e), void *(*conv2)(void *e));
+
+/// Returns a new Arr. Returns Arr[Tp]. See it_zip
+Arr *arr_zip (Arr *a1, Arr *a2);
+
+/// Returns a new Arr. Returns Arr[Tp3]. See it_zip3
+Arr *arr_zip3 (Arr *a1, Arr *a2, Arr *a3);
+
+/// Returns Tp[Arr, Arr] from an Arr[Tp]. 'Return_e1' contains elements of
+/// source 'Tp_e1' and 'return_e2' elementso of 'Tp_e2'
+Tp *arr_unzip (Arr *this);
+
+/// Returns Tp[Arr, Arr, Arr] from an Arr[Tp2]. 'Return_e1' contains elements
+/// of source 'Tp_e1', 'return_e2' elements of 'Tp_e2' and 'return_e3'
+/// elements of 'Tp_e3'
+Tp3 *arr_unzip3 (Arr *this);
+
+/// Returns Tp[Arr, Arr] (duplicates, rest) See it_duplicates.
+Tp *arr_duplicates (Arr *this, int (feq)(void *e1, void *e2));
 
 /// Creates an iterator over 'this'
 It *arr_to_it (Arr *this);

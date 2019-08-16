@@ -14,12 +14,6 @@ char *ext_wget(char *url) {
   return opt_get(r);
 }
 
-void ext_awget(
-  Schd *sc, void (*fn)(void *ctx, char *html), void *ctx, char *url
-) {
-  schd_cmd(sc, fn, ctx, str_f("wget -q --no-cache -O - %s", url));
-}
-
 char *ext_zenity_entry(char *title, char *prompt) {
   char *cmd = str_f(
     "zenity --entry --title=\"%s\" --text=\"%s\"", title, prompt

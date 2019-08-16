@@ -177,6 +177,20 @@ void it_tests() {
   assert(it_last_index(it_unary("a"), (FPRED)eqz) == -1);
   assert(it_last_index(mk2(), (FPRED)eqz) == -1);
 
+  Tp *dr = it_duplicates(mk2(), (FCMP)str_eq);
+  assert(arr_size(tp_e1(dr)) == 1);
+  assert(arr_size(tp_e2(dr)) == 2);
+  assert(str_eq(arr_get(tp_e1(dr), 0), "a"));
+  assert(str_eq(arr_get(tp_e2(dr), 0), "a"));
+  assert(str_eq(arr_get(tp_e2(dr), 1), "b"));
+
+  dr = it_duplicates(mk(), (FCMP)str_eq);
+  assert(arr_size(tp_e1(dr)) == 0);
+  assert(arr_size(tp_e2(dr)) == 3);
+  assert(str_eq(arr_get(tp_e2(dr), 0), "a"));
+  assert(str_eq(arr_get(tp_e2(dr), 1), "b"));
+  assert(str_eq(arr_get(tp_e2(dr), 2), "c"));
+
   puts( "    Finished");
 
 }

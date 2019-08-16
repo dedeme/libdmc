@@ -76,7 +76,7 @@ It *it_map (It *this, void *(*converter)(void *e));
 /// it_map2 applies conv1 to the first element and conv2 to the others.
 It *it_map2 (It *this, void *(*conv1)(void *e), void *(*conv2)(void *e));
 
-/// Returns It[Tp2]
+/// Returns It[Tp]
 It *it_zip (It *it1, It *it2);
 
 /// Returns It[Tp3]
@@ -121,15 +121,9 @@ Arr *it_to (It *this);
 /// Creates an It from 'a'
 It *it_from (Arr *a);
 
-/// Returns two arrays: 'dup' with duplicates values (only one case) and
-/// 'rest' with every element of 'this', but duplicates. One exemple of
-/// duplicates is in 'rest'.
-void it_duplicates (
-  Arr **dup,
-  Arr **rest,
-  It *this,
-  int (feq)(void *e1, void *e2)
-);
+/// Returns Tp[Arr, Arr] (dup, rest): 'dup' with duplicates values (only one
+/// case) and 'rest' with every element of 'this' without duplicates.
+Tp *it_duplicates (It *this, int (feq)(void *e1, void *e2));
 
 #endif
 
