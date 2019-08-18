@@ -564,7 +564,7 @@ static void long_run(Tp3 *fn_v_rq) {
   Map *(*lrun)(void *, Map *) = tp3_e1(fn_v_rq);
   void *ctx = tp3_e2(fn_v_rq);
   Map *rq = tp3_e3(fn_v_rq);
-  CGI_GET_STR(long_run_file, rq, "longRunFile")
+  CGI_GET_STR(longRunFile, rq)
 
   // Map[js]
   Map *rp = lrun(ctx, rq);
@@ -572,19 +572,19 @@ static void long_run(Tp3 *fn_v_rq) {
 
   char *tmp = file_tmp("dmc_cgi_long_run");
   file_write(tmp, (char *)js_wo(rp));
-  file_rename(tmp, long_run_file);
+  file_rename(tmp, longRunFile);
 }
 
 // All Maps are Map[Js]
 Map *cgi_long_run(Map *(*fn)(void *ctx, Map *rq), void *ctx, Map *rq) {
-  CGI_GET_STR(long_run_file, rq, "longRunFile")
+  CGI_GET_STR(longRunFile, rq)
   // Map[Js]
   Map *rp = map_new();
-  if (*long_run_file) {
-    if (file_exists(long_run_file)) {
-      rp = js_ro((Js *)file_read(long_run_file));
+  if (*longRunFile) {
+    if (file_exists(longRunFile)) {
+      rp = js_ro((Js *)file_read(longRunFile));
       map_put(rp, "longRunEnd", js_wb(1));
-      file_del(long_run_file);
+      file_del(longRunFile);
     } else {
       map_put(rp, "longRunEnd", js_wb(0));
     }

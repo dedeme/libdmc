@@ -262,7 +262,7 @@ typedef void (*FLOOP)(void *, SchdTask *);
   { \
     Opt *js = map_get(map, #var); \
     if (opt_is_empty(js))  \
-      EXC_ILLEGAL_ARGUMENT(field, "Map key", "Key not found") \
+      EXC_ILLEGAL_ARGUMENT(#var, "Map key", "Key not found") \
     var = fun(opt_get(js)); \
   }
 
