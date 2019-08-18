@@ -247,48 +247,47 @@ typedef void (*FLOOP)(void *, SchdTask *);
 /// using 'fun'.
 /// <table><tr><td>
 ///   type : type of var
-///   var  : name of new variable. It shuld be free.
+///   var  : name of variable.
 ///   fun  : function to pass 'Js' to 'type'
 ///   map  : A Map[Js]
-///   field: field key. Its value must be const char *
 /// </table>
 /// Examples:
 /// <table><tr><td>
-///   CGI_GET(int, i, js_ri, m, "index")
-///   CGI_GET(char *, a, js_rs, m, "value")
-///   CGI_GET(Arr *, a, js_ra, m, "values")
+///   CGI_GET(int, index, js_ri, m)
+///   CGI_GET(char *, value, js_rs, m)
+///   CGI_GET(Arr *, values, js_ra, m)
 /// </table>
-#define CGI_GET(type, var, fun, map, field) \
+#define CGI_GET(type, var, fun, map) \
   type var; \
   { \
-    Opt *js = map_get(map, field); \
+    Opt *js = map_get(map, #var); \
     if (opt_is_empty(js))  \
       EXC_ILLEGAL_ARGUMENT(field, "Map key", "Key not found") \
     var = fun(opt_get(js)); \
   }
 
 /// Calls CGI_GET with 'var' as 'int'.
-#define CGI_GET_BOOL(var, map, field) \
-  CGI_GET(int, var, js_rb, map, field)
+#define CGI_GET_BOOL(var, map) \
+  CGI_GET(int, var, js_rb, map)
 
 /// Calls CGI_GET with 'var' as 'int'.
-#define CGI_GET_INT(var, map, field) \
-  CGI_GET(int, var, js_ri, map, field)
+#define CGI_GET_INT(var, map) \
+  CGI_GET(int, var, js_ri, map)
 
 /// Calls CGI_GET with 'var' as 'double'.
-#define CGI_GET_DOUBLE(var, map, field) \
-  CGI_GET(double, var, js_rd, map, field)
+#define CGI_GET_DOUBLE(var, map) \
+  CGI_GET(double, var, js_rd, map)
 
 /// Calls CGI_GET with 'var' as 'char *'.
-#define CGI_GET_STR(var, map, field) \
-  CGI_GET(char *, var, js_rs, map, field)
+#define CGI_GET_STR(var, map) \
+  CGI_GET(char *, var, js_rs, map)
 
 /// Calls CGI_GET with 'var' as 'Arr[Js]'.
-#define CGI_GET_ARR(var, map, field) \
-  CGI_GET(Arr *, var, js_ra, map, field)
+#define CGI_GET_ARR(var, map) \
+  CGI_GET(Arr *, var, js_ra, map)
 
 /// Calls CGI_GET with 'var' as 'Map[Js]'.
-#define CGI_GET_MAP(var, map, field) \
-  CGI_GET(Map *, var, js_ro, map, field)
+#define CGI_GET_MAP(var, map) \
+  CGI_GET(Map *, var, js_ro, map)
 
 #endif
