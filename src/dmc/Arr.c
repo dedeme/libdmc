@@ -195,6 +195,7 @@ void arr_insert_arr (Arr *this, int ix, Arr *other) {
     } else {
       void **s = this->end - 1;
       void **t = s + other_len;
+      this->end = t + 1;
       void **limit = this->es + ix;
       while (s >= limit) {
         *t-- = *s--;
