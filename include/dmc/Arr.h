@@ -1,8 +1,7 @@
 // Copyright 15-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Array structure.<p>
-/// This structure is owner of its elements and frees them with 'arr_free".
+/// Array structure.
 
 #ifndef DMC_ARR_H
   #define DMC_ARR_H
@@ -40,7 +39,7 @@ Arr *arr_copy (Arr *this);
 ///
 int arr_size (Arr *this);
 
-/// Resturn the element at position ix
+/// Resturn the element at position ix.
 void *arr_get (Arr *this, int ix);
 
 /// Return a pointer to the first element of 'this'
@@ -62,7 +61,7 @@ void *arr_peek (Arr *this);
 /// Sets the element at position ix.
 void arr_set (Arr *this, int ix, void *e);
 
-/// Inserts an element at position ix
+/// Inserts an element at position ix.
 void arr_insert (Arr *this, int ix, void *e);
 
 /// Removes an element at position ix. Buffer size of 'this' does not change.
@@ -83,15 +82,15 @@ void arr_clear (Arr *this);
 /// Removes every element of 'this'.
 void arr_bf_clear (Arr *this, int buffer);
 
-/// Reverses elements of 'this'
+/// Reverses elements of 'this'.
 void arr_reverse (Arr *this);
 
 /// Sorts 'this' ascendantly using the function 'greater' that returns 'true'
-/// if 'e1' > 'e2'
+/// if 'e1' > 'e2'.
 void arr_sort (Arr *this, int (*greater)(void *e1, void *e2));
 
 /// arr_shuflle remix 'this' elements. It should be used after calling
-/// rnd_init() or sys_init()
+/// rnd_init() or sys_init().
 void arr_shuffle (Arr *this);
 
 /// arr_index returns the index of the first elements which returns 'true'
@@ -101,55 +100,55 @@ int arr_index (Arr *this, int (*pred)(void *e));
 /// arr_filter_in removes every element which returns 'false' with 'pred'.
 void arr_filter_in (Arr *this, int (*pred)(void *e));
 
-/// Returns a new Arr. See it_take
+/// Returns a new Arr. See it_take.
 Arr *arr_take (Arr *this, int n);
 
-/// Returns a new Arr. See it_takef
+/// Returns a new Arr. See it_takef.
 Arr *arr_takef (Arr *this, int (*predicate)(void *e));
 
-/// Returns a new Arr. See it_drop
+/// Returns a new Arr. See it_drop.
 Arr *arr_drop (Arr *this, int n);
 
-/// Returns a new Arr. See it_dropf
+/// Returns a new Arr. See it_dropf.
 Arr *arr_dropf (Arr *this, int (*predicate)(void *e));
 
-/// Returns a new Arr. See it_filter
+/// Returns a new Arr. See it_filter.
 Arr *arr_filter_to (Arr *this, int (*predicate)(void *e));
 
-/// Returns a new Arr. See it_map
+/// Returns a new Arr. See it_map.
 Arr *arr_map (Arr *this, void *(*converter)(void *e));
 
-/// Returns a new Arr. See it_map2
+/// Returns a new Arr. See it_map2.
 Arr *arr_map2 (Arr *this, void *(*conv1)(void *e), void *(*conv2)(void *e));
 
-/// Returns a new Arr. Returns Arr[Tp]. See it_zip
+/// Returns a new Arr. Returns Arr[Tp]. See it_zip.
 Arr *arr_zip (Arr *a1, Arr *a2);
 
-/// Returns a new Arr. Returns Arr[Tp3]. See it_zip3
+/// Returns a new Arr. Returns Arr[Tp3]. See it_zip3.
 Arr *arr_zip3 (Arr *a1, Arr *a2, Arr *a3);
 
 /// Returns Tp[Arr, Arr] from an Arr[Tp]. 'Return_e1' contains elements of
-/// source 'Tp_e1' and 'return_e2' elementso of 'Tp_e2'
+/// source 'Tp_e1' and 'return_e2' elementso of 'Tp_e2'.
 Tp *arr_unzip (Arr *this);
 
 /// Returns Tp[Arr, Arr, Arr] from an Arr[Tp2]. 'Return_e1' contains elements
 /// of source 'Tp_e1', 'return_e2' elements of 'Tp_e2' and 'return_e3'
-/// elements of 'Tp_e3'
+/// elements of 'Tp_e3'.
 Tp3 *arr_unzip3 (Arr *this);
 
 /// Returns Tp[Arr, Arr] (duplicates, rest) See it_duplicates.
 Tp *arr_duplicates (Arr *this, int (feq)(void *e1, void *e2));
 
-/// Creates an iterator over 'this'
+/// Creates an iterator over 'this'.
 It *arr_to_it (Arr *this);
 
-/// Creates an Arr from 'it'
+/// Creates an Arr from 'it'.
 Arr *arr_from_it (It *it);
 
 /// Returns a Js from an element of 'this'
 Js *arr_to_js (Arr *this, Js *(*to)(void *e));
 
-/// Parses a Js to an element of 'this'.<br>
+/// Parses a Js to an element of 'this'.
 Arr *arr_from_js (Js *js, void *(*from)(Js *jse));
 
 #endif

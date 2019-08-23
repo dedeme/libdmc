@@ -1,7 +1,7 @@
 // Copyright 23-Apr-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Pair key - value
+/// Pair key - value.
 
 #ifndef DMC_KV_H
   #define DMC_KV_H
