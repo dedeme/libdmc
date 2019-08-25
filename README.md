@@ -7,9 +7,10 @@ Some utilities from C language.
 Version - 201909
 
 Dependencies:
-  -libpthread
-  -libm
-  -libgc (Garbage collector)
+
+  - libpthread
+  - libm
+  - libgc (Garbage collector)
 
 ```sh
 apt-get install libgc-dev
