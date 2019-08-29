@@ -105,6 +105,9 @@ void *arr_pop (Arr *this) {
 }
 
 void *arr_peek (Arr *this) {
+  if (this->es >= this->end)
+    EXC_ILLEGAL_STATE("Array is empty")
+
   return *(this->end - 1);
 }
 
