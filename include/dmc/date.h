@@ -163,15 +163,15 @@ typedef struct timeval DateTm;
 ///   DateTm (struct timeval) has following fields:
 ///     time_t tv_sec - Seconds.
 ///     long int tv_usecs - Microseconds (0 - 999999).
-DateTm *date_tm_now ();
+DateTm *dateTm_now ();
 
 /// Returns t1 - t2.
-DateTm *date_tm_tdf (DateTm *t1, DateTm *t2);
+DateTm *dateTm_tdf (DateTm *t1, DateTm *t2);
 
 /// Adds 'millis' milliseconds to 't'. 'millis' can be negative.
-DateTm *date_tm_add (DateTm *t, int millis);
+DateTm *dateTm_add (DateTm *t, int millis);
 
 /// Returns t1 - t2 in milliseconds.
-int date_tm_df (DateTm *t1, DateTm *t2);
+int dateTm_df (DateTm *t1, DateTm *t2);
 
 #endif
