@@ -60,7 +60,7 @@ char *str_cat(char *s, ...);
 
 /// Returns a substring.
 ///   - If 'begin' or 'end' are negatives, they are subtracted from 'strlen(s)'.
-///   - If 'begin' or 'end' are out of bounds, function returns "".
+///   - If 'begin' or 'end' are out of bounds, function throws a RANGE exception.
 char *str_sub(char *str, int begin, int end);
 
 /// str_left is equals to 'str_sub(str, 0, end)'.

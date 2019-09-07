@@ -220,9 +220,9 @@ typedef void (*FLOOP)(void *, SchdTask *);
 #define EXC_GENERIC(msg) \
   THROW(exc_generic_t) msg _THROW
 
-/// Throw a range exception if v < 0 or v > 32.
+/// Throw a range exception if v < 'min' or v > 'max'.
 /// Example:
-///   EXC_RANGE(v, 0, 23)
+///   EXC_RANGE(v, 0, 23) // -1 and 24 throw exeption.
 #define EXC_RANGE(value, min, max) { \
     int __v = value; \
     if (__v < (min) || __v > (max)) \

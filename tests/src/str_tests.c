@@ -106,8 +106,12 @@ void str_tests(void) {
   r = str_sub(r, -1, 0);
   assert(str_eq(r, ""));
   r = str_cat(r, "ab", NULL);
-  r = str_sub(r, 0, 35);
-  assert(str_eq(r, ""));
+  TRY {
+    r = str_sub(r, 0, 35);
+    assert (0);
+  } CATCH (e) {
+    str_eq(exc_type(e), exc_range_t);
+  }_TRY
   r = str_cat(r, "ab", NULL);
   r = str_sub(r, 3, 3);
   assert(str_eq(r, ""));
@@ -120,7 +124,11 @@ void str_tests(void) {
   assert(str_eq(r, "ab"));
   r = str_sub(r, 1, 2);
   assert(str_eq(r, "b"));
-  r = str_right(r, 20);
+  TRY {
+    r = str_right(r, 20);
+  } CATCH (e) {
+    str_eq(exc_type(e), exc_range_t);
+  }_TRY
   r = str_left(r, 0);
   assert(str_eq(r, ""));
   r = str_cat(r, "ab", NULL);

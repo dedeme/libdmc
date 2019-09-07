@@ -172,13 +172,14 @@ char *str_sub(char *str, int begin, int end) {
   if (begin < 0) {
     begin = l + begin;
   }
+  EXC_RANGE(begin, 0, l)
+
   if (end < 0) {
     end = l + end;
   }
+  EXC_RANGE(end, 0, l)
+
   df = end - begin;
-  if (begin < 0 || end > l) {
-    df = -1;
-  }
 
   char *r;
   if (df < 0) {
