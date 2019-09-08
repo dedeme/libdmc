@@ -2,7 +2,6 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/str.h"
-#include <ctype.h>
 #include <wctype.h>
 #include "dmc/std.h"
 
@@ -202,20 +201,22 @@ char *str_right(char *str, int begin) {
 }
 
 char *str_ltrim(char *str) {
-  while (isspace(*str)) ++str;
+  unsigned char ch = *str;
+  while (ch && ch <= ' ') ch = *++str;
   return str_new(str);
 }
 
 char *str_rtrim(char *str) {
   char *p = str + (strlen(str) - 1);
-  while (p >= str && isspace(*p)) {
+  while (p >= str && ((unsigned char)*p) <= ' ') {
     --p;
   }
   return str_left(str, (p - str) + 1);
 }
 
 char *str_trim(char *str) {
-  while (isspace(*str)) ++str;
+  unsigned char ch = *str;
+  while (ch && ch <= ' ') ch = *++str;
   return str_rtrim(str);
 }
 

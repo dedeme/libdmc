@@ -69,16 +69,13 @@ char *str_left(char *str, int end);
 /// str_right is equals to 'str_sub(str, begin, strlen(s))'.
 char *str_right(char *str, int begin);
 
-/// Returns a new string removing spaces (' ', '\\f', '\\n', '\\r', '\\t' and
-/// '\\v') at left.
+/// Returns a new string removing spaces (ch <= ' ') at left.
 char *str_ltrim(char *str);
 
-/// Returns a new string removing spaces (' ', '\\f', '\\n', '\\r', '\\t' and
-/// '\\v') at right.
+/// Returns a new string removing spaces (ch <= ' ') at right.
 char *str_rtrim(char *str);
 
-/// Returns a new string removing spaces (' ', '\\f', '\\n', '\\r', '\\t' and
-/// '\\v') at left and right.
+/// Returns a new string removing spaces (ch <= ' ') at left and right.
 char *str_trim(char *str);
 
 /// Splits 'str' in an Arr[char].
