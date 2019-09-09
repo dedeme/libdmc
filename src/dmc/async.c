@@ -38,6 +38,13 @@ pthread_t *async_thread (void (*fn)(void)) {
   return thr;
 }
 
+pthread_t *async_thread2 (void (*fn)(void *), void *value) {
+  pthread_t *thr = MALLOC(pthread_t);
+  struct async_Thread *data = async_thread_new(fn, value);
+  pthread_create(thr, NULL, (FCOPY)async_thread_run, data);
+  return thr;
+}
+
 void async_thread_detached (void (*fn)(void *), void *value) {
   pthread_attr_t attr;
   pthread_attr_init(&attr);

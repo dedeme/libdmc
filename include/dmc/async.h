@@ -15,11 +15,19 @@
 
 /// Launchs 'fn' in a new joinable thread. Example of use:
 ///   void fn() { puts("Here"); }
-///   pthread_t *thr = async_thread0(fn);
+///   pthread_t *thr = async_thread(fn);
 ///   async_join(thr); // Waits for thr.
 /// NOTE: After calling 'async_thread' is mandatory to call 'async_join' to
 ///         free resources.
 pthread_t *async_thread (void (*fn)(void));
+
+/// Launchs 'fn' in a new joinable thread. Example of use:
+///   void fn(char *tx) { puts(tx); }
+///   pthread_t *thr = async_thread2((FPROC)fn, "Hello");
+///   async_join(thr); // Waits for thr.
+/// NOTE: After calling 'async_thread' is mandatory to call 'async_join' to
+///         free resources.
+pthread_t *async_thread2 (void (*fn)(void *), void *value);
 
 /// Launch 'fn' in a new thread. Example of use:
 ///   void fn(char *tx) { puts(tx); }

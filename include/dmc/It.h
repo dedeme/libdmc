@@ -120,8 +120,8 @@ Arr *it_to (It *this);
 /// Creates an It from 'a'.
 It *it_from (Arr *a);
 
-/// Returns Tp<Arr, Arr> (dup, rest): 'dup' with duplicates values (only one
-/// case) and 'rest' with every element of 'this' without duplicates.
+/// Returns Tp<Arr, Arr> (dup, rest): 'dup' with duplicates values (only the
+/// first case) and 'rest' with every element of 'this' without duplicates.
 Tp *it_duplicates (It *this, int (feq)(void *e1, void *e2));
 
 #endif
