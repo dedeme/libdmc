@@ -402,7 +402,7 @@ Tp3 *arr_unzip3 (Arr *this) {
   EACH(this, Tp3, tp) {
     arr_push(a1, tp3_e1(tp));
     arr_push(a2, tp3_e2(tp));
-    arr_push(a2, tp3_e3(tp));
+    arr_push(a3, tp3_e3(tp));
   }_EACH
   return tp3_new(a1, a2, a3);
 }
