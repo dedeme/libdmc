@@ -183,6 +183,20 @@ void arr_tests(void) {
   assert(str_eq(arr_get(sa, 1), "d"));
   assert(str_eq(arr_get(sa, 2), "e"));
 
+  int pred (void *s) { return *((char *)s) < 'd'; }
+  assert(arr_index(arr_new(), pred) == -1);
+  assert(!arr_any(arr_new(), pred));
+  assert(arr_all(arr_new(), pred));
+  assert(arr_index(arr_new_from("a", "b", NULL), pred) == 0);
+  assert(arr_index(arr_new_from("d", "e", "b", NULL), pred) == 2);
+  assert(arr_index(arr_new_from("d", "e", NULL), pred) == -1);
+  assert(arr_all(arr_new_from("a", "b", NULL), pred));
+  assert(!arr_all(arr_new_from("d", "e", "b", NULL), pred));
+  assert(!arr_all(arr_new_from("d", "e", NULL), pred));
+  assert(arr_any(arr_new_from("a", "b", NULL), pred));
+  assert(arr_any(arr_new_from("d", "e", "b", NULL), pred));
+  assert(!arr_any(arr_new_from("d", "e", NULL), pred));
+
   assert(test("", arr_take(arr_new(), 0)));
   assert(test("", arr_take(arr_new(), 20)));
   assert(test("", arr_take(mk(), 0)));

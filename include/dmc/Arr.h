@@ -93,6 +93,12 @@ void arr_sort (Arr *this, int (*greater)(void *e1, void *e2));
 /// rnd_init() or sys_init().
 void arr_shuffle (Arr *this);
 
+/// Returns '1' if every element of 'this' yields '1' with 'pred'.
+int arr_all (Arr *this, int (*pred)(void *e));
+
+/// Returns '1' if some element of 'this' yields '1' with 'pred'.
+int arr_any (Arr *this, int (*pred)(void *e));
+
 /// arr_index returns the index of the first elements which returns 'true'
 /// with 'pred', or -1 if such element does not exist.
 int arr_index (Arr *this, int (*pred)(void *e));

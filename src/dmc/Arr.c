@@ -325,15 +325,25 @@ void arr_shuffle (Arr *this) {
   }
 }
 
+int arr_all (Arr *this, int (*pred)(void *e)) {
+  EACH(this, void, e) {
+    if (!pred(e)) return 0;
+  }_EACH
+  return 1;
+}
+
+int arr_any (Arr *this, int (*pred)(void *e)) {
+  EACH(this, void, e) {
+    if (pred(e)) return 1;
+  }_EACH
+  return 0;
+}
+
 int arr_index (Arr *this, int (*pred)(void *e)) {
-  int ix = -1;
-  EACH_IX(this, void, e, i)
-    if (pred(e)) {
-      ix = i;
-      break;
-    }
-  _EACH
-  return ix;
+  EACH_IX(this, void, e, i) {
+    if (pred(e)) return i;
+  }_EACH
+  return -1;
 }
 
 void arr_filter_in (Arr *this, int (*pred)(void *e)) {
