@@ -9,10 +9,10 @@
 #include "dmc/Arr.h"
 #include "dmc/Map.h"
 
-/// 'Js' is an alias of 'char'. It is freed with 'free'.
+/// 'Js' is an alias of 'char'.
 typedef struct js_Js Js;
 
-/// Returns true if json is "null" or false in another case.
+/// Returns '1' if json is "null" or '0' in another case.
 int js_is_null (Js *json);
 
 /// Read boolean.

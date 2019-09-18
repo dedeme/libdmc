@@ -34,8 +34,12 @@ char *sys_uname (void) {
   return sys.uname;
 }
 
-void sys_locale (char *language) {
+void sys_set_locale (char *language) {
   setlocale (LC_ALL, language);
+}
+
+char *sys_locale (void) {
+  return setlocale (LC_ALL, NULL);
 }
 
 Opt *sys_cmd(char *command) {

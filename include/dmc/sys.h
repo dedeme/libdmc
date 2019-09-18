@@ -23,8 +23,11 @@ char *sys_home (void);
 char *sys_uname (void);
 
 /// Sets LC_ALL, for example:
-///   sys_locale("es_ES.utf8")
-void sys_locale (char *language);
+///   sys_set_locale("es_ES.utf8")
+void sys_set_locale (char *language);
+
+/// Returns the current locale.
+char *sys_locale (void);
 
 /// Executes 'command', redirecting stderr to stdout, and returns its standard
 /// out and standard error. If command fails, function returns an empty Opt.

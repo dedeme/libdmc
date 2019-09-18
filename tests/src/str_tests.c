@@ -364,12 +364,12 @@ void str_tests(void) {
 
   printf("    str-to_upper/to_lower\n");
 
-  sys_locale("es_ES.utf8");
+  sys_set_locale("es_ES.utf8");
   r = str_to_upper("cañón");
   assert(str_eq("CAÑÓN", r));
   r = str_to_lower(r);
   assert(str_eq("cañón", r));
-  sys_locale("C");
+  sys_set_locale("C");
 
   r = str_to_escape("cuña\\\"abc\"");
   assert(str_eq("\"cuña\\\\\\\"abc\\\"\"", r));
