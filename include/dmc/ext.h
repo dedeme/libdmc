@@ -11,7 +11,7 @@
 char *ext_wget(char *url);
 
 /// Reads a text using GUI. It calls:
-///   zenity --entry --title='title' --text='prompt'
+///   zenity --entry --title='title' --text='prompt' 2>/dev/null
 /// The return removes starting and trailing spaces.
 /// If user clicks on cancel, it returns an empty string.
 /// It is posible set a default text adding in promp:

@@ -23,7 +23,7 @@ char *ext_zenity_entry(char *title, char *prompt) {
 
 void ext_zenity_msg(char *icon, char *text) {
   char *cmd = str_f(
-    "zenity --info --icon-name=\"%s\" --text=\"%s\"", icon, text
+    "zenity --info --icon-name=\"%s\" --text=\"%s\" 2>/dev/null", icon, text
   );
   opt_eget(sys_cmd(cmd), "Fail running zenity.");
 }
