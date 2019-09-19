@@ -30,7 +30,7 @@ void sys_set_locale (char *language);
 char *sys_locale (void);
 
 /// Executes 'command', redirecting stderr to stdout, and returns its standard
-/// out and standard error. If command fails, function returns an empty Opt.
+/// output. If command fails, function returns an empty Opt.
 ///   return: Opt<char>.
 Opt *sys_cmd(char *command);
 

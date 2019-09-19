@@ -19,7 +19,7 @@ char *ext_wget(char *url);
 char *ext_zenity_entry(char *title, char *prompt);
 
 /// ext_zenity_msg shows a message box. It calls:
-///   zenity --notification --window-icon='icon' --text='text'
+///   zenity --notification --window-icon='icon' --text='text' 2>/dev/null
 /// 'icon' is one of gnome icon stock. For example: info, dialog-warning,
 /// dialog-error, dialog-information, face-wink, etc
 void ext_zenity_msg(char *icon, char *text);

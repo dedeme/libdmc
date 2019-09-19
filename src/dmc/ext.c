@@ -16,20 +16,9 @@ char *ext_wget(char *url) {
 
 char *ext_zenity_entry(char *title, char *prompt) {
   char *cmd = str_f(
-    "zenity --entry --title=\"%s\" --text=\"%s\"", title, prompt
+    "zenity --entry --title=\"%s\" --text=\"%s\" 2>/dev/null", title, prompt
   );
-  char *rt = opt_eget(sys_cmd(cmd), "Fail running zenity.");
-
-  // Arr[char]
-  Arr *parts = str_csplit_trim(rt, '\n');
-  char *s = "";
-  EACH(parts, char, l) {
-    if (!str_starts(l, "Gtk-")) {
-      s = l;
-      break;
-    }
-  }_EACH
-  return s;
+  return str_trim(opt_eget(sys_cmd(cmd), "Fail running zenity."));
 }
 
 void ext_zenity_msg(char *icon, char *text) {

@@ -43,8 +43,8 @@ char *sys_locale (void) {
 }
 
 Opt *sys_cmd(char *command) {
-  char *c = str_f("%s 2>&1", command);
-  FILE *fp = popen(c, "r");
+//  char *c = str_f("%s 2>&1", command);
+  FILE *fp = popen(command, "r");
 
   if (!fp)
     return opt_empty();

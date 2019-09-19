@@ -33,7 +33,7 @@
 
 int main(int argc, char *argv[]) {
   sys_init("libdmc_tests");
-
+/*
   iarr_tests();
   darr_tests();
   bytes_tests();
@@ -51,11 +51,11 @@ int main(int argc, char *argv[]) {
   file_tests();
   js_tests();
   dec_tests();
-  date_tests();
-  ext_tests();
+  date_tests();*/
+  ext_tests();/*
   cgi_tests();
   async_tests();
   iserver_tests(0);
   exc_tests();
-
+*/
 }
