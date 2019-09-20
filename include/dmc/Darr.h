@@ -24,13 +24,14 @@ Darr *darr_bf_new(int buffer);
 /// undetermined.
 Darr *darr_new_c (int size, double *es);
 
-/// If ix is < 0 then is changed to 'darr_size - ix'.
+/// Returns a new Darr with elements from 0 to 'ix' (exclusive),
 Darr *darr_left(Darr *this, int ix);
 
-/// If ix is < 0 then is changed to 'darr_size - ix'.
+/// Returns a new Darr with elements from 'ix' (inclusive) to end of 'this'.
 Darr *darr_right(Darr *this, int ix);
 
-/// If begin or end are < 0 then is changed to 'darr_size - itsValue'.
+/// Returns a new Darr with elements from 'begin' (inclusive) to
+/// to 'end' (exclusive),
 Darr *darr_sub(Darr *this, int begin, int end);
 
 ///

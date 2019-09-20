@@ -24,13 +24,14 @@ Iarr *iarr_bf_new(int buffer);
 /// undetermined.
 Iarr *iarr_new_c (int size, int *es);
 
-/// If ix is < 0 then is changed to 'iarr_size - ix'.
+/// Returns a new Iarr with elements from 0 to 'ix' (exclusive),
 Iarr *iarr_left(Iarr *this, int ix);
 
-/// If ix is < 0 then is changed to 'iarr_size - ix'.
+/// Returns a new Iarr with elements from 'ix' (inclusive) to end of 'this'.
 Iarr *iarr_right(Iarr *this, int ix);
 
-/// If begin or end are < 0 then is changed to 'iarr_size - itsValue'.
+/// Returns a new Iarr with elements from 'begin' (inclusive) to
+/// to 'end' (exclusive),
 Iarr *iarr_sub(Iarr *this, int begin, int end);
 
 ///

@@ -73,7 +73,7 @@ Darr *darr_sub(Darr *this, int begin, int end) {
   EXC_RANGE(end, begin, size);
 
   double *source = this->es + begin;
-  Darr *r = darr_bf_new((this->es + end) - source);
+  Darr *r = darr_bf_new(end - begin);
   double *target = r->es;
   double *end_target = r->endbf;
   r->end = end_target;
