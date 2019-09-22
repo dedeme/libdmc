@@ -17,6 +17,8 @@ static struct {
 } sys = {.home = NULL, .uname = NULL, .udir = NULL};
 
 void sys_init (char *path) {
+  if (sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' already has been called")
   exc_init();
   rnd_init();
 
