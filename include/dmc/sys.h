@@ -22,6 +22,9 @@ char *sys_home (void);
 ///
 char *sys_uname (void);
 
+///
+char *sys_udir (void);
+
 /// Sets LC_ALL, for example:
 ///   sys_set_locale("es_ES.utf8")
 void sys_set_locale (char *language);

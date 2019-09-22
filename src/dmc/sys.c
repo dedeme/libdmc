@@ -13,7 +13,8 @@
 static struct {
   char *home;
   char *uname;
-} sys;
+  char *udir;
+} sys = {.home = NULL, .uname = NULL, .udir = NULL};
 
 void sys_init (char *path) {
   exc_init();
@@ -23,15 +24,26 @@ void sys_init (char *path) {
   struct passwd *udata = getpwuid(uid);
   sys.home = path_cat(udata->pw_dir, ".dmCApp", path, NULL);
   sys.uname = str_new(udata->pw_name);
+  sys.udir = str_new(udata->pw_dir);
   file_mkdir(sys.home);
 }
 
 char *sys_home (void) {
+  if (!sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' was not called")
   return sys.home;
 }
 
 char *sys_uname (void) {
+  if (!sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' was not called")
   return sys.uname;
+}
+
+char *sys_udir (void) {
+  if (!sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' was not called")
+  return sys.udir;
 }
 
 void sys_set_locale (char *language) {
