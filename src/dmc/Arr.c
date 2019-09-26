@@ -346,6 +346,14 @@ int arr_index (Arr *this, int (*pred)(void *e)) {
   return -1;
 }
 
+int arr_last_index (Arr *this, int (*pred)(void *e)) {
+  int r = -1;
+  EACH_IX(this, void, e, i) {
+    if (pred(e)) r = i;
+  }_EACH
+  return r;
+}
+
 void arr_filter_in (Arr *this, int (*pred)(void *e)) {
   void **p = this->es;
   void **end = this->end;

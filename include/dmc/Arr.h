@@ -99,9 +99,13 @@ int arr_all (Arr *this, int (*pred)(void *e));
 /// Returns '1' if some element of 'this' yields '1' with 'pred'.
 int arr_any (Arr *this, int (*pred)(void *e));
 
-/// arr_index returns the index of the first elements which returns 'true'
+/// Returns the index of the first elements which returns 'true'
 /// with 'pred', or -1 if such element does not exist.
 int arr_index (Arr *this, int (*pred)(void *e));
+
+/// Returns the index of the last elements which returns 'true'
+/// with 'pred', or -1 if such element does not exist.
+int arr_last_index (Arr *this, int (*pred)(void *e));
 
 /// arr_filter_in removes every element which returns 'false' with 'pred'.
 void arr_filter_in (Arr *this, int (*pred)(void *e));

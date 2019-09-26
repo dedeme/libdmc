@@ -185,11 +185,16 @@ void arr_tests(void) {
 
   int pred (void *s) { return *((char *)s) < 'd'; }
   assert(arr_index(arr_new(), pred) == -1);
+  assert(arr_last_index(arr_new(), pred) == -1);
   assert(!arr_any(arr_new(), pred));
   assert(arr_all(arr_new(), pred));
   assert(arr_index(arr_new_from("a", "b", NULL), pred) == 0);
   assert(arr_index(arr_new_from("d", "e", "b", NULL), pred) == 2);
   assert(arr_index(arr_new_from("d", "e", NULL), pred) == -1);
+  assert(arr_last_index(arr_new_from("a", "b", NULL), pred) == 1);
+  assert(arr_last_index(arr_new_from("a", "b", "a", NULL), pred) == 2);
+  assert(arr_last_index(arr_new_from("d", "e", "b", NULL), pred) == 2);
+  assert(arr_last_index(arr_new_from("d", "e", NULL), pred) == -1);
   assert(arr_all(arr_new_from("a", "b", NULL), pred));
   assert(!arr_all(arr_new_from("d", "e", "b", NULL), pred));
   assert(!arr_all(arr_new_from("d", "e", NULL), pred));
