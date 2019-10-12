@@ -212,6 +212,14 @@ static void barbery (void) {
   asyncActor_join(actor);
 }
 
+static void counter (char *c) {
+  int n = atoi(c);
+  for (int i = 0; i < n; ++i) {
+    printf("%d\n", i);
+    sys_sleep(50);
+  }
+}
+
 void async_tests(void) {
   puts("Async tests");
 
@@ -219,8 +227,14 @@ void async_tests(void) {
   void fn() { puts("Hello"); }
   pthread_t *thr = async_thread(fn);
   async_join(thr);
+*/
 
-
+  if (0) {
+    async_thread_detached((FPROC)counter, "10");
+    async_thread_detached((FPROC)counter, "10");
+    sys_sleep(1000);
+  }
+/*
   AsyncActor *ac = asyncActor_new(50);
   void task (void *null) {
     puts("--------");

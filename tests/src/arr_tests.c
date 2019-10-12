@@ -91,7 +91,6 @@ void arr_tests(void) {
   arr_clear(acp);
   assert(arr_size(acp) == 0);
 
-
   arr_set(ia, 4, double_new(33));
   arr_remove(ia, 1);
   assert(*(double *)arr_get(ia, 1) == 2);

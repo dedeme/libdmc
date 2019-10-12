@@ -45,13 +45,13 @@ Arr *arr_new_from (void *e, ...) {
 }
 
 Arr *arr_new_c (int size, void **es) {
-  int buffer = size + size;
-  int bf_size = buffer * sizeof(void *);
+  int bs_size= size * sizeof(void *);
+
   Arr *this = MALLOC(Arr);
-  this->es = GC_MALLOC(bf_size);
+  this->es = GC_MALLOC(bs_size + bs_size);
   this->end = this->es + size;
-  this->endbf = this->es + buffer;
-  memcpy(this->es, es, bf_size);
+  this->endbf = this->es + size + size;
+  memcpy(this->es, es, bs_size);
   return this;
 }
 
