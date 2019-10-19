@@ -80,9 +80,9 @@ char *str_trim(char *str);
 
 /// Splits 'str' in an Arr[char].
 /// For example (using ';' as separator):
-///   "" -> []
-///   ";" -> [""]
-///   "a;" -> [a]
+///   "" -> [""]
+///   ";" -> ["", ""]
+///   "a;" -> [a, ""]
 ///   "a;bc" -> ["a", "bc"]
 /// Returns an Arr<char>.
 Arr *str_csplit(char *str, char sep);
@@ -93,11 +93,11 @@ Arr *str_csplit_trim(char *str, char sep);
 
 /// Splits 'str' in an Arr<char>.
 /// For example (using ";" as separator):
-///   "" -> []
-///   ";" -> [""]
-///   "a;" -> [a]
+///   "" -> [""]
+///   ";" -> ["", ""]
+///   "a;" -> [a, ""]
 ///   "a;bc" -> ["a", "bc"]
-/// If 'sep' is "" return will have only one string equals to 'str'.
+/// If 'sep' is "" return all runes of 'str'.
 /// Returns an Arr<char>.
 Arr *str_split(char *str, char *sep);
 

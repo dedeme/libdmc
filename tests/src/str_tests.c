@@ -211,13 +211,13 @@ void str_tests(void) {
   assert(str_eq(r, tx0));
   a = str_csplit(tx01, ';');
   r = str_cjoin(a, ';');
-  assert(str_eq(r, ""));
+  assert(str_eq(r, ";"));
   a = str_csplit(tx1, ';');
   r = str_cjoin(a, ';');
   assert(str_eq(r, tx1));
   a = str_csplit(tx2, ';');
   r = str_cjoin(a, ';');
-  assert(str_eq(r, tx1));
+  assert(str_eq(r, "ab;"));
   a = str_csplit(tx3, ';');
   r = str_cjoin(a, ';');
   assert(str_eq(r, tx3));
@@ -254,6 +254,14 @@ void str_tests(void) {
   a = str_split_trim(tx3b, ";--");
   r = str_join(a, ";--");
   assert(str_eq(r, tx3c));
+  a = str_split("", "");
+  assert(arr_size(a) == 0);
+  r = str_join(a, "");
+  assert(str_eq(r, ""));
+  a = str_split("abñ", "");
+  assert(arr_size(a) == 3);
+  r = str_join(a, "");
+  assert(str_eq(r, "abñ"));
 
   puts("    str-replace\n");
 

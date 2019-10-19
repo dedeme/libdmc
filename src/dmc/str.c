@@ -233,7 +233,7 @@ Arr *str_csplit(char *s, char sep) {
     s = s + i + 1;
     i = str_cindex(s, sep);
   }
-  if (*s) arr_push(r, str_new(s));
+  arr_push(r, str_new(s));
   return r;
 }
 
@@ -256,9 +256,15 @@ Arr *str_split(char *s, char *sep) {
   Arr *r = arr_new();
   int len = strlen(sep);
   if (!len) {
-    arr_push(r, str_new(s));
+    char *rune;
+    s = str_next_rune(&rune, s);
+    while (*rune) {
+      arr_push(r, rune);
+      s = str_next_rune(&rune, s);
+    }
     return r;
   }
+
   int i = str_index(s, sep);
   while (i != -1) {
     char *sub = ATOMIC(i + 1);
