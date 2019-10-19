@@ -274,7 +274,7 @@ Arr *str_split(char *s, char *sep) {
     s = s + i + len;
     i = str_index(s, sep);
   }
-  if (*s) arr_push(r, str_new(s));
+  arr_push(r, str_new(s));
   return r;
 }
 
