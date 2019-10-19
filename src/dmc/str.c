@@ -130,7 +130,7 @@ int str_last_cindex(char *str, char ch) {
 int str_last_index(char *str, char *substr) {
   int r = -1;
   if (!*substr) {
-    return 0;
+    return strlen(str);
   }
   int c = 0;
   int limit = strlen(str) - strlen(substr);

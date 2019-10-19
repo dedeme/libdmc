@@ -61,7 +61,7 @@ void str_tests(void) {
   assert(str_last_index("ab", "b") == 1);
   assert(str_last_index("abcb", "b") == 3);
   assert(str_last_index("ab", "c") == -1);
-  assert(str_last_index("ab", "") == 0);
+  assert(str_last_index("ab", "") == 2);
   assert(str_last_index("", "") == 0);
   assert(str_last_index("ab", "abc") == -1);
   assert(str_last_index("abcd", "bc") == 1);
