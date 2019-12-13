@@ -28,6 +28,7 @@
 #include "async_tests.h"
 #include "iserver_tests.h"
 #include "exc_tests.h"
+#include "regex_tests.h"
 
 #include <stdio.h>
 
@@ -52,10 +53,11 @@ int main(int argc, char *argv[]) {
   js_tests();
   dec_tests();
   date_tests();
-*/  ext_tests(); /*
+  ext_tests();
   cgi_tests();
   async_tests();
   iserver_tests(0);
-  exc_tests();*/
+  exc_tests(); */
+  regex_tests();
 
 }
