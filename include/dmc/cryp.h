@@ -26,7 +26,7 @@ char *cryp_decryp (char *b64, char *k);
 
 /// Encodes automatically 's' with a random key of 'nk' digits.
 ///   nK: Number of digits for random key (1 to 64 both inclusive).
-///   s : Text for enconding.
+///   s : Text for encoding.
 char *cryp_auto_cryp (char *s, int nk);
 
 /// Decodes a text codified with autoCryp().

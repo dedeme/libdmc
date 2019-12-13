@@ -15,6 +15,9 @@ void ext_tests(void) {
 //  r = ext_wget("www.google.com");
 //  puts(r);
 
+//  r = ext_puppeteer("https://www.google.com");
+//  puts(r);
+
 //  r = ext_zenity_entry("Title", "A text:\" --entry-text \"default");
 //  printf("%s\n%zu\n", r, strlen(r));
 
