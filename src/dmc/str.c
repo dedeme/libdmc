@@ -200,6 +200,18 @@ char *str_right(char *str, int begin) {
   return str_sub(str, begin, strlen(str));
 }
 
+char *str_reverse(char *str) {
+  int len = strlen(str);
+  char *r = ATOMIC(len + 1);
+  char *pr = r;
+  char *pstr = str + (len - 1);
+  while (*pstr)
+    *pr++ = *pstr--;
+  *pr++ = *pstr;
+  *pr = 0;
+  return r;
+}
+
 char *str_ltrim(char *str) {
   unsigned char ch = *str;
   while (ch && ch <= ' ') ch = *++str;

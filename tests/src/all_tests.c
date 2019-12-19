@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
   bytes_tests();
   arr_tests();
   it_tests();
-  buf_tests();
-  str_tests();
+  buf_tests(); */
+  str_tests(); /*
   map_tests();
   list_tests();
   hash_tests();
@@ -51,13 +51,13 @@ int main(int argc, char *argv[]) {
   path_tests();
   file_tests();
   js_tests();
-  dec_tests();
+*/  dec_tests(); /*
   date_tests();
   ext_tests();
   cgi_tests();
   async_tests();
   iserver_tests(0);
-  exc_tests(); */
+  exc_tests();
   regex_tests();
-
+*/
 }

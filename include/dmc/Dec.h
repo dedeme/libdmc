@@ -16,8 +16,20 @@ typedef struct dec_Dec Dec;
 ///   scale: Decimal positions. Maximum scale is 10.
 Dec *dec_new(double n, int scale);
 
-///
+/// Returns use '.' as decimal point.
 char *dec_to_str(Dec *this);
+
+/// Returns use '.' as thousands separator.
+char *dec_int_to_iso(int n);
+
+/// Returns use ',' as thousands separator.
+char *dec_int_to_us(int n);
+
+/// Returns use ',' as decimal point and '.' as thousands separator.
+char *dec_double_to_iso(double n, int scale);
+
+/// Returns use '.' as decimal point and ',' as thousands separator.
+char *dec_double_to_us(double n, int scale);
 
 /// Returns the rounded double value of 'this'.
 double dec_n(Dec *this);

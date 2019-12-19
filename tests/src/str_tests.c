@@ -137,6 +137,12 @@ void str_tests(void) {
   r = str_right(r, -1);
   assert(str_eq(r, "b"));
 
+  puts("    str-trim/reverse");
+
+  assert (str_eq("", str_reverse("")));
+  assert (str_eq("a", str_reverse("a")));
+  assert (str_eq("abc", str_reverse("cba")));
+
   r = str_trim("nothing to trim");
   assert(str_eq(r, "nothing to trim"));
   r = str_trim("trim the back     ");

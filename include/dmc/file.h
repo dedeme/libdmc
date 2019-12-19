@@ -100,22 +100,22 @@ FileLck *file_wopen (char *path);
 /// It returns a FileLck object which will be freed when close is called..
 FileLck *file_aopen (char *path);
 
-/// Reads a text file opened with file_ropen.
+/// Reads a text file open with file_ropen.
 /// It does not delete ends of line.
 /// When reading is finished, returns a blank string.
 char *file_read_line (FileLck *lck);
 
-/// Writes a text file opened with file_wopen or file_aopen.
+/// Writes a text file open with file_wopen or file_aopen.
 void file_write_text (FileLck *lck, char *text);
 
-/// Reads a binary file opened with file_ropen.
+/// Reads a binary file open with file_ropen.
 /// When reading is finished, returns an empty Bytes.
 Bytes *file_read_bin_buf (FileLck *lck, int buffer);
 
 /// file_read_bin is the same as 'file_read_bin_bf' using a buffer of 8192.
 Bytes *file_read_bin (FileLck *lck);
 
-/// Writes a binary file opened with file_wopen.
+/// Writes a binary file open with file_wopen.
 /// Returns 0 if there is no error.
 void file_write_bin (FileLck *lck, Bytes *bs);
 

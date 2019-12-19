@@ -11,10 +11,6 @@ void dec_tests(void) {
 
   int decEqstr(char *n, Dec *this) {
     char *r = dec_to_str(this);
-    char *lc = setlocale(LC_ALL, NULL);
-    if (str_starts(lc, "es") || str_starts(lc, "ES")){
-      r = dec_regularize_iso(r);
-    }
     return str_eq(r, n);
   }
 
@@ -143,6 +139,60 @@ void dec_tests(void) {
   assert(!dec_number("12b.eb"));
   assert(!dec_number("124.7b"));
   assert(!dec_number("12b"));
+
+  assert(str_eq(dec_int_to_iso(0), "0"));
+  assert(str_eq(dec_int_to_iso(-0), "0"));
+  assert(str_eq(dec_int_to_iso(2), "2"));
+  assert(str_eq(dec_int_to_iso(-2), "-2"));
+  assert(str_eq(dec_int_to_iso(1112), "1.112"));
+  assert(str_eq(dec_int_to_iso(-1122), "-1.122"));
+  assert(str_eq(dec_int_to_iso(123451112), "123.451.112"));
+  assert(str_eq(dec_int_to_iso(-123451112), "-123.451.112"));
+
+  assert(str_eq(dec_int_to_us(0), "0"));
+  assert(str_eq(dec_int_to_us(-0), "0"));
+  assert(str_eq(dec_int_to_us(2), "2"));
+  assert(str_eq(dec_int_to_us(-2), "-2"));
+  assert(str_eq(dec_int_to_us(1112), "1,112"));
+  assert(str_eq(dec_int_to_us(-1122), "-1,122"));
+  assert(str_eq(dec_int_to_us(123451112), "123,451,112"));
+  assert(str_eq(dec_int_to_us(-123451112), "-123,451,112"));
+
+  assert(str_eq(dec_double_to_iso(0, 0), "0"));
+  assert(str_eq(dec_double_to_iso(-0, 0), "0"));
+  assert(str_eq(dec_double_to_iso(2, 0), "2"));
+  assert(str_eq(dec_double_to_iso(-2, 0), "-2"));
+  assert(str_eq(dec_double_to_iso(1112, 0), "1.112"));
+  assert(str_eq(dec_double_to_iso(-1122, 0), "-1.122"));
+  assert(str_eq(dec_double_to_iso(123451112, 0), "123.451.112"));
+  assert(str_eq(dec_double_to_iso(-123451112, 0), "-123.451.112"));
+
+  assert(str_eq(dec_double_to_us(0, 0), "0"));
+  assert(str_eq(dec_double_to_us(-0, 0), "0"));
+  assert(str_eq(dec_double_to_us(2, 0), "2"));
+  assert(str_eq(dec_double_to_us(-2, 0), "-2"));
+  assert(str_eq(dec_double_to_us(1112, 0), "1,112"));
+  assert(str_eq(dec_double_to_us(-1122, 0), "-1,122"));
+  assert(str_eq(dec_double_to_us(123451112, 0), "123,451,112"));
+  assert(str_eq(dec_double_to_us(-123451112, 0), "-123,451,112"));
+
+  assert(str_eq(dec_double_to_iso(0.20, 2), "0,20"));
+  assert(str_eq(dec_double_to_iso(-0.02, 2), "-0,02"));
+  assert(str_eq(dec_double_to_iso(2.346, 2), "2,35"));
+  assert(str_eq(dec_double_to_iso(-2.346, 2), "-2,35"));
+  assert(str_eq(dec_double_to_iso(1112, 2), "1.112,00"));
+  assert(str_eq(dec_double_to_iso(-1122, 2), "-1.122,00"));
+  assert(str_eq(dec_double_to_iso(123451112.41, 2), "123.451.112,41"));
+  assert(str_eq(dec_double_to_iso(-123451112.41, 2), "-123.451.112,41"));
+
+  assert(str_eq(dec_double_to_us(0.20, 2), "0.20"));
+  assert(str_eq(dec_double_to_us(-0.02, 2), "-0.02"));
+  assert(str_eq(dec_double_to_us(2.346, 2), "2.35"));
+  assert(str_eq(dec_double_to_us(-2.346, 2), "-2.35"));
+  assert(str_eq(dec_double_to_us(1112, 2), "1,112.00"));
+  assert(str_eq(dec_double_to_us(-1122, 2), "-1,122.00"));
+  assert(str_eq(dec_double_to_us(123451112.41, 2), "123,451,112.41"));
+  assert(str_eq(dec_double_to_us(-123451112.41, 2), "-123,451,112.41"));
 
   puts("    Finished");
 }
