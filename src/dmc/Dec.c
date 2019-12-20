@@ -91,6 +91,7 @@ char *dec_int_to_us(int n) {
 
 static char *double_to_str(double n, int scale, char sep, char point) {
   if (scale < 1) scale = 0;
+  if (n == -0) n = 0;
   char *r = str_f(str_cat("%.", str_f("%d", scale), "f", NULL), n);
 
   struct lconv *lc = localeconv();

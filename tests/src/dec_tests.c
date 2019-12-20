@@ -168,7 +168,7 @@ void dec_tests(void) {
   assert(str_eq(dec_double_to_iso(-123451112, 0), "-123.451.112"));
 
   assert(str_eq(dec_double_to_us(0, 0), "0"));
-  assert(str_eq(dec_double_to_us(-0, 0), "0"));
+  assert(str_eq(dec_double_to_us(-0.0000, 0), "0"));
   assert(str_eq(dec_double_to_us(2, 0), "2"));
   assert(str_eq(dec_double_to_us(-2, 0), "-2"));
   assert(str_eq(dec_double_to_us(1112, 0), "1,112"));
