@@ -27,7 +27,11 @@ static IserverRq *iserverRq_new (int sock, Opt *msg, Opt *host) {
 }
 
 char *iserverRq_error (IserverRq *this) {
-  return this->sock < 0 ? opt_get(this->msg) : "";
+  if(this->sock < 0) {
+    char *msg = opt_nget(this->msg);
+    return msg ? msg : "Unknown error";
+  }
+  return "";
 }
 
 Opt *iserverRq_msg (IserverRq *this) {
