@@ -1,10 +1,10 @@
 // Copyright 13-Dec-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Tuple of two integers.
+
 #ifndef DMC_ITP_H
   #define DMC_ITP_H
-
-/// Tuple of two integers.
 
 #include "dmc/std.h"
 

@@ -1,14 +1,14 @@
 // Copyright 13-Dec-2019 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
+/// Regular expressions management.
+
 #ifndef DMC_REGEX_H
   #define DMC_REGEX_H
 
-/// Regular expressions management.
-
 #include "dmc/std.h"
 
-/// Returns the offets where ereg is found in s.
+/// Returns the offsets where ereg is found in s.
 ///   rex   : Regular expression to find. It does not admit grouping (that is,
 ///           parenthesis).
 ///   s     : String to search in.
