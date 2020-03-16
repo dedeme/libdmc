@@ -61,7 +61,7 @@ void str_tests(void) {
   assert(str_last_index("ab", "b") == 1);
   assert(str_last_index("abcb", "b") == 3);
   assert(str_last_index("ab", "c") == -1);
-  assert(str_last_index("ab", "") == 0);
+  assert(str_last_index("ab", "") == 2);
   assert(str_last_index("", "") == 0);
   assert(str_last_index("ab", "abc") == -1);
   assert(str_last_index("abcd", "bc") == 1);
@@ -106,8 +106,12 @@ void str_tests(void) {
   r = str_sub(r, -1, 0);
   assert(str_eq(r, ""));
   r = str_cat(r, "ab", NULL);
-  r = str_sub(r, 0, 35);
-  assert(str_eq(r, ""));
+  TRY {
+    r = str_sub(r, 0, 35);
+    assert (0);
+  } CATCH (e) {
+    str_eq(exc_type(e), exc_range_t);
+  }_TRY
   r = str_cat(r, "ab", NULL);
   r = str_sub(r, 3, 3);
   assert(str_eq(r, ""));
@@ -120,7 +124,11 @@ void str_tests(void) {
   assert(str_eq(r, "ab"));
   r = str_sub(r, 1, 2);
   assert(str_eq(r, "b"));
-  r = str_right(r, 20);
+  TRY {
+    r = str_right(r, 20);
+  } CATCH (e) {
+    str_eq(exc_type(e), exc_range_t);
+  }_TRY
   r = str_left(r, 0);
   assert(str_eq(r, ""));
   r = str_cat(r, "ab", NULL);
@@ -128,6 +136,12 @@ void str_tests(void) {
   assert(str_eq(r, "ab"));
   r = str_right(r, -1);
   assert(str_eq(r, "b"));
+
+  puts("    str-trim/reverse");
+
+  assert (str_eq("", str_reverse("")));
+  assert (str_eq("a", str_reverse("a")));
+  assert (str_eq("abc", str_reverse("cba")));
 
   r = str_trim("nothing to trim");
   assert(str_eq(r, "nothing to trim"));
@@ -203,13 +217,13 @@ void str_tests(void) {
   assert(str_eq(r, tx0));
   a = str_csplit(tx01, ';');
   r = str_cjoin(a, ';');
-  assert(str_eq(r, ""));
+  assert(str_eq(r, ";"));
   a = str_csplit(tx1, ';');
   r = str_cjoin(a, ';');
   assert(str_eq(r, tx1));
   a = str_csplit(tx2, ';');
   r = str_cjoin(a, ';');
-  assert(str_eq(r, tx1));
+  assert(str_eq(r, "ab;"));
   a = str_csplit(tx3, ';');
   r = str_cjoin(a, ';');
   assert(str_eq(r, tx3));
@@ -218,13 +232,13 @@ void str_tests(void) {
   assert(str_eq(r, tx0));
   a = str_split(tx01, ";");
   r = str_join(a, ";");
-  assert(str_eq(r, ""));
+  assert(str_eq(r, ";"));
   a = str_split(tx1, ";");
   r = str_join(a, ";");
   assert(str_eq(r, tx1));
   a = str_split(tx2, ";");
   r = str_join(a, ";");
-  assert(str_eq(r, tx1));
+  assert(str_eq(r, tx2));
   a = str_split(tx3, ";");
   r = str_join(a, ";");
   assert(str_eq(r, tx3));
@@ -233,19 +247,27 @@ void str_tests(void) {
   assert(str_eq(r, tx0));
   a = str_split(tx01b, ";--");
   r = str_join(a, ";--");
-  assert(str_eq(r, ""));
+  assert(str_eq(r, tx01b));
   a = str_split(tx1, ";--");
   r = str_join(a, ";--");
   assert(str_eq(r, tx1));
   a = str_split(tx2b, ";--");
   r = str_join(a, ";--");
-  assert(str_eq(r, tx1));
+  assert(str_eq(r, tx2b));
   a = str_split(tx3b, ";--");
   r = str_join(a, ";--");
   assert(str_eq(r, tx3b));
   a = str_split_trim(tx3b, ";--");
   r = str_join(a, ";--");
   assert(str_eq(r, tx3c));
+  a = str_split("", "");
+  assert(arr_size(a) == 0);
+  r = str_join(a, "");
+  assert(str_eq(r, ""));
+  a = str_split("abñ", "");
+  assert(arr_size(a) == 3);
+  r = str_join(a, "");
+  assert(str_eq(r, "abñ"));
 
   puts("    str-replace\n");
 
@@ -356,12 +378,12 @@ void str_tests(void) {
 
   printf("    str-to_upper/to_lower\n");
 
-  sys_locale("es_ES.utf8");
+  sys_set_locale("es_ES.utf8");
   r = str_to_upper("cañón");
   assert(str_eq("CAÑÓN", r));
   r = str_to_lower(r);
   assert(str_eq("cañón", r));
-  sys_locale("C");
+  sys_set_locale("C");
 
   r = str_to_escape("cuña\\\"abc\"");
   assert(str_eq("\"cuña\\\\\\\"abc\\\"\"", r));

@@ -2,7 +2,6 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/str.h"
-#include <ctype.h>
 #include <wctype.h>
 #include "dmc/std.h"
 
@@ -131,7 +130,7 @@ int str_last_cindex(char *str, char ch) {
 int str_last_index(char *str, char *substr) {
   int r = -1;
   if (!*substr) {
-    return 0;
+    return strlen(str);
   }
   int c = 0;
   int limit = strlen(str) - strlen(substr);
@@ -172,13 +171,14 @@ char *str_sub(char *str, int begin, int end) {
   if (begin < 0) {
     begin = l + begin;
   }
+  EXC_RANGE(begin, 0, l)
+
   if (end < 0) {
     end = l + end;
   }
+  EXC_RANGE(end, 0, l)
+
   df = end - begin;
-  if (begin < 0 || end > l) {
-    df = -1;
-  }
 
   char *r;
   if (df < 0) {
@@ -200,21 +200,35 @@ char *str_right(char *str, int begin) {
   return str_sub(str, begin, strlen(str));
 }
 
+char *str_reverse(char *str) {
+  int len = strlen(str);
+  char *r = ATOMIC(len + 1);
+  char *pr = r;
+  char *pstr = str + (len - 1);
+  while (*pstr)
+    *pr++ = *pstr--;
+  *pr++ = *pstr;
+  *pr = 0;
+  return r;
+}
+
 char *str_ltrim(char *str) {
-  while (isspace(*str)) ++str;
+  unsigned char ch = *str;
+  while (ch && ch <= ' ') ch = *++str;
   return str_new(str);
 }
 
 char *str_rtrim(char *str) {
   char *p = str + (strlen(str) - 1);
-  while (p >= str && isspace(*p)) {
+  while (p >= str && ((unsigned char)*p) <= ' ') {
     --p;
   }
   return str_left(str, (p - str) + 1);
 }
 
 char *str_trim(char *str) {
-  while (isspace(*str)) ++str;
+  unsigned char ch = *str;
+  while (ch && ch <= ' ') ch = *++str;
   return str_rtrim(str);
 }
 
@@ -231,7 +245,7 @@ Arr *str_csplit(char *s, char sep) {
     s = s + i + 1;
     i = str_cindex(s, sep);
   }
-  if (*s) arr_push(r, str_new(s));
+  arr_push(r, str_new(s));
   return r;
 }
 
@@ -254,9 +268,15 @@ Arr *str_split(char *s, char *sep) {
   Arr *r = arr_new();
   int len = strlen(sep);
   if (!len) {
-    arr_push(r, str_new(s));
+    char *rune;
+    s = str_next_rune(&rune, s);
+    while (*rune) {
+      arr_push(r, rune);
+      s = str_next_rune(&rune, s);
+    }
     return r;
   }
+
   int i = str_index(s, sep);
   while (i != -1) {
     char *sub = ATOMIC(i + 1);
@@ -266,7 +286,7 @@ Arr *str_split(char *s, char *sep) {
     s = s + i + len;
     i = str_index(s, sep);
   }
-  if (*s) arr_push(r, str_new(s));
+  arr_push(r, str_new(s));
   return r;
 }
 

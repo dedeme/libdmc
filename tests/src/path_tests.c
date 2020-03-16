@@ -50,6 +50,14 @@ void path_tests(void) {
   char *r = path_cat(s0, s1, "ab", "ab", "", "cd", NULL);
   assert(str_eq(r, "1/ab/ab/cd"));
 
+  assert(str_eq(opt_oget(path_canonical("/hom/dem"), "EE"), "EE"));
+  assert(str_eq(
+    opt_oget(path_canonical("/bin/xx/.//..//../bin"), "EE"), "EE"
+  ));
+  assert(str_eq(
+    opt_oget(path_canonical("/etc/apt/.//..//../etc"), "EE"), "/etc"
+  ));
+
   puts("    Finished");
 }
 

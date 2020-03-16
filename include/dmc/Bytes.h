@@ -23,7 +23,7 @@ Bytes *bytes_new(void);
 ///
 Bytes *bytes_bf_new(int length);
 
-/// Returns a new allocated 'Bytes' whitch is copy of 'bs'
+/// Returns a new allocated 'Bytes' whitch is copy of 'bs'.
 Bytes *bytes_from_bytes(unsigned char *bs, int length);
 
 /// Returns a 'Bytes' whitch is copy of 's' without the ending zero.
@@ -35,13 +35,13 @@ unsigned char *bytes_bs(Bytes *this);
 ///
 int bytes_len(Bytes *this);
 
-/// Adds to 'this' a new copy of 'bs'
+/// Adds to 'this' a new copy of 'bs'.
 void bytes_add_bytes(Bytes *this, unsigned char *bs, int length);
 
-/// Adds to 'this' a new copy of 'another'
+/// Adds to 'this' a new copy of 'another'.
 void bytes_add(Bytes *this, Bytes *another);
 
-/// Adds to 'this' a copy of 's' without the ending zero
+/// Adds to 'this' a copy of 's' without the ending zero.
 void bytes_add_str(Bytes *this, char *s);
 
 ///

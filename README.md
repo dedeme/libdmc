@@ -4,7 +4,13 @@ C utilities.
 
 Some utilities from C language.
 
-These utilities depend on 'libpthread', 'libm' and 'libgc' (Garbage collector)
+Version - 201909
+
+Dependencies:
+
+  - libpthread
+  - libm
+  - libgc (Garbage collector)
 
 ```sh
 apt-get install libgc-dev
@@ -16,13 +22,13 @@ apt-get install libgc-dev
 
 ```sh
 mkdir dmctest
-cd dmctests
+cd dmctest
 ```
 
 ### Clone repository
 
 ```sh
-git clone https://github.com/dedeme/libdmc.git
+git clone --branch 201909 https://github.com/dedeme/libdmc.git
 ```
 
 ### Open 'libdmc' and run 'make'

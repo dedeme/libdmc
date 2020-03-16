@@ -9,15 +9,18 @@ void ext_tests(void) {
   puts("Ext tests");
 
 
-/*
-  char *r;
 
-  r = ext_wget("www.google.com");
-  puts(r);
+//  char *r;
 
-  r = ext_zenity_entry("Title", "A text:\" --entry-text \"default");
-  printf("%s\n%zu\n", r, strlen(r));
-*/
+//  r = ext_wget("www.google.com");
+//  puts(r);
+
+//  r = ext_puppeteer("https://www.google.com");
+//  puts(r);
+
+//  r = ext_zenity_entry("Title", "A text:\" --entry-text \"default");
+//  printf("%s\n%zu\n", r, strlen(r));
+
 //  ext_zenity_msg("face-wink", "A <b>message</b>");
 
   char *target = str_f("%s/doc.pdf", sys_home());

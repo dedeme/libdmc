@@ -14,33 +14,44 @@ char *ext_wget(char *url) {
   return opt_get(r);
 }
 
-void ext_awget(
-  Schd *sc, void (*fn)(void *ctx, char *html), void *ctx, char *url
-) {
-  schd_cmd(sc, fn, ctx, str_f("wget -q --no-cache -O - %s", url));
+char *ext_puppeteer (char *url) {
+  char *fmt = "node -e \""
+    "const puppeteer = require('puppeteer');"
+    "(async () => {"
+    "  try {"
+    "    const browser = await puppeteer.launch();"
+    "    const page = await browser.newPage();"
+    "    page.setDefaultNavigationTimeout(180000);"
+    "    await page.goto('%s');"
+    "    const ct = await page.content();"
+    "    console.log(ct);"
+    "    await browser.close();"
+    "  } catch (e) {"
+    "    console.error(e.toString());"
+    "    process.exit(1);"
+    "  }"
+    "})();"
+    "\" 2>/dev/null"
+  ;
+  char *cmd = str_f(fmt, url);
+  // Opt[char]
+  Opt *r = sys_cmd(cmd);
+  if (opt_is_empty(r)) {
+    return "";
+  }
+  return opt_get(r);
 }
 
 char *ext_zenity_entry(char *title, char *prompt) {
   char *cmd = str_f(
-    "zenity --entry --title=\"%s\" --text=\"%s\"", title, prompt
+    "zenity --entry --title=\"%s\" --text=\"%s\" 2>/dev/null", title, prompt
   );
-  char *rt = opt_eget(sys_cmd(cmd), "Fail running zenity.");
-
-  // Arr[char]
-  Arr *parts = str_csplit_trim(rt, '\n');
-  char *s = "";
-  EACH(parts, char, l) {
-    if (!str_starts(l, "Gtk-")) {
-      s = l;
-      break;
-    }
-  }_EACH
-  return s;
+  return str_trim(opt_eget(sys_cmd(cmd), "Fail running zenity."));
 }
 
 void ext_zenity_msg(char *icon, char *text) {
   char *cmd = str_f(
-    "zenity --info --icon-name=\"%s\" --text=\"%s\"", icon, text
+    "zenity --info --icon-name=\"%s\" --text=\"%s\" 2>/dev/null", icon, text
   );
   opt_eget(sys_cmd(cmd), "Fail running zenity.");
 }

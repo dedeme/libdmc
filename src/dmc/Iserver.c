@@ -27,7 +27,11 @@ static IserverRq *iserverRq_new (int sock, Opt *msg, Opt *host) {
 }
 
 char *iserverRq_error (IserverRq *this) {
-  return this->sock < 0 ? opt_get(this->msg) : "";
+  if(this->sock < 0) {
+    char *msg = opt_nget(this->msg);
+    return msg ? msg : "Unknown error";
+  }
+  return "";
 }
 
 Opt *iserverRq_msg (IserverRq *this) {
@@ -105,7 +109,10 @@ IserverRq *iserver_read (Iserver *this) {
   int rs = select (FD_SETSIZE, read_fd_set, NULL, NULL, &timeout);
 
   if (rs < 0) {
-    return iserverRq_new(-1, opt_new("Fail in server select"), opt_empty());
+    if (errno == EINTR)
+      return iserverRq_new(0, opt_empty(), opt_empty());
+    else
+      return iserverRq_new(-1, opt_new("Fail in server select"), opt_empty());
   }
   if (!FD_ISSET(sock, read_fd_set)) {
     FD_SET (sock, read_fd_set);

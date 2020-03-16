@@ -9,54 +9,55 @@
 #include "dmc/Arr.h"
 #include "dmc/Map.h"
 
-/// 'Js' is an alias of 'char'. It is freed with 'free'.
+/// 'Js' is an alias of 'char'.
 typedef struct js_Js Js;
 
-/// Returns true if json is "null" or false in another case.
+/// Returns '1' if json is "null" or '0' in another case.
 int js_is_null (Js *json);
 
-/// Read boolean
+/// Read boolean.
 int js_rb (Js *json);
 
-/// Read int
+/// Read int.
 int js_ri (Js *json);
 
-/// Read long
+/// Read long.
 long js_rl (Js *json);
 
-/// Read double
+/// Read double.
 double js_rd (Js *json);
 
-/// Read string
+/// Read string.
 char *js_rs (Js *json);
 
-/// Read array in an Arr[Js]
+/// Read array in an Arr<Js>.
 Arr *js_ra (Js *json);
 
-/// Read object in a Map[js]
+/// Read object in a Map<js>.
 Map *js_ro (Js *json);
-/// Write a null value
+
+/// Write a null value.
 Js *js_wn(void);
 
-/// Write a boolean value
+/// Write a boolean value.
 Js *js_wb(int value);
 
-/// Write an int value
+/// Write an int value.
 Js *js_wi(int n);
 
-/// Write an long value
+/// Write an long value.
 Js *js_wl(long n);
 
 /// Write a double value with a maximum of 9 decimal positions.
 Js *js_wd(double n);
 
-/// Write a string
+/// Write a string.
 Js *js_ws(char *s);
 
-/// Write an Arr[Js]
+/// Write an Arr<Js>.
 Js *js_wa(Arr *a);
 
-/// Write a Map[Js]
+/// Write a Map<Js>.
 Js *js_wo(Map *m);
 
 #endif

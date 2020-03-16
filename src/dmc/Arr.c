@@ -45,13 +45,13 @@ Arr *arr_new_from (void *e, ...) {
 }
 
 Arr *arr_new_c (int size, void **es) {
-  int buffer = size + size;
-  int bf_size = buffer * sizeof(void *);
+  int bs_size= size * sizeof(void *);
+
   Arr *this = MALLOC(Arr);
-  this->es = GC_MALLOC(bf_size);
+  this->es = GC_MALLOC(bs_size + bs_size);
   this->end = this->es + size;
-  this->endbf = this->es + buffer;
-  memcpy(this->es, es, bf_size);
+  this->endbf = this->es + size + size;
+  memcpy(this->es, es, bs_size);
   return this;
 }
 
@@ -105,6 +105,9 @@ void *arr_pop (Arr *this) {
 }
 
 void *arr_peek (Arr *this) {
+  if (this->es >= this->end)
+    EXC_ILLEGAL_STATE("Array is empty")
+
   return *(this->end - 1);
 }
 
@@ -195,6 +198,7 @@ void arr_insert_arr (Arr *this, int ix, Arr *other) {
     } else {
       void **s = this->end - 1;
       void **t = s + other_len;
+      this->end = t + 1;
       void **limit = this->es + ix;
       while (s >= limit) {
         *t-- = *s--;
@@ -321,18 +325,36 @@ void arr_shuffle (Arr *this) {
   }
 }
 
-int arr_index (Arr *this, int (*pred)(void *e)) {
-  int ix = -1;
-  EACH_IX(this, void, e, i)
-    if (pred(e)) {
-      ix = i;
-      break;
-    }
-  _EACH
-  return ix;
+int arr_all (Arr *this, int (*pred)(void *e)) {
+  EACH(this, void, e) {
+    if (!pred(e)) return 0;
+  }_EACH
+  return 1;
 }
 
-void arr_filter (Arr *this, int (*pred)(void *e)) {
+int arr_any (Arr *this, int (*pred)(void *e)) {
+  EACH(this, void, e) {
+    if (pred(e)) return 1;
+  }_EACH
+  return 0;
+}
+
+int arr_index (Arr *this, int (*pred)(void *e)) {
+  EACH_IX(this, void, e, i) {
+    if (pred(e)) return i;
+  }_EACH
+  return -1;
+}
+
+int arr_last_index (Arr *this, int (*pred)(void *e)) {
+  int r = -1;
+  EACH_IX(this, void, e, i) {
+    if (pred(e)) r = i;
+  }_EACH
+  return r;
+}
+
+void arr_filter_in (Arr *this, int (*pred)(void *e)) {
   void **p = this->es;
   void **end = this->end;
   void **new_end = p;
@@ -343,6 +365,68 @@ void arr_filter (Arr *this, int (*pred)(void *e)) {
     ++p;
   }
   this->end = new_end;
+}
+
+Arr *arr_take (Arr *this, int n) {
+  return arr_from_it(it_take(arr_to_it(this), n));
+}
+
+Arr *arr_takef (Arr *this, int (*predicate)(void *e)) {
+  return arr_from_it(it_takef(arr_to_it(this), predicate));
+}
+
+Arr *arr_drop (Arr *this, int n) {
+  return arr_from_it(it_drop(arr_to_it(this), n));
+}
+
+Arr *arr_dropf (Arr *this, int (*predicate)(void *e)) {
+  return arr_from_it(it_dropf(arr_to_it(this), predicate));
+}
+
+Arr *arr_filter_to (Arr *this, int (*predicate)(void *e)) {
+  return arr_from_it(it_filter(arr_to_it(this), predicate));
+}
+
+Arr *arr_map (Arr *this, void *(*converter)(void *e)) {
+  return arr_from_it(it_map(arr_to_it(this), converter));
+}
+
+Arr *arr_map2 (Arr *this, void *(*conv1)(void *e), void *(*conv2)(void *e)) {
+  return arr_from_it(it_map2(arr_to_it(this), conv1, conv2));
+}
+
+Arr *arr_zip (Arr *a1, Arr *a2) {
+  return arr_from_it(it_zip(arr_to_it(a1), arr_to_it(a2)));
+}
+
+Arr *arr_zip3 (Arr *a1, Arr *a2, Arr *a3) {
+  return arr_from_it(it_zip3(arr_to_it(a1), arr_to_it(a2), arr_to_it(a3)));
+}
+
+Tp *arr_unzip (Arr *this) {
+  Arr *a1 = arr_new();
+  Arr *a2 = arr_new();
+  EACH(this, Tp, tp) {
+    arr_push(a1, tp_e1(tp));
+    arr_push(a2, tp_e2(tp));
+  }_EACH
+  return tp_new(a1, a2);
+}
+
+Tp3 *arr_unzip3 (Arr *this) {
+  Arr *a1 = arr_new();
+  Arr *a2 = arr_new();
+  Arr *a3 = arr_new();
+  EACH(this, Tp3, tp) {
+    arr_push(a1, tp3_e1(tp));
+    arr_push(a2, tp3_e2(tp));
+    arr_push(a3, tp3_e3(tp));
+  }_EACH
+  return tp3_new(a1, a2, a3);
+}
+
+Tp *arr_duplicates (Arr *this, int (feq)(void *e1, void *e2)) {
+  return it_duplicates(arr_to_it(this), feq);
 }
 
 // -------------------------------------------------------------------------- //

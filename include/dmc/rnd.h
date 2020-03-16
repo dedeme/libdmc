@@ -11,20 +11,20 @@
 ///
 typedef struct rnd_Box Box;
 
-/// rnd_init intializates the random number generator.
+/// Intializates the random number generator.
 void rnd_init(void);
 
-/// rnd_d generates a new double between 0.0 (inclusive) and 1.0 (exclusive)
+/// Generates a new double between 0.0 (inclusive) and 1.0 (exclusive).
 double rnd_d(void);
 
-/// rnd_i generates a new int between 0 (inclusive) and 'top' (exclusive)
+/// Generates a new int between 0 (inclusive) and 'top' (exclusive).
 int rnd_i(int top);
 
-/// rnd_box_new returns an 'Box' that iterates over 'a' elements randomly. When
-/// it finishes with all the elements of 'a', restarts again.
+/// Returns an 'Box' that iterates over 'a' elements randomly. When it finishes
+/// with all the elements of 'a', restarts again.
 Box *rnd_box_new(Arr *a);
 
-/// rnd_box_next returns the next element of 'this'.
+/// Returns the next element of 'this'.
 void *rnd_box_next(Box *this);
 
 #endif

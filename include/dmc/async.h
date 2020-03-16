@@ -2,7 +2,7 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Management of multithread programs.
-///   NOTA: This file must be included instead of 'std.h'
+/// NOTE: This file must be included instead of 'std.h'.
 
 #ifndef DMC_ASYNC_H
   #define DMC_ASYNC_H
@@ -15,18 +15,26 @@
 
 /// Launchs 'fn' in a new joinable thread. Example of use:
 ///   void fn() { puts("Here"); }
-///   pthread_t *thr = async_thread0(fn);
+///   pthread_t *thr = async_thread(fn);
 ///   async_join(thr); // Waits for thr.
-/// NOTA: After calling 'async_thread' is mandatory to call 'async_join' to
-/// free resources.
+/// NOTE: After calling 'async_thread' is mandatory to call 'async_join' to
+///         free resources.
 pthread_t *async_thread (void (*fn)(void));
+
+/// Launchs 'fn' in a new joinable thread. Example of use:
+///   void fn(char *tx) { puts(tx); }
+///   pthread_t *thr = async_thread2((FPROC)fn, "Hello");
+///   async_join(thr); // Waits for thr.
+/// NOTE: After calling 'async_thread' is mandatory to call 'async_join' to
+///         free resources.
+pthread_t *async_thread2 (void (*fn)(void *), void *value);
 
 /// Launch 'fn' in a new thread. Example of use:
 ///   void fn(char *tx) { puts(tx); }
 ///   async_thread_detached((FPROC)fn, "Hello");
 void async_thread_detached (void (*fn)(void *), void *value);
 
-/// Wait until thr finishes
+/// Wait until thr finishes.
 void async_join (pthread_t *thr);
 
 ///
@@ -51,10 +59,10 @@ void asyncActor_join (AsyncActor *this);
 ///
 typedef struct async_AsyncTimer AsyncTimer;
 
-/// Executes 'fn(value)' each 'millis' milliseconds
+/// Executes 'fn(value)' each 'millis' milliseconds.
 AsyncTimer *asyncTimer_new (void (*fn)(void *), void *value, int millis);
 
-/// Finalizes 'this'
+/// Finalizes 'this'.
 void asyncTimer_end (AsyncTimer *this);
 
 #endif

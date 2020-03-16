@@ -15,6 +15,22 @@ static double *double_new(double n) {
   return this;
 }
 
+static int test(char *result, Arr *a) {
+  Buf *bf = buf_new();
+  EACH(a, char, e) {
+    buf_add(bf, e);
+  }_EACH
+  return str_eq(result, buf_str(bf));
+}
+
+Arr *mk() {
+  return arr_new_from("a", "b", "c", NULL);
+}
+
+Arr *mk2() {
+  return arr_new_from("a", "b", "a", NULL);
+}
+
 void arr_tests(void) {
   puts("Arr tests");
   // Arr[double]
@@ -74,7 +90,6 @@ void arr_tests(void) {
 
   arr_clear(acp);
   assert(arr_size(acp) == 0);
-
 
   arr_set(ia, 4, double_new(33));
   arr_remove(ia, 1);
@@ -166,6 +181,112 @@ void arr_tests(void) {
   assert(str_eq(arr_get(sa, 0), "c"));
   assert(str_eq(arr_get(sa, 1), "d"));
   assert(str_eq(arr_get(sa, 2), "e"));
+
+  int pred (void *s) { return *((char *)s) < 'd'; }
+  assert(arr_index(arr_new(), pred) == -1);
+  assert(arr_last_index(arr_new(), pred) == -1);
+  assert(!arr_any(arr_new(), pred));
+  assert(arr_all(arr_new(), pred));
+  assert(arr_index(arr_new_from("a", "b", NULL), pred) == 0);
+  assert(arr_index(arr_new_from("d", "e", "b", NULL), pred) == 2);
+  assert(arr_index(arr_new_from("d", "e", NULL), pred) == -1);
+  assert(arr_last_index(arr_new_from("a", "b", NULL), pred) == 1);
+  assert(arr_last_index(arr_new_from("a", "b", "a", NULL), pred) == 2);
+  assert(arr_last_index(arr_new_from("d", "e", "b", NULL), pred) == 2);
+  assert(arr_last_index(arr_new_from("d", "e", NULL), pred) == -1);
+  assert(arr_all(arr_new_from("a", "b", NULL), pred));
+  assert(!arr_all(arr_new_from("d", "e", "b", NULL), pred));
+  assert(!arr_all(arr_new_from("d", "e", NULL), pred));
+  assert(arr_any(arr_new_from("a", "b", NULL), pred));
+  assert(arr_any(arr_new_from("d", "e", "b", NULL), pred));
+  assert(!arr_any(arr_new_from("d", "e", NULL), pred));
+
+  assert(test("", arr_take(arr_new(), 0)));
+  assert(test("", arr_take(arr_new(), 20)));
+  assert(test("", arr_take(mk(), 0)));
+  assert(test("ab", arr_take(mk(), 2)));
+  assert(test("abc", arr_take(mk(), 20000)));
+
+  int take1(char *e) { return strcmp(e, "") < 0; }
+  int take2(char *e) { return strcmp(e, "b") < 0; }
+  int take3(char *e) { return strcmp(e, "j") < 0; }
+
+  assert(test("", arr_takef(arr_new(), (FPRED)take1)));
+  assert(test("", arr_takef(arr_new(), (FPRED)take3)));
+  assert(test("", arr_takef(mk(), (FPRED)take1)));
+  assert(test("a", arr_takef(mk(), (FPRED)take2)));
+  assert(test("abc", arr_takef(mk(), (FPRED)take3)));
+
+  assert(test("", arr_drop(arr_new(), 0)));
+  assert(test("", arr_drop(arr_new(), 20)));
+  assert(test("abc", arr_drop(mk(), 0)));
+  assert(test("c", arr_drop(mk(), 2)));
+  assert(test("", arr_drop(mk(), 20000)));
+
+  assert(test("", arr_dropf(arr_new(), (FPRED)take1)));
+  assert(test("", arr_dropf(arr_new(), (FPRED)take3)));
+  assert(test("abc", arr_dropf(mk(), (FPRED)take1)));
+  assert(test("bc", arr_dropf(mk(), (FPRED)take2)));
+  assert(test("", arr_dropf(mk(), (FPRED)take3)));
+
+  int filter1(char *e) { return str_eq(e, "b"); }
+  int filter2(char *e) { return !str_eq(e, "b"); }
+  int filter3(char *e) { return str_eq(e, "j"); }
+  assert(test("", arr_filter_to(arr_new(), (FPRED)filter1)));
+  assert(test("", arr_filter_to(arr_new(), (FPRED)filter2)));
+  assert(test("b", arr_filter_to(mk(), (FPRED)filter1)));
+  assert(test("ac", arr_filter_to(mk(), (FPRED)filter2)));
+  assert(test("", arr_filter_to(mk(), (FPRED)filter3)));
+
+  void *map(char *e) { return str_cat(e, "-", NULL); }
+  assert(test("", arr_map(arr_new(), (FCOPY)map)));
+  assert(test("a-b-c-", arr_map(mk(), (FCOPY)map)));
+
+  void *map1(char *e) { return str_cat("-", e, "-", NULL); }
+  assert(test("", arr_map2(arr_new(), (FCOPY)map1, (FCOPY)map)));
+  assert(test("-a-", arr_map2(
+    arr_new_from("a", NULL), (FCOPY)map1, (FCOPY)map
+  )));
+  assert(test("-a-b-c-", arr_map2(mk(), (FCOPY)map1, (FCOPY)map)));
+
+  // ------------------------------------------------------------------------ //
+  void *zip(Tp *tp) { return str_f("(%s-%s)", tp_e1(tp), tp_e2(tp)); }        //
+  // ------------------------------------------------------------------------ //
+  assert(test("",
+    arr_map(arr_zip(arr_new(), arr_new()), (FCOPY)zip)));
+  assert(test("", arr_map(arr_zip(arr_new(), mk()), (FCOPY)zip)));
+  assert(test("(x-a)", arr_map(arr_zip(
+    arr_new_from("x", NULL), mk()), (FCOPY)zip
+  )));
+  assert(test("(a-a)(b-b)(c-c)", arr_map(arr_zip(mk(), mk()), (FCOPY)zip)));
+
+  // ------------------------------------------------------------------------ //
+  void *zip3(Tp3 *tp3) {                                                      //
+    return str_f("(%s-%s-%s)", tp3_e1(tp3), tp3_e2(tp3), tp3_e3(tp3));        //
+  }                                                                           //
+  // ------------------------------------------------------------------------ //
+  assert(test("",
+    arr_map(arr_zip3(arr_new(), arr_new(), arr_new()), (FCOPY)zip3)
+  ));
+  assert(test("", arr_map(arr_zip3(arr_new(), mk(), mk()), (FCOPY)zip3)));
+  assert(test("(a-x-a)",
+    arr_map(arr_zip3(mk(), arr_new_from("x", NULL), mk()), (FCOPY)zip3)));
+  assert(test("(a-a-a)(b-b-b)(c-c-c)",
+    arr_map(arr_zip3(mk(), mk(), mk()), (FCOPY)zip3)));
+
+  Tp *dr = arr_duplicates(mk2(), (FCMP)str_eq);
+  assert(arr_size(tp_e1(dr)) == 1);
+  assert(arr_size(tp_e2(dr)) == 2);
+  assert(str_eq(arr_get(tp_e1(dr), 0), "a"));
+  assert(str_eq(arr_get(tp_e2(dr), 0), "a"));
+  assert(str_eq(arr_get(tp_e2(dr), 1), "b"));
+
+  dr = arr_duplicates(mk(), (FCMP)str_eq);
+  assert(arr_size(tp_e1(dr)) == 0);
+  assert(arr_size(tp_e2(dr)) == 3);
+  assert(str_eq(arr_get(tp_e2(dr), 0), "a"));
+  assert(str_eq(arr_get(tp_e2(dr), 1), "b"));
+  assert(str_eq(arr_get(tp_e2(dr), 2), "c"));
 
   puts("    Finished");
 }

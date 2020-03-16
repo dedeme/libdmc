@@ -379,12 +379,8 @@ It *it_from (Arr *a) {
   return arr_to_it(a);
 }
 
-void it_duplicates (
-  Arr **dup,
-  Arr **rest,
-  It *this,
-  int (feq)(void *e1, void *e2)
-) {
+// Tp[Arr, Arr]
+Tp *it_duplicates (It *this, int (feq)(void *e1, void *e2)) {
   Arr *d = arr_new();
   Arr *r = arr_new();
   void fn (void *e1) {
@@ -399,6 +395,5 @@ void it_duplicates (
   }
   it_each(this, fn);
 
-  *dup = d;
-  *rest = r;
+  return tp_new(d, r);
 }

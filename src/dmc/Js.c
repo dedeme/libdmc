@@ -33,7 +33,7 @@ static void json_unicode(Buf *bf, char *hexdigits) {
 }
 
 static char *json_blanks(char *json) {
-  while (*json && *json <= ' ') {
+  while (*json && ((unsigned char)*json) <= ' ') {
     ++json;
   }
   return json;
@@ -52,7 +52,9 @@ static char *json_sbool(char *json) {
 }
 
 static char *json_snumber(char *j) {
-  while (*j && *j != '}' && *j != ']' && *j != ',' && *j > ' ') {
+  while (
+    *j && *j != '}' && *j != ']' && *j != ',' && ((unsigned char) *j) > ' '
+  ) {
     ++j;
   }
   return json_blanks(j);
@@ -132,7 +134,7 @@ static char *json_selement(char *j) {
 }
 
 static int json_rend(char *json) {
-  while (*json && *json <= ' ') {
+  while (*json && ((unsigned char)*json) <= ' ') {
     ++json;
   }
   return *json ? 0 : 1;
@@ -182,7 +184,9 @@ long js_rl (Js *json) {
     FAIL(json_error(j, "Bad start number"))
 
   Buf *bf = buf_new();
-  while (*j && *j != '}' && *j != ']' && *j != ',' && *j > ' ') {
+  while (
+    *j && *j != '}' && *j != ']' && *j != ',' && ((unsigned char)*j) > ' '
+  ) {
     ++j;
   }
   buf_add_buf(bf, jsons, j - jsons);
@@ -210,7 +214,9 @@ double js_rd (Js *json) {
     FAIL(json_error(jsons, "Bad start number"))
 
   Buf *bf = buf_new();
-  while (*j && *j != '}' && *j != ']' && *j != ',' && *j > ' ') {
+  while (
+    *j && *j != '}' && *j != ']' && *j != ',' && ((unsigned char)*j) > ' '
+  ) {
     ++j;
   }
   buf_add_buf(bf, jsons, j - jsons);

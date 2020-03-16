@@ -26,17 +26,16 @@
 #include "ext_tests.h"
 #include "cgi_tests.h"
 #include "async_tests.h"
-#include "schd_tests.h"
 #include "iserver_tests.h"
 #include "exc_tests.h"
+#include "regex_tests.h"
 
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
   sys_init("libdmc_tests");
 
-
-  iarr_tests();/*
+  iarr_tests();
   darr_tests();
   bytes_tests();
   arr_tests();
@@ -57,8 +56,7 @@ int main(int argc, char *argv[]) {
   ext_tests();
   cgi_tests();
   async_tests();
-  schd_tests();
-  iserver_tests(1);
+  iserver_tests(0);
   exc_tests();
-*/
+  regex_tests();
 }

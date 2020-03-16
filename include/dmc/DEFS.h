@@ -80,13 +80,14 @@ typedef struct schd_Task SchdTask;
     n = *__p++;
 
 /// Iterates over an 'Arr'. You can access to the 'element' index with _i.
-///   a      : An Arr *
-///   type   : Element type without pointer sign (*)
-///   element: An element of type 'type'
 /// For example:
 ///   EACH(a, char, s) {
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
+///
+///   a      : An Arr *.
+///   type   : Element type without pointer sign (*).
+///   element: An element of type 'type'.
 #define EACH(a, type, element) { \
   Arr *__arr = (Arr *)a; \
   size_t __size = arr_size(__arr); \
@@ -96,14 +97,15 @@ typedef struct schd_Task SchdTask;
     element = arr_get(__arr, _i);
 
 /// Iterates over an 'Arr'. You can access to the 'element' index with i.
-///   a      : An Arr *
-///   type   : Element type without pointer sign (*)
-///   e: An element of type 'type'
-///   i: Element index.
 /// For example:
 ///   EACH(a, char, s, i) {
 ///     printf("[%d] -> %s\n", i, s);
 ///   } _EACH
+///
+///   a      : An Arr *.
+///   type   : Element type without pointer sign (*).
+///   e: An element of type 'type'.
+///   i: Element index.
 #define EACH_IX(a, type, e, i) { \
   Arr *__a = (Arr *)a; \
   void **__p = arr_start(__a); \
@@ -115,13 +117,14 @@ typedef struct schd_Task SchdTask;
     e = *__p++;
 
 /// Iterates over an 'It'. You can access to the 'element' index with _i.
-///   a      : An It *
-///   type   : Element type without pointer sign (*)
-///   element: An element of type 'type'
 /// For example:
 ///   EACH(it, char, s) {
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
+///
+///   a      : An It *.
+///   type   : Element type without pointer sign (*).
+///   element: An element of type 'type'.
 #define EACHI(it, type, element) { \
   It *__it = (It *)it; \
   int _i = -1; \
@@ -131,13 +134,14 @@ typedef struct schd_Task SchdTask;
     element = it_next(__it);
 
 /// Iterates over a 'List'.
-///   list   : An List *
-///   type   : Element type without pointer sign (*)
-///   element: An element of type 'type'
 /// For example:
 ///   EACHL(list, char, s) {
 ///     printf("%s\n", s);
 ///   } _EACH
+///
+///   list   : An List *,
+///   type   : Element type without pointer sign (*),
+///   element: An element of type 'type',
 #define EACHL(list, type, element) { \
   List *_EACHL_list = (List *)list; \
   type *element; \
@@ -147,14 +151,14 @@ typedef struct schd_Task SchdTask;
 
 /// Iterates over an 'Arr' in reverse order. You can access to the 'element'
 /// index with _i.
-///   a      : An Arr *
-///   fn
-///   type   : Element type without pointer sign (*)
-///   element: An element of type 'a'
 /// For example:
 ///   EACHR(a, char, s) {
 ///     printf("[%d] -> %s\n", _i, s);
 ///   } _EACH
+///
+///   a      : An Arr *.
+///   type   : Element type without pointer sign (*).
+///   element: An element of type 'a'.
 #define EACHR(a, type, element) { \
   Arr *__arr = (Arr *)a; \
   size_t _i = arr_size(__arr); \
@@ -162,7 +166,7 @@ typedef struct schd_Task SchdTask;
   while (_i) { \
     element = arr_get(__arr, --_i);
 
-/// Finalizes an EACHL, EACH or a EACHR
+/// Finalizes an EACHL, EACH or a EACHR.
 #define _EACH }}
 
 ///
@@ -192,19 +196,19 @@ typedef void (*FLOOP)(void *, SchdTask *);
 ///   CATCH (e)
 ///     puts(exc_msg(e));
 ///   _TRY
-/// NOTE: <i>CATCH block must return 'void'</i>
+/// NOTE: CATCH block must return 'void'
 #define TRY { \
   jmp_buf *_TRY_buf = MALLOC(jmp_buf); \
   exc_add(_TRY_buf); \
   if (!setjmp(*_TRY_buf)) { \
 
-/// See <a href="#hp:TRY">TRY</a>
+/// See TRY.
 #define CATCH(e) ;exc_remove();} else { Exc *e = exc_get();
 
-/// See <a href="#hp:TRY">TRY</a>
+/// See>TRY.
 #define _TRY ;exc_remove();}}
 
-/// Example
+/// Example:
 ///   THROW(exc_io_t) "Working directory not found: %s", strerror(errno) _THROW
 #define THROW(type) exc_throw(type, str_f(
 
@@ -216,9 +220,9 @@ typedef void (*FLOOP)(void *, SchdTask *);
 #define EXC_GENERIC(msg) \
   THROW(exc_generic_t) msg _THROW
 
-/// Throw a range exception if v < 0 or v > 32.<br>
+/// Throw a range exception if v < 'min' or v > 'max'.
 /// Example:
-///   EXC_RANGE(v, 0, 23)
+///   EXC_RANGE(v, 0, 23) // -1 and 24 throw exeption.
 #define EXC_RANGE(value, min, max) { \
     int __v = value; \
     if (__v < (min) || __v > (max)) \
@@ -242,53 +246,49 @@ typedef void (*FLOOP)(void *, SchdTask *);
 #define EXC_IO(msg) \
   THROW(exc_io_t) exc_io(msg) _THROW
 
-/// CGI_GET read a 'field' of 'map'. If 'field' is not found produce a
+/// Reads a 'field' of 'map'. If 'field' is not found produce an
 /// ILLEGAL_ARGUMENT exception, otherwise returns its value in 'type var'
 /// using 'fun'.
-/// <table><tr><td>
-///   type : type of var
-///   var  : name of new variable. It shuld be free.
-///   fun  : function to pass 'Js' to 'type'
-///   map  : A Map[Js]
-///   field: field key. Its value must be const char *
-/// </table>
 /// Examples:
-/// <table><tr><td>
-///   CGI_GET(int, i, js_ri, m, "index")
-///   CGI_GET(char *, a, js_rs, m, "value")
-///   CGI_GET(Arr *, a, js_ra, m, "values")
-/// </table>
-#define CGI_GET(type, var, fun, map, field) \
+///   CGI_GET(int, index, js_ri, m)
+///   CGI_GET(char *, value, js_rs, m)
+///   CGI_GET(Arr *, values, js_ra, m)
+///
+///   type: type of var.
+///   var : name of variable.
+///   fun : function to pass 'Js' to 'type'.
+///   map : A Map<Js>.
+#define CGI_GET(type, var, fun, map) \
   type var; \
   { \
-    Opt *js = map_get(map, field); \
+    Opt *js = map_get(map, #var); \
     if (opt_is_empty(js))  \
-      EXC_ILLEGAL_ARGUMENT(field, "Map key", "Key not found") \
+      EXC_ILLEGAL_ARGUMENT(#var, "Map key", "Key not found") \
     var = fun(opt_get(js)); \
   }
 
 /// Calls CGI_GET with 'var' as 'int'.
-#define CGI_GET_BOOL(var, map, field) \
-  CGI_GET(int, var, js_rb, map, field)
+#define CGI_GET_BOOL(var, map) \
+  CGI_GET(int, var, js_rb, map)
 
 /// Calls CGI_GET with 'var' as 'int'.
-#define CGI_GET_INT(var, map, field) \
-  CGI_GET(int, var, js_ri, map, field)
+#define CGI_GET_INT(var, map) \
+  CGI_GET(int, var, js_ri, map)
 
 /// Calls CGI_GET with 'var' as 'double'.
-#define CGI_GET_DOUBLE(var, map, field) \
-  CGI_GET(double, var, js_rd, map, field)
+#define CGI_GET_DOUBLE(var, map) \
+  CGI_GET(double, var, js_rd, map)
 
 /// Calls CGI_GET with 'var' as 'char *'.
-#define CGI_GET_STR(var, map, field) \
-  CGI_GET(char *, var, js_rs, map, field)
+#define CGI_GET_STR(var, map) \
+  CGI_GET(char *, var, js_rs, map)
 
-/// Calls CGI_GET with 'var' as 'Arr[Js]'.
-#define CGI_GET_ARR(var, map, field) \
-  CGI_GET(Arr *, var, js_ra, map, field)
+/// Calls CGI_GET with 'var' as 'Arr<Js>'.
+#define CGI_GET_ARR(var, map) \
+  CGI_GET(Arr *, var, js_ra, map)
 
-/// Calls CGI_GET with 'var' as 'Map[Js]'.
-#define CGI_GET_MAP(var, map, field) \
-  CGI_GET(Map *, var, js_ro, map, field)
+/// Calls CGI_GET with 'var' as 'Map<Js>'.
+#define CGI_GET_MAP(var, map) \
+  CGI_GET(Map *, var, js_ro, map)
 
 #endif

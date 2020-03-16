@@ -71,7 +71,7 @@ Iarr *iarr_sub(Iarr *this, int begin, int end) {
   EXC_RANGE(end, begin, size);
 
   int *source = this->es + begin;
-  Iarr *r = iarr_bf_new((this->es + end) - source);
+  Iarr *r = iarr_bf_new(end - begin);
   int *target = r->es;
   int *end_target = r->endbf;
   r->end = end_target;

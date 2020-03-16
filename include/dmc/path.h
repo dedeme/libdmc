@@ -6,24 +6,31 @@
 #ifndef DMC_PATH_H
   #define DMC_PATH_H
 
-/// path_name returns name and extension of path.<br>
+#include "Opt.h"
+
+/// Returns name and extension of path.
 /// If path is "" or ends at ("/") it returns "".
 char *path_name (char *path);
 
-/// path_parent returns the parent path of 'path'.<br>
+/// Returns the parent path of 'path'.
 /// If 'path' is "/" or a string without '/', it returns an empty string.
 char *path_parent (char *path);
 
-/// path_extendsion returns only extension of path. Extension is
-/// set with point (e.g., ".", ".txt") <br>
+/// Returns only extension of path. Extension is returned with point,
+/// (e.g., ".", ".txt").
 /// If path does not have extension it returns "".
 char *path_extension (char *path);
 
-/// path_only_name returns only name of path.<br>
+/// Returns only name of path.
 /// If path is "", ends at ("/"), or if file starts with point, it returns "".
 char *path_only_name (char *path);
 
-/// path_cat concatenates paths. Variable argumens must finish with NULL.
+/// Concatenates paths. Variable argumens must finish with NULL.
 char *path_cat (char *s, char *more, ...);
+
+/// Returns Opt<char> Cannonical representation of 'path'.
+///   - If some component of 'path' is not in file system, returns 'opt_empty'.
+///   - Directories do not finish in '/'.
+Opt *path_canonical (char *s);
 
 #endif

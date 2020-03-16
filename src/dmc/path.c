@@ -64,3 +64,10 @@ char *path_cat (char *s, char *more, ...) {
 
   return buf_to_str(bf);
 }
+
+Opt *path_canonical (char *s) {
+  char *tmp = realpath(s, NULL);
+  Opt *r = tmp ? opt_new(str_new(tmp)) : opt_empty();
+  free(tmp);
+  return r;
+}

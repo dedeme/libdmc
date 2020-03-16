@@ -3,6 +3,7 @@
 
 #include "dmc/Dec.h"
 #include <math.h>
+#include <locale.h>
 #include "dmc/std.h"
 
 struct dec_Dec {
@@ -51,10 +52,67 @@ char *dec_to_str(Dec *this) {
   double n = this->n;
   char *scale = str_f("%d", this->scale);
   char *r = str_f(str_cat("%.", scale, "f", NULL), n);
+  struct lconv *lc = localeconv();
+  r = str_replace(r, lc->decimal_point, ".");
   if (*r == '-' && dec_eq(n, 0.0)) {
     r = str_right(r, 1);
   }
   return r;
+}
+
+static char *int_to_str(char *s, char sep) {
+  int sign = *s == '-' ? 1 : 0;
+  s = str_reverse(s);
+
+  Buf *bf = buf_new();
+
+  int c = 0;
+  char *send = s + strlen(s) - sign;
+  while (s < send) {
+    if (c == 3) {
+      buf_cadd(bf, sep);
+      c = 0;
+    }
+    buf_cadd(bf, *s++);
+    ++c;
+  }
+
+  if (sign) buf_cadd(bf, '-');
+  return str_reverse(buf_to_str(bf));
+}
+
+char *dec_int_to_iso(int n) {
+  return int_to_str(str_f("%d", n), '.');
+}
+
+char *dec_int_to_us(int n) {
+  return int_to_str(str_f("%d", n), ',');
+}
+
+static char *double_to_str(double n, int scale, char sep, char point) {
+  if (scale < 1) scale = 0;
+  if (n == -0) n = 0;
+  char *r = str_f(str_cat("%.", str_f("%d", scale), "f", NULL), n);
+
+  struct lconv *lc = localeconv();
+  char *lcp = lc->decimal_point;
+  if (scale) {
+    int ix = str_index(r, lcp);
+    return str_cat(
+      int_to_str(str_left(r, ix), sep),
+      str_c(point), str_right(r, ix + strlen(lcp)), NULL
+    );
+  } else {
+    return int_to_str(r, sep);
+  }
+}
+
+char *dec_double_to_iso(double n, int scale) {
+  return double_to_str(n, scale, '.', ',');
+}
+
+char *dec_double_to_us(double n, int scale) {
+  return double_to_str(n, scale, ',', '.');
 }
 
 int dec_eq(double d1, double d2) {

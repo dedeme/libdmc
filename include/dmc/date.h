@@ -1,7 +1,7 @@
 // Copyright 18-Oct-2018 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-/// Utilities for managing dates
+/// Utilities for managing dates.
 
 #ifndef DMC_DATE_H
   #define DMC_DATE_H
@@ -9,34 +9,34 @@
 #include <time.h>
 #include "dmc/std.h"
 
-/// date_new makes a new time_t.
-///   this  : New time_t
-///   year  : Year with all digits
-///   month : Month in base 1 (1 to 12)
-///   day   : Day in base 1 (1 to 31)
+/// Makes a new time_t.
+///   this : New time_t.
+///   year : Year with all digits.
+///   month: Month in base 1 (1 to 12).
+///   day  : Day in base 1 (1 to 31).
 time_t date_new (int day, int month, int year);
 
-/// date_now returns the current date
+/// Returns the current date.
 time_t date_now (void);
 
-/// date_from_str makes a date from a string is in format yyyymmdd
-/// (month and day in base 1)
+/// Makes a date from a string is in format 'yyyymmdd'.
+/// (month and day in base 1).
 time_t date_from_str (char *date);
 
-/// date_from_iso makes a date from a string in format [x]x/[x]x/[xxx]x
-/// (month and day in base 1)
+/// Makes a date from a string in format '[x]x/[x]x/[xxx]x'.
+/// (month and day in base 1).
 time_t date_from_iso (char *date);
 
-/// date_from_us makes a date from a string in format  [x]x/[x]x/[xxx]x
-/// (month and day in base 1)
+/// Mmakes a date from a string in format '[x]x/[x]x/[xxx]x'.
+/// (month and day in base 1).
 time_t date_from_us (char *date);
 
-/// date_from_iso_sep makes a date from a string is in format
-/// [x]xSP[x]xSP[xxx]x. If 'data' is not valid, returns '0'
+/// Makes a date from a string is in format '[x]xSP[x]xSP[xxx]x'.
+/// If 'data' is not valid, returns '0'.
 time_t date_from_iso_sep (char *date, char sep);
 
-/// date_from_us_sep makes a date from a string in format
-/// [x]xSP[x]xSP[xxx]x. If 'data' is not valid, returns '0'
+/// Makes a date from a string in format '[x]xSP[x]xSP[xxx]x'.
+/// If 'data' is not valid, returns '0'.
 time_t date_from_us_sep (char *date, char sep);
 
 ///
@@ -45,7 +45,7 @@ int date_eq (time_t this, time_t another);
 ///
 int date_cmp (time_t this, time_t another);
 
-/// date_df returns the difference in days this - another.
+/// Returns the difference in days this - another.
 int date_df (time_t this, time_t another);
 
 ///
@@ -60,7 +60,7 @@ int date_month (time_t this);
 ///
 int date_year (time_t this);
 
-/// date_format formats a time_t. Format can be:
+/// Formats a time_t. Format can be:
 ///   %a     The abbreviated name of the day of the week according to the
 ///          current locale.
 ///   %A     The full name of the day of the week according to the current
@@ -74,18 +74,18 @@ int date_year (time_t this);
 ///   %D     Equivalent to %m/%d/%y.  (Yecch—for Americans only.  Americans
 ///          should note that in other countries %d/%m/%y is rather common.
 ///          This means that in international context this format is
-///          ambiguous and should not be used.) (SU)
+///          ambiguous and should not be used.) (SU).
 ///   %e     Like %d, the day of the month as a decimal number, but a
-///          leading zero is replaced by a space. (SU)
-///   %F     Equivalent to %Y-%m-%d (the ISO 8601 date format). (C99)
+///          leading zero is replaced by a space. (SU).
+///   %F     Equivalent to %Y-%m-%d (the ISO 8601 date format). (C99).
 ///   %G     The ISO 8601 week-based year (see NOTES) with century as a
 ///          decimal number.  The 4-digit year corresponding to the ISO
 ///          week number (see %V).  This has the same format and value as
 ///          %Y, except that if the ISO week number belongs to the previous
-///          or next year, that year is used instead. (TZ)
+///          or next year, that year is used instead. (TZ).
 ///   %g     Like %G, but without century, that is, with a 2-digit year
-///          (00-99). (TZ)
-///   %h     Equivalent to %b.  (SU)
+///          (00-99). (TZ).
+///   %h     Equivalent to %b.  (SU).
 ///   %H     The hour as a decimal number using a 24-hour clock (range 00
 ///          to 23).
 ///   %I     The hour as a decimal number using a 12-hour clock (range 01
@@ -111,9 +111,9 @@ int date_year (time_t this);
 ///   %s     The number of seconds since the Epoch, 1970-01-01 00:00:00
 ///          +0000 (UTC). (TZ)
 ///   %S     The second as a decimal number (range 00 to 60).  (The range
-///          is up to 60 to allow for occasional leap seconds.)
-///   %t     A tab character. (SU)
-///   %T     The time in 24-hour notation (%H:%M:%S).  (SU)
+///          is up to 60 to allow for occasional leap seconds).
+///   %t     A tab character. (SU).
+///   %T     The time in 24-hour notation (%H:%M:%S). (SU).
 ///   %u     The day of the week as a decimal, range 1 to 7, Monday being
 ///          1.  See also %w.  (SU)
 ///   %U     The week number of the current year as a decimal number, range
@@ -122,7 +122,7 @@ int date_year (time_t this);
 ///   %V     The ISO 8601 week number (see NOTES) of the current year as a
 ///          decimal number, range 01 to 53, where week 1 is the first week
 ///          that has at least 4 days in the new year.  See also %U and %W.
-///          (SU)
+///          (SU).
 ///   %w     The day of the week as a decimal, range 0 to 6, Sunday being
 ///          0.  See also %u.
 ///   %W     The week number of the current year as a decimal number, range
@@ -136,18 +136,18 @@ int date_year (time_t this);
 ///          99).
 ///   %Y     The year as a decimal number including the century.
 ///   %z     The +hhmm or -hhmm numeric timezone (that is, the hour and
-///          minute offset from UTC). (SU)
+///          minute offset from UTC). (SU).
 ///   %Z     The timezone name or abbreviation.
 ///   %%     A literal '%' character.
 char *date_f (time_t this, char *template);
 
-/// date_to_str returns a string in format yyyymmdd
+/// Returns a string in format 'yyyymmdd'.
 char *date_to_str (time_t this);
 
-/// date_to_iso returns a string in format dd/mm/yyyy
+/// Returns a string in format 'dd/mm/yyyy'.
 char *date_to_iso (time_t this);
 
-/// date_to_us returns a string in format mm/dd/yyyy
+/// Returns a string in format 'mm/dd/yyyy'.
 char *date_to_us (time_t this);
 
 ///
@@ -160,18 +160,18 @@ time_t date_from_js (Js *js);
 typedef struct timeval DateTm;
 
 /// Returns the current time with microsconds of precission.
-///   struct timeval has following fields:
-///     time_t tv_sec Seconds
-///     long int tv_usecs Microseconds (0 - 999999)
-DateTm *date_tm_now ();
+///   DateTm (struct timeval) has following fields:
+///     time_t tv_sec - Seconds.
+///     long int tv_usecs - Microseconds (0 - 999999).
+DateTm *dateTm_now ();
 
-/// Returns t1 - t2
-DateTm *date_tm_tdf (DateTm *t1, DateTm *t2);
+/// Returns t1 - t2.
+DateTm *dateTm_tdf (DateTm *t1, DateTm *t2);
 
-/// Adds 'millis' milliseconds to 't'. 'millis' can be negative:
-DateTm *date_tm_add (DateTm *t, int millis);
+/// Adds 'millis' milliseconds to 't'. 'millis' can be negative.
+DateTm *dateTm_add (DateTm *t, int millis);
 
-/// Returns t1 - t2 in milliseconds
-int date_tm_df (DateTm *t1, DateTm *t2);
+/// Returns t1 - t2 in milliseconds.
+int dateTm_df (DateTm *t1, DateTm *t2);
 
 #endif

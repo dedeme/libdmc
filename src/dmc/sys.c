@@ -13,9 +13,12 @@
 static struct {
   char *home;
   char *uname;
-} sys;
+  char *udir;
+} sys = {.home = NULL, .uname = NULL, .udir = NULL};
 
 void sys_init (char *path) {
+  if (sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' already has been called")
   exc_init();
   rnd_init();
 
@@ -23,24 +26,39 @@ void sys_init (char *path) {
   struct passwd *udata = getpwuid(uid);
   sys.home = path_cat(udata->pw_dir, ".dmCApp", path, NULL);
   sys.uname = str_new(udata->pw_name);
+  sys.udir = str_new(udata->pw_dir);
   file_mkdir(sys.home);
 }
 
 char *sys_home (void) {
+  if (!sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' was not called")
   return sys.home;
 }
 
 char *sys_uname (void) {
+  if (!sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' was not called")
   return sys.uname;
 }
 
-void sys_locale (char *language) {
+char *sys_udir (void) {
+  if (!sys.home)
+    EXC_ILLEGAL_STATE("'sys_init' was not called")
+  return sys.udir;
+}
+
+void sys_set_locale (char *language) {
   setlocale (LC_ALL, language);
 }
 
+char *sys_locale (void) {
+  return setlocale (LC_ALL, NULL);
+}
+
 Opt *sys_cmd(char *command) {
-  char *c = str_f("%s 2>&1", command);
-  FILE *fp = popen(c, "r");
+//  char *c = str_f("%s 2>&1", command);
+  FILE *fp = popen(command, "r");
 
   if (!fp)
     return opt_empty();
