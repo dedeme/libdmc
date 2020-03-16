@@ -11,11 +11,14 @@
 /// Returns of cgi_get_session_data.
 typedef struct cgi_Session CgiSession;
 
+/// Returns sesion user.
+char *cgiSession_user(CgiSession *this);
+
+/// Returns sesion user level.
+char *cgiSession_level(CgiSession *this);
+
 /// Returns comunication key.
 char *cgiSession_key(CgiSession *this);
-
-/// Returns connection identifier.
-char *cgiSession_id(CgiSession *this);
 
 /// Returns the standard length of keys.
 int cgi_klen(void);

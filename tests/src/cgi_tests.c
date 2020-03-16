@@ -42,23 +42,25 @@ void cgi_tests(void) {
 
   CgiSession *cgiss = opt_get(cgi_get_session(session_id));
   char *key2 = cgiSession_key(cgiss);
-  char *con_id = cgiSession_id(cgiss);
+  char *suser = cgiSession_user(cgiss);
+  char *slevel = cgiSession_level(cgiss);
   assert(*key2);
-  assert(!*con_id);
+  assert(str_eq(suser, "admin"));
+  assert(str_eq(slevel, "0"));
 
   r = cgi_connect(session_id);
   rp = rp_new(key, r);
   char *key2b = js_rs(opt_get(map_get(rp, "key")));
-  char *con_idb = js_rs(opt_get(map_get(rp, "connectionId")));
 
   cgiss = opt_get(cgi_get_session(session_id));
   key2 = cgiSession_key(cgiss);
-  con_id = cgiSession_id(cgiss);
+  suser = cgiSession_user(cgiss);
+  slevel = cgiSession_level(cgiss);
   assert(*key2);
-  assert(*con_id);
+  assert(str_eq(suser, "admin"));
+  assert(str_eq(slevel, "0"));
 
   assert(str_eq(key2b, key2));
-  assert(str_eq(con_idb, con_id));
 
   r = cgi_del_session(session_id);
   rp = rp_new(key, r);
@@ -67,10 +69,8 @@ void cgi_tests(void) {
   r = cgi_connect(session_id);
   rp = rp_new(key, r);
   key2b = js_rs(opt_get(map_get(rp, "key")));
-  con_idb = js_rs(opt_get(map_get(rp, "connectionId")));
 
   assert(str_eq(key2b, ""));
-  assert(str_eq(con_idb, ""));
 
   r = cgi_add_user("admin", pass, "u1", "passu1", "1");
   rp = rp_new(key, r);
