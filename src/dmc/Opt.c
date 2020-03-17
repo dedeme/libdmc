@@ -54,3 +54,18 @@ void *opt_oget (Opt *this, void *value) {
 void *opt_nget (Opt *this) {
   return this->value ? this->value : NULL;
 }
+
+Js *opt_to_js (Opt *this, Js *(*to)(void *e)) {
+  // Arr[js]
+  Arr *js = this->value
+    ? arr_new_c(1, (void *[]) { to(this->value) })
+    : arr_new()
+  ;
+  return js_wa(js);
+}
+
+Opt *opt_from_js (Js *js, void *(*from)(Js *jse)) {
+  // Arr[js]
+  Arr *a = js_ra(js);
+  return arr_size(a) ? opt_new(from(*arr_start(a))) : opt_empty();
+}

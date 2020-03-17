@@ -162,7 +162,7 @@ typedef struct timeval DateTm;
 /// Returns the current time with microsconds of precission.
 ///   DateTm (struct timeval) has following fields:
 ///     time_t tv_sec - Seconds.
-///     long int tv_usecs - Microseconds (0 - 999999).
+///     long int tv_usec - Microseconds (0 - 999999).
 DateTm *dateTm_now ();
 
 /// Returns t1 - t2.

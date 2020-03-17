@@ -3,6 +3,8 @@
 
 /// Option.
 
+#include "dmc/Js.h"
+
 #ifndef DMC_OPT_H
   #define DMC_OPT_H
 
@@ -31,5 +33,11 @@ void *opt_oget (Opt *this, void *value);
 
 /// Returns NULL if 'this' is empty.
 void *opt_nget (Opt *this);
+
+///
+Js *opt_to_js (Opt *this, Js *(*to)(void *e));
+
+///
+Opt *opt_from_js (Js *js, void *(*from)(Js *jse));
 
 #endif
