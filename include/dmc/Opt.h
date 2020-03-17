@@ -8,6 +8,7 @@
 #ifndef DMC_OPT_H
   #define DMC_OPT_H
 
+///
 typedef struct opt_Opt Opt;
 
 /// Creates a full option.

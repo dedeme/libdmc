@@ -2,7 +2,6 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Map.h"
-
 #include "dmc/std.h"
 
 struct map_Map {

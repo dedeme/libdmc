@@ -7,7 +7,8 @@
   #define DMC_MAP_H
 
 #include "dmc/Arr.h"
-#include "dmc/Opt.h"
+
+typedef struct opt_Opt Opt;
 
 ///
 typedef struct map_Map Map;
