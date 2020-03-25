@@ -204,6 +204,7 @@ void arr_tests(void) {
   assert(test("", arr_take(arr_new(), 0)));
   assert(test("", arr_take(arr_new(), 20)));
   assert(test("", arr_take(mk(), 0)));
+  assert(test("", arr_take(mk(), -1)));
   assert(test("ab", arr_take(mk(), 2)));
   assert(test("abc", arr_take(mk(), 20000)));
 
@@ -220,6 +221,7 @@ void arr_tests(void) {
   assert(test("", arr_drop(arr_new(), 0)));
   assert(test("", arr_drop(arr_new(), 20)));
   assert(test("abc", arr_drop(mk(), 0)));
+  assert(test("abc", arr_drop(mk(), -12)));
   assert(test("c", arr_drop(mk(), 2)));
   assert(test("", arr_drop(mk(), 20000)));
 

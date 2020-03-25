@@ -126,8 +126,8 @@ It *it_cat (It *this, It *another) {
 // -------------------------------------------------------------------------- //
 typedef struct {                                                              //
   It *it;                                                                     //
-  size_t i;                                                                   //
-  size_t n;                                                                   //
+  int i;                                                                   //
+  int n;                                                                   //
 } it_take_O;                                                                  //
 static Opt *take_next (it_take_O *o) {                                        //
   if (o->i < o->n && it_has_next(o->it)) {                                    //
@@ -137,7 +137,7 @@ static Opt *take_next (it_take_O *o) {                                        //
   else return opt_empty();                                                    //
 }                                                                             //
 // -------------------------------------------------------------------------- //
-It *it_take (It *this, size_t n) {
+It *it_take (It *this, int n) {
   it_take_O *o = MALLOC(it_take_O);
   o->it = this;
   o->n = n;
@@ -162,8 +162,8 @@ It *it_takef (It *this, int (*predicate)(void *e)) {
   return it_new(o, (it_Next)takef_next);
 }
 
-It *it_drop (It *this, size_t n) {
-  size_t i = 0;
+It *it_drop (It *this, int n) {
+  int i = 0;
   while (it_has_next(this) && i++ < n)
     it_next(this);
   return this;

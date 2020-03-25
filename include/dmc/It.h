@@ -55,13 +55,13 @@ It *it_add0 (It *this, void *element);
 It *it_cat (It *this, It *another);
 
 ///
-It *it_take (It *this, size_t n);
+It *it_take (It *this, int n);
 
 ///
 It *it_takef (It *this, int (*predicate)(void *e));
 
 ///
-It *it_drop (It *this, size_t n);
+It *it_drop (It *this, int n);
 
 ///
 It *it_dropf (It *this, int (*predicate)(void *e));
