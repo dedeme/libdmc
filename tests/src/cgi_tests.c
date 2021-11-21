@@ -41,10 +41,12 @@ void cgi_tests(void) {
   assert(str_eq(level, "0"));
 
   CgiSession *cgiss = opt_get(cgi_get_session(session_id));
-  char *key2 = cgiSession_key(cgiss);
+  char *key2 = cgiSession_com_key(cgiss);
+  char *key3 = cgiSession_con_key(cgiss);
   char *suser = cgiSession_user(cgiss);
   char *slevel = cgiSession_level(cgiss);
   assert(*key2);
+  assert(*key3);
   assert(str_eq(suser, "admin"));
   assert(str_eq(slevel, "0"));
 
@@ -53,10 +55,12 @@ void cgi_tests(void) {
   char *key2b = js_rs(opt_get(map_get(rp, "key")));
 
   cgiss = opt_get(cgi_get_session(session_id));
-  key2 = cgiSession_key(cgiss);
+  key2 = cgiSession_com_key(cgiss);
+  key3 = cgiSession_con_key(cgiss);
   suser = cgiSession_user(cgiss);
   slevel = cgiSession_level(cgiss);
   assert(*key2);
+  assert(*key3);
   assert(str_eq(suser, "admin"));
   assert(str_eq(slevel, "0"));
 

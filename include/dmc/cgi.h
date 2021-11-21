@@ -18,7 +18,10 @@ char *cgiSession_user(CgiSession *this);
 char *cgiSession_level(CgiSession *this);
 
 /// Returns comunication key.
-char *cgiSession_key(CgiSession *this);
+char *cgiSession_com_key(CgiSession *this);
+
+/// Returns connection key.
+char *cgiSession_con_key(CgiSession *this);
 
 /// Returns the standard length of keys.
 int cgi_klen(void);

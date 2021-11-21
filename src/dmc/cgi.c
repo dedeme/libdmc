@@ -19,16 +19,18 @@ static char *deme_key =
 struct cgi_Session {
   char *user;
   char *level;
-  char *com_key;
+  char *com_key; // Communication key
+  char *con_key; // Connection key
 };
 
 static CgiSession *cgiSession_new(
-  char *user, char *level, char *com_key
+  char *user, char *level, char *com_key, char *con_key
 ) {
   CgiSession *this = MALLOC(CgiSession);
   this->user = user;
   this->level = level;
   this->com_key = com_key;
+  this->con_key = con_key;
   return this;
 }
 
@@ -40,8 +42,12 @@ char *cgiSession_level(CgiSession *this) {
   return this->level;
 }
 
-char *cgiSession_key(CgiSession *this) {
+char *cgiSession_com_key(CgiSession *this) {
   return this->com_key;
+}
+
+char *cgiSession_con_key(CgiSession *this) {
+  return this->con_key;
 }
 
 struct cgi_Cgi {
@@ -253,7 +259,8 @@ static Arr *read_sessions_new(void) {
 
 // If expiration is 0 tNoExpiration is used
 static void add_session(
-  char *session_id, char *user, char *key, char *level, time_t expiration
+  char *session_id, char *user, char *com_key, char *con_key,
+  char *level, time_t expiration
 ) {
   // Arr[Js] (Where Js is a json array)
   Arr *sessions = read_sessions_new();
@@ -265,10 +272,11 @@ static void add_session(
   Arr *new_row = arr_new();
   arr_push(new_row,  js_ws(session_id));  //0
   arr_push(new_row,  js_ws(user));        //1
-  arr_push(new_row,  js_ws(key));         //2
-  arr_push(new_row,  js_ws(level));       //3
-  arr_push(new_row,  date_to_js(time));   //4
-  arr_push(new_row,  date_to_js(lapse));  //5
+  arr_push(new_row,  js_ws(com_key));     //2
+  arr_push(new_row,  js_ws(con_key));     //3
+  arr_push(new_row,  js_ws(level));       //4
+  arr_push(new_row,  date_to_js(time));   //5
+  arr_push(new_row,  date_to_js(lapse));  //6
 
   arr_push(sessions, js_wa(new_row));
   write_sessions(sessions);
@@ -285,7 +293,7 @@ static Opt *read_session(char *session_id) {
   int filter(Js *jsrow) {                                                     //
     // Arr[Js]                                                                //
     Arr *row = js_ra(jsrow);                                                  //
-    return (date_from_js(arr_get(row, 4)) >= now);                            //
+    return (date_from_js(arr_get(row, 5)) >= now);                            //
   }                                                                           //
                                                                               //
   // jsrow is a Js(Arr[Js])                                                   //
@@ -310,11 +318,12 @@ static Opt *read_session(char *session_id) {
     Arr *row = js_ra(arr_get(sessions, ix));
     char *user = js_rs(arr_get(row, 1));
     char *com_key = js_rs(arr_get(row, 2));
-    char *level = js_rs(arr_get(row, 3));
-    r = opt_new(cgiSession_new(user, level, com_key));
+    char *con_key = js_rs(arr_get(row, 3));
+    char *level = js_rs(arr_get(row, 4));
+    r = opt_new(cgiSession_new(user, level, com_key, con_key));
 
-    arr_set(row, 4, date_to_js(
-      date_now() + date_from_js(arr_get(row, 5))
+    arr_set(row, 5, date_to_js(
+      date_now() + date_from_js(arr_get(row, 6))
     ));
     arr_set(sessions, ix, js_wa(row));
   }
@@ -465,16 +474,20 @@ char *cgi_authentication(char *user, char *key, int expiration) {
   if (level) {
     char *session_id = cryp_genk(klen);
     char *key = cryp_genk(klen);
+    char *con_key = cryp_genk(klen);
     add_session(
-      session_id, user, key, level, expiration ? cgi_null->t_expiration : 0
+      session_id, user, key, con_key,
+      level, expiration ? cgi_null->t_expiration : 0
     );
     map_put(m, "level", js_ws(level));
     map_put(m, "sessionId", js_ws(session_id));
     map_put(m, "key", js_ws(key));
+    map_put(m, "conKey", js_ws(con_key));
   } else {
     map_put(m, "level", js_ws(""));
     map_put(m, "sessionId", js_ws(""));
     map_put(m, "key", js_ws(""));
+    map_put(m, "conKey", js_ws(""));
   }
 
   return cgi_ok(m);
@@ -490,6 +503,7 @@ char *cgi_connect(char *session_id) {
   char *com_key = "";
   char *user = "";
   char *level = "";
+  char *con_key = "";
   // Opt[CgiSession]
   Opt *cgiss = read_session(session_id);
   if (opt_is_full(cgiss)) {
@@ -497,11 +511,27 @@ char *cgi_connect(char *session_id) {
     com_key = ss->com_key;
     user = ss->user;
     level = ss->level;
+    con_key = cryp_genk(klen);
+
+    // Arr[Js]
+    Arr *sss = read_sessions_new();
+    EACH_IX(sss, Js, rowjs, i) {
+      // Arr[Js]
+      Arr *row = js_ra(rowjs);
+      char *ssId = js_rs(arr_get(row, 0));
+      if (str_eq(ssId, session_id)) {
+        arr_set(row, 3, js_ws(con_key));
+        arr_set(sss, i, js_wa(row));
+        break;
+      }
+    }_EACH
+    write_sessions(sss);
   }
 
   map_put(m, "key", js_ws(com_key));
   map_put(m, "user", js_ws(user));
   map_put(m, "level", js_ws(level));
+  map_put(m, "conKey", js_ws(con_key));
   return cgi_ok(m);
 }
 
