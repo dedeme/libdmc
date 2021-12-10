@@ -10,7 +10,7 @@ OBJECTS2 = $(foreach DIR, $(DIRS),\
 
 lib/lib$(LIB).a : $(OBJECTS) $(OBJECTS2)
 	if [ ! -e lib ];then mkdir lib;fi
-	ar rcs lib/lib$(LIB).a $(OBJECTS)
+	ar rcs lib/lib$(LIB).a $(OBJECTS) $(OBJECTS2)
 
 obj/%.o : src/dmc/%.c include/dmc/%.h
 	if [ ! -e obj ];then mkdir obj;fi
