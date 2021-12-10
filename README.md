@@ -4,7 +4,7 @@ C utilities.
 
 Some utilities from C language.
 
-Version - 201909
+Version - 202111
 
 Dependencies:
 
@@ -28,7 +28,7 @@ cd dmctest
 ### Clone repository
 
 ```sh
-git clone --branch 201909 https://github.com/dedeme/libdmc.git
+git clone --branch 202111 https://github.com/dedeme/libdmc.git
 ```
 
 ### Open 'libdmc' and run 'make'
@@ -46,21 +46,20 @@ make
 #include "dmc/std.h"
 
 void main () {
-  Arr *a = arr_new();
-  arr_push(a, "one");
-  arr_push(a, "two");
-  arr_push(a, "three");
+  Achar *a = achar_new();
+  achar_push(a, "one");
+  achar_push(a, "two");
+  achar_push(a, "three");
 
-  EACH(a, char, e)
-    puts(e);
-  _EACH
+  char **p = a->es;
+  while (p < a->end) puts(*p++);
 }
 ```
 
 ### Compile and execute
 
 ```sh
-gcc test.c -o test -I./include -L./lib -ldmc -lgc -lpthread -lm
+gcc test.c -o test -I./include -L./lib -ldmc -lgc -lm
 ./test
 ```
 And console will show:
