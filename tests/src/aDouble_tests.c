@@ -3,6 +3,8 @@
 
 #include "aDouble_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include "dmc/ADouble.h"
 
 void aDouble_tests(void) {
   puts("ADouble tests");

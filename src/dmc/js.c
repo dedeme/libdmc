@@ -1,7 +1,7 @@
 // Copyright 01-Dic-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
-#include "dmc/Js.h"
+#include "dmc/js.h"
 #include <ctype.h>
 #include <locale.h>
 #include <errno.h>

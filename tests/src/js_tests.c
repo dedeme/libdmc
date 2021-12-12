@@ -3,7 +3,9 @@
 
 #include "js_tests.h"
 #include <assert.h>
-#include "dmc/std.h"
+#include <stdio.h>
+#include "dmc/js.h"
+#include "dmc/str.h"
 
 void js_tests(void) {
   puts("Js tests");

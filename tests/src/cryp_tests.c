@@ -3,8 +3,10 @@
 
 #include "cryp_tests.h"
 #include <assert.h>
-#include "string.h"
+#include <stdio.h>
+#include <string.h>
 #include "dmc/cryp.h"
+#include "dmc/str.h"
 
 void cryp_tests(void) {
   puts("Cryp tests");

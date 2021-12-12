@@ -3,6 +3,9 @@
 
 #include "regex_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include "dmc/str.h"
+#include "dmc/regex.h"
 
 void regex_tests(void) {
   puts("Regex tests");

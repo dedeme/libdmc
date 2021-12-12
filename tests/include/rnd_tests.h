@@ -4,8 +4,6 @@
 #ifndef RND_TESTS_H
   #define RND_TESTS_H
 
-#include "dmc/std.h"
-
 void rnd_tests(void);
 
 #endif

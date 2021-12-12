@@ -3,7 +3,10 @@
 
 #include "map_tests.h"
 #include <assert.h>
-#include "dmc/std.h"
+#include <stdio.h>
+#include "dmc/char/Mchar.h"
+#include "dmc/Buf.h"
+#include "dmc/str.h"
 
 static char *keys_to_s(Achar *keys) {
   Buf *bf = buf_new();

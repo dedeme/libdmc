@@ -4,8 +4,6 @@
 #ifndef FILE_TESTS_H
   #define FILE_TESTS_H
 
-#include "dmc/std.h"
-
 void file_tests(void);
 
 #endif

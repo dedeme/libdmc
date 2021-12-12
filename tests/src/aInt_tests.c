@@ -3,6 +3,8 @@
 
 #include "aInt_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include "dmc/AInt.h"
 
 void aInt_tests(void) {
   puts("AInt tests");

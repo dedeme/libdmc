@@ -3,7 +3,10 @@
 
 #include "hash_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include "dmc/char/Hchar.h"
+#include "dmc/str.h"
+#include "dmc/js.h"
 
 void hash_tests () {
   printf("Hash test\n");

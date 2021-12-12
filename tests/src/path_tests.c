@@ -3,6 +3,9 @@
 
 #include "path_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include "dmc/str.h"
+#include "dmc/path.h"
 
 void path_tests(void) {
   puts("Path tests");

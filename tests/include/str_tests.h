@@ -4,8 +4,6 @@
 #ifndef STR_TESTS_H
   #define STR_TESTS_H
 
-#include "dmc/std.h"
-
 void str_tests(void);
 
 #endif

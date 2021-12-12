@@ -4,8 +4,6 @@
 #ifndef CRYP_TESTS_H
   #define CRYP_TESTS_H
 
-#include "dmc/std.h"
-
 void cryp_tests(void);
 
 #endif

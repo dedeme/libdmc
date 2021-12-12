@@ -3,7 +3,9 @@
 
 #include "str_tests.h"
 #include <assert.h>
-#include "dmc/std.h"
+#include <stdio.h>
+#include "dmc/str.h"
+#include "dmc/Buf.h"
 
 void str_tests(void) {
   puts("Str tests");

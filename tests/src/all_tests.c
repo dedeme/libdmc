@@ -3,10 +3,8 @@
 
 /** Version 201904 */
 
+#include "dmc/sys.h"
 #include "all_tests.h"
-#include <time.h>
-
-#include "dmc/std.h"
 #include "b64_tests.h"
 #include "bytes_tests.h"
 #include "tp_tests.h"

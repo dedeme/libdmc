@@ -3,7 +3,13 @@
 
 #include "file_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include <sys/stat.h>
+#include "dmc/file.h"
+#include "dmc/sys.h"
+#include "dmc/path.h"
+#include "dmc/str.h"
+#include "dmc/Buf.h"
 
 void file_tests(void) {
   puts("File tests");

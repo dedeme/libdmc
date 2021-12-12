@@ -2,7 +2,10 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/async.h"
-#include "time.h"
+#include <time.h>
+#include "dmc/DEFS.h"
+#include "dmc/Arr.h"
+#include "dmc/sys.h"
 
 struct async_Thread {
   void (*fn) (void *);
@@ -132,7 +135,7 @@ AsyncActor *asyncActor_new (int millis) {
   this->active = 1;
   this->live = 1;
 
-  async_thread_detached((FPROC)actor_cycle, this);
+  async_thread_detached((void(*)(void *))actor_cycle, this);
 
   return this;
 }
@@ -184,7 +187,7 @@ AsyncTimer *asyncTimer_new (void (*fn)(void *), void *value, int millis) {
   this->millis = millis;
   this->active = 1;
 
-  async_thread_detached((FPROC)timer_cycle, this);
+  async_thread_detached((void(*)(void *))timer_cycle, this);
 
   return this;
 }

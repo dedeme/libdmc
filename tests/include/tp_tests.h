@@ -4,8 +4,6 @@
 #ifndef TP_TESTS_H
   #define TP_TESTS_H
 
-#include "dmc/std.h"
-
 void tp_tests(void);
 
 #endif

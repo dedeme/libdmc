@@ -4,8 +4,6 @@
 #ifndef ADOUBLE_TESTS_H
   #define ADOUBLE_TESTS_H
 
-#include "dmc/std.h"
-
 void aDouble_tests(void);
 
 #endif

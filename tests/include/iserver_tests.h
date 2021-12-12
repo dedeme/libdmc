@@ -4,8 +4,6 @@
 #ifndef ISERVER_TESTS_H
   #define ISERVER_TESTS_H
 
-#include "dmc/std.h"
-
 ///
 void iserver_tests(int active);
 

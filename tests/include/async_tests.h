@@ -4,8 +4,6 @@
 #ifndef ASYNC_TESTS_H
   #define ASYNC_TESTS_H
 
-#include "dmc/std.h"
-
 ///
 void async_tests (void);
 

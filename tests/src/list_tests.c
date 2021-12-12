@@ -3,6 +3,11 @@
 
 #include "list_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include "dmc/char/Lchar.h"
+#include "dmc/Buf.h"
+#include "dmc/js.h"
+#include "dmc/str.h"
 
 // List[char]
 char *paste (Lchar *l) {

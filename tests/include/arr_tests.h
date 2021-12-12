@@ -4,8 +4,6 @@
 #ifndef ARR_TESTS_H
   #define ARR_TESTS_H
 
-#include "dmc/std.h"
-
 void arr_tests(void);
 
 #endif

@@ -2,7 +2,6 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Management of multithread programs.
-/// NOTE: This file must be included instead of 'std.h'.
 
 #ifndef DMC_ASYNC_H
   #define DMC_ASYNC_H
@@ -11,7 +10,6 @@
 /// Necesary definition for multithreading garbage collector.
 #define GC_THREADS
 #include "gc.h"
-#include "dmc/std.h"
 
 /// Launchs 'fn' in a new joinable thread. Example of use:
 ///   void fn() { puts("Here"); }

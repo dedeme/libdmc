@@ -3,8 +3,13 @@
 
 #include "iserver_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include "dmc/async.h"
 #include "dmc/Iserver.h"
+#include "dmc/DEFS.h"
+#include "dmc/err.h"
+#include "dmc/str.h"
+#include "dmc/sys.h"
 
 static void run_server (Iserver *is) {
   for (;;) {

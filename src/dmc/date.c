@@ -4,6 +4,12 @@
 #include "dmc/date.h"
 #include "dmc/Dec.h"
 #include <sys/time.h>
+#include <string.h>
+#include <stdlib.h>
+#include "dmc/char/Achar.h"
+#include "dmc/str.h"
+#include "dmc/js.h"
+#include "dmc/DEFS.h"
 
 time_t date_new(int day, int month, int year) {
   struct tm t;

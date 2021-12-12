@@ -4,6 +4,7 @@
 #include "b64_tests.h"
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 #include "dmc/b64.h"
 
 void b64_tests(void) {

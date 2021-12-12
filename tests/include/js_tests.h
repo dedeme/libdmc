@@ -4,8 +4,6 @@
 #ifndef JS_TESTS_H
   #define JS_TESTS_H
 
-#include "dmc/std.h"
-
 void js_tests(void);
 
 #endif

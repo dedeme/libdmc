@@ -4,8 +4,6 @@
 #ifndef EXT_TESTS_H
   #define EXT_TESTS_H
 
-#include "dmc/std.h"
-
 void ext_tests(void);
 
 #endif

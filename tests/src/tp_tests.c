@@ -4,6 +4,9 @@
 #include "tp_tests.h"
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
+#include "dmc/Tp.h"
+#include "dmc/Kv.h"
 
 void tp_tests(void) {
   puts("tp tests");

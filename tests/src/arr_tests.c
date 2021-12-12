@@ -3,9 +3,12 @@
 
 #include "arr_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
+#include "dmc/DEFS.h"
 #include "dmc/Arr.h"
 #include "dmc/Buf.h"
+#include "dmc/str.h"
 
 static int greater(double *e1, double *e2) {
   return *e1 > *e2;
@@ -126,7 +129,7 @@ void arr_tests(void) {
   for (void **p = ia->es; p < ia->end; ++p) *sum += **(double **)p;
   assert(*sum == 208);
 
-  arr_sort(ia, (FCMP) greater);
+  arr_sort(ia, (int(*)(void *, void *)) greater);
   arr_reverse(ia);
 
   assert(arr_size(ia) == 5);
@@ -148,7 +151,7 @@ void arr_tests(void) {
   assert(*(double *)arr_get(ia, 4) == 1);
 
   ia = arr_new();
-  arr_sort(ia, (FCMP) greater);
+  arr_sort(ia, (int(*)(void *, void *)) greater);
   arr_reverse(ia);
   assert(arr_size(ia) == 0);
 
@@ -207,11 +210,11 @@ void arr_tests(void) {
   int take2(char *e) { return strcmp(e, "b") < 0; }
   int take3(char *e) { return strcmp(e, "j") < 0; }
 
-  assert(test("", arr_takef(arr_new(), (FPRED)take1)));
-  assert(test("", arr_takef(arr_new(), (FPRED)take3)));
-  assert(test("", arr_takef(mk(), (FPRED)take1)));
-  assert(test("a", arr_takef(mk(), (FPRED)take2)));
-  assert(test("abc", arr_takef(mk(), (FPRED)take3)));
+  assert(test("", arr_takef(arr_new(), (int(*)(void *))take1)));
+  assert(test("", arr_takef(arr_new(), (int(*)(void *))take3)));
+  assert(test("", arr_takef(mk(), (int(*)(void *))take1)));
+  assert(test("a", arr_takef(mk(), (int(*)(void *))take2)));
+  assert(test("abc", arr_takef(mk(), (int(*)(void *))take3)));
 
   assert(test("", arr_drop(arr_new(), 0)));
   assert(test("", arr_drop(arr_new(), 20)));
@@ -220,39 +223,41 @@ void arr_tests(void) {
   assert(test("c", arr_drop(mk(), 2)));
   assert(test("", arr_drop(mk(), 20000)));
 
-  assert(test("", arr_dropf(arr_new(), (FPRED)take1)));
-  assert(test("", arr_dropf(arr_new(), (FPRED)take3)));
-  assert(test("abc", arr_dropf(mk(), (FPRED)take1)));
-  assert(test("bc", arr_dropf(mk(), (FPRED)take2)));
-  assert(test("", arr_dropf(mk(), (FPRED)take3)));
+  assert(test("", arr_dropf(arr_new(), (int(*)(void *))take1)));
+  assert(test("", arr_dropf(arr_new(), (int(*)(void *))take3)));
+  assert(test("abc", arr_dropf(mk(), (int(*)(void *))take1)));
+  assert(test("bc", arr_dropf(mk(), (int(*)(void *))take2)));
+  assert(test("", arr_dropf(mk(), (int(*)(void *))take3)));
 
   int filter1(char *e) { return !strcmp(e, "b"); }
   int filter2(char *e) { return strcmp(e, "b"); }
   int filter3(char *e) { return !strcmp(e, "j"); }
-  assert(test("", arr_filter_to(arr_new(), (FPRED)filter1)));
-  assert(test("", arr_filter_to(arr_new(), (FPRED)filter2)));
-  assert(test("b", arr_filter_to(mk(), (FPRED)filter1)));
-  assert(test("ac", arr_filter_to(mk(), (FPRED)filter2)));
-  assert(test("", arr_filter_to(mk(), (FPRED)filter3)));
+  assert(test("", arr_filter_to(arr_new(), (int(*)(void *))filter1)));
+  assert(test("", arr_filter_to(arr_new(), (int(*)(void *))filter2)));
+  assert(test("b", arr_filter_to(mk(), (int(*)(void *))filter1)));
+  assert(test("ac", arr_filter_to(mk(), (int(*)(void *))filter2)));
+  assert(test("", arr_filter_to(mk(), (int(*)(void *))filter3)));
 
   void *map(char *e) {
     char *s = ATOMIC(80);
     sprintf(s, "%s-", e);
     return s;
   }
-  assert(test("", arr_map(arr_new(), (FMAP)map)));
-  assert(test("a-b-c-", arr_map(mk(), (FMAP)map)));
+  assert(test("", arr_map(arr_new(), (void *(*)(void *))map)));
+  assert(test("a-b-c-", arr_map(mk(), (void *(*)(void *))map)));
 
   void *map1(char *e) {
     char *s = ATOMIC(80);
     sprintf(s, "-%s-", e);
     return s;
   }
-  assert(test("", arr_map2(arr_new(), (FMAP)map1, (FMAP)map)));
-  assert(test("-a-", arr_map2(
-    arr_new_from("a", NULL), (FMAP)map1, (FMAP)map
+  assert(test("", arr_map2(arr_new(),
+    (void *(*)(void *))map1, (void *(*)(void *))map)));
+  assert(test("-a-", arr_map2(arr_new_from("a", NULL),
+    (void *(*)(void *))map1, (void *(*)(void *))map
   )));
-  assert(test("-a-b-c-", arr_map2(mk(), (FMAP)map1, (FMAP)map)));
+  assert(test("-a-b-c-", arr_map2(mk(),
+    (void *(*)(void *))map1, (void *(*)(void *))map)));
 
   // ------------------------------------------------------------------------ //
   void *zip(void *e1, void *e2) {
@@ -281,7 +286,7 @@ void arr_tests(void) {
     arr_zip3(mk(), mk(), mk(), zip3)));
 
   sa = mk2();
-  Arr *d = arr_duplicates(sa, (FCMP)str_eq);
+  Arr *d = arr_duplicates(sa, (int(*)(void *, void *))str_eq);
   assert(arr_size(d) == 1);
   assert(arr_size(sa) == 2);
   assert(str_eq(arr_get(d, 0), "a"));
@@ -289,7 +294,7 @@ void arr_tests(void) {
   assert(str_eq(arr_get(sa, 1), "b"));
 
   sa = mk();
-  d = arr_duplicates(sa, (FCMP)str_eq);
+  d = arr_duplicates(sa, (int(*)(void *, void *))str_eq);
   assert(arr_size(d) == 0);
   assert(arr_size(sa) == 3);
   assert(str_eq(arr_get(sa, 0), "a"));

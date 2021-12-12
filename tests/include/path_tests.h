@@ -4,8 +4,6 @@
 #ifndef PATH_TESTS_H
   #define PATH_TESTS_H
 
-#include "dmc/std.h"
-
 void path_tests(void);
 
 #endif

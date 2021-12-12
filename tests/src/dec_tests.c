@@ -4,7 +4,10 @@
 #include "dec_tests.h"
 #include <assert.h>
 #include <locale.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "dmc/Dec.h"
+#include "dmc/str.h"
 
 void dec_tests(void) {
   puts("Dec tests");

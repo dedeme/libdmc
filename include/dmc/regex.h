@@ -6,7 +6,8 @@
 #ifndef DMC_REGEX_H
   #define DMC_REGEX_H
 
-#include "dmc/std.h"
+#include "dmc/TpIntInt/OATpIntInt.h"
+#include "dmc/char/Ochar.h"
 
 /// Returns the offsets where 'rex' is found in s.
 ///   rex   : Regular expression to find. It does not admit grouping (that is,

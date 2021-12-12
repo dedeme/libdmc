@@ -28,7 +28,7 @@
 #ifndef DMC_ISERVER_H
   #define DMC_ISERVER_H
 
-#include "dmc/std.h"
+#include "dmc/char/Ochar.h"
 
 /// Request read by Iserver.
 typedef struct iserver_Rq IserverRq;

@@ -55,9 +55,9 @@ char *cgi_change_pass (char *user, char *old, char *new);
 
 /// Adds a new user. If the user identifier already exists, it returns 0.
 /// Otherwise it returns 1.
-///   user       : User id.
-///   pass  : User password.
-///   level      : User level.
+///   user : User id.
+///   pass : User password.
+///   level: User level.
 int cgi_add_user (char *user, char *pass, char *level);
 
 /// Remove user if exists.

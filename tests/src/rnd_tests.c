@@ -3,7 +3,9 @@
 
 #include "rnd_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include "dmc/rnd.h"
+#include "dmc/str.h"
 
 void rnd_tests(void) {
   puts("Rnd tests");

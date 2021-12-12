@@ -3,7 +3,9 @@
 
 #include "date_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include "dmc/date.h"
+#include "dmc/str.h"
 
 void date_tests(void) {
   puts("Date tests");

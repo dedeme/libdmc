@@ -4,8 +4,6 @@
 #ifndef AINT_TESTS_H
   #define AINT_TESTS_H
 
-#include "dmc/std.h"
-
 void aInt_tests(void);
 
 #endif

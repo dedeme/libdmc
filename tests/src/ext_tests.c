@@ -3,7 +3,11 @@
 
 #include "ext_tests.h"
 #include <assert.h>
+#include <stdio.h>
 #include "dmc/ext.h"
+#include "dmc/str.h"
+#include "dmc/sys.h"
+#include "dmc/file.h"
 
 void ext_tests(void) {
   puts("Ext tests");

@@ -3,10 +3,17 @@
 
 #include "async_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "dmc/async.h"
 #include "dmc/date.h"
 #include "dmc/rnd.h"
 #include "dmc/OInt.h"
+#include "dmc/char/Achar.h"
+#include "dmc/str.h"
+#include "dmc/DEFS.h"
+#include "dmc/err.h"
+#include "dmc/sys.h"
 
 static void barbery (void) {
   int TIME_MAX_CLIENT_CREATE = 2000; // millis
@@ -122,7 +129,7 @@ static void barbery (void) {
     bmsg(str_f("Start cutting hair to %d", *client));
     sys_sleep(TIME_HAIR_CUT);
     bmsg(str_f("End cutting hair to %d", *client));
-    asyncActor_run(actor, (FPROC)watch_sites, hair_cut);
+    asyncActor_run(actor, (void(*)(void *))watch_sites, hair_cut);
   }
 
   void barber_end (void) {
@@ -156,7 +163,7 @@ static void barbery (void) {
       } else {
         cmsg(client, "Calling to barber");
         is_occupy = 1;
-        async_thread_detached((FPROC)hair_cut, client);
+        async_thread_detached((void(*)(void *))hair_cut, client);
       }
     } else {
       if (get_a_sit(client)) {
@@ -175,7 +182,7 @@ static void barbery (void) {
 
   void create_clients (void *null_value) {
     if (delay == 0) {
-      asyncActor_run(actor, (FPROC)client_run, mk_client());
+      asyncActor_run(actor, (void(*)(void *))client_run, mk_client());
       delay = (
           TIME_MIN_CLIENT_CREATE +
           rnd_i(TIME_MAX_CLIENT_CREATE - TIME_MIN_CLIENT_CREATE)
@@ -225,8 +232,8 @@ void async_tests(void) {
 */
 
   if (0) {
-    async_thread_detached((FPROC)counter, "10");
-    async_thread_detached((FPROC)counter, "10");
+    async_thread_detached((void(*)(void *))counter, "10");
+    async_thread_detached((void(*)(void *))counter, "10");
     sys_sleep(1000);
   }
 /*

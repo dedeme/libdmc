@@ -3,6 +3,8 @@
 
 #include "bytes_tests.h"
 #include <assert.h>
+#include <stdio.h>
+#include "dmc/Bytes.h"
 
 void bytes_tests(void) {
   puts("Bytes tests");

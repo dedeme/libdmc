@@ -4,8 +4,6 @@
 #ifndef DEC_TESTS_H
   #define DEC_TESTS_H
 
-#include "dmc/std.h"
-
 void dec_tests(void);
 
 #endif
