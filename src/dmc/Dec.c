@@ -4,7 +4,10 @@
 #include "dmc/Dec.h"
 #include <math.h>
 #include <locale.h>
-#include "dmc/std.h"
+#include "dmc/DEFS.h"
+#include "dmc/str.h"
+#include "dmc/Buf.h"
+#include "dmc/js.h"
 
 struct dec_Dec {
   double n;

@@ -4,8 +4,11 @@
 #include "dmc/cryp.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "dmc/std.h"
+#include "dmc/err.h"
+#include "dmc/b64.h"
+#include "dmc/str.h"
+#include "dmc/Buf.h"
+#include "dmc/rnd.h"
 
 static char *b64_base =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

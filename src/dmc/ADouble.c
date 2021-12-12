@@ -2,12 +2,11 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/ADouble.h"
-#include "dmc/std.h"
+#include <string.h>
 #include "dmc/Dec.h"
-
-
-
-
+#include "dmc/err.h"
+#include "dmc/str.h"
+#include "dmc/js.h"
 
 ADouble *aDouble_new(void) {
   return aDouble_bf_new(15);

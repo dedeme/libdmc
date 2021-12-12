@@ -3,7 +3,6 @@
 
 #include "dmc/Opt.h"
 #include <string.h>
-#include "dmc/DEFS.h"
 #include "dmc/err.h"
 
 struct opt_Opt {

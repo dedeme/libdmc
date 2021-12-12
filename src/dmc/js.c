@@ -4,8 +4,11 @@
 #include "dmc/js.h"
 #include <ctype.h>
 #include <locale.h>
+#include <stdlib.h>
 #include <errno.h>
-#include "dmc/std.h"
+#include "dmc/str.h"
+#include "dmc/Buf.h"
+#include "dmc/err.h"
 
 static void json_unicode(Buf *bf, char *hexdigits) {
   char hexvalue (char ch) {

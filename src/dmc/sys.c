@@ -2,12 +2,19 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/sys.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <locale.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <execinfo.h>
-#include "dmc/std.h"
-#include "time.h"
+#include <time.h>
+#include "dmc/err.h"
+#include "dmc/rnd.h"
+#include "dmc/path.h"
+#include "dmc/str.h"
+#include "dmc/Buf.h"
+#include "dmc/file.h"
 
 static struct {
   char *home;

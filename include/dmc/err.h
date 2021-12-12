@@ -6,6 +6,8 @@
 #ifndef DMC_ERR_H
   #define DMC_ERR_H
 
+#include "dmc/DEFS.h"
+
 /// Sets 'fn' as function to manage errors.
 /// If no function is set 'err_fail' will print 'err' and 'stack' and will finish
 /// the program with code 1.

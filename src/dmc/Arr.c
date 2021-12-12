@@ -4,7 +4,10 @@
 #include "dmc/Arr.h"
 #include <string.h>
 #include <stdarg.h>
-#include "dmc/std.h"
+#include <stdlib.h>
+#include "dmc/err.h"
+#include "dmc/str.h"
+#include "dmc/js.h"
 
 Arr *arr_new (void) {
   return arr_bf_new(15);
@@ -66,11 +69,8 @@ int arr_size (Arr *this) {
 
 void *arr_get (Arr *this, int ix) {
   int size = arr_size(this);
-  if (ix >= size || ix < 0) {
-    char err[250];
-    sprintf(err, "Index (%d) out of range (0-%d]", ix, size);
-    FAIL(err);
-  }
+  if (ix >= size || ix < 0)
+    FAIL(str_f("Index (%d) out of range (0-%d]", ix, size));
 
   return *(this->es + ix);
 }
@@ -101,11 +101,8 @@ void *arr_peek (Arr *this) {
 
 void arr_set (Arr *this, int ix, void *e) {
   int size = arr_size(this);
-  if (ix >= size || ix < 0) {
-    char err[250];
-    sprintf(err, "Index (%d) out of range (0-%d]", ix, size);
-    FAIL(err);
-  }
+  if (ix >= size || ix < 0)
+    FAIL(str_f("Index (%d) out of range (0-%d]", ix, size));
 
   void **p = this->es + ix;
   *p = e;
@@ -113,11 +110,8 @@ void arr_set (Arr *this, int ix, void *e) {
 
 void arr_insert (Arr *this, int ix, void *e) {
   int size = arr_size(this);
-  if (ix > size || ix < 0) {
-    char err[250];
-    sprintf(err, "Index (%d) out of range (0-%d)", ix, size);
-    FAIL(err);
-  }
+  if (ix > size || ix < 0)
+    FAIL(str_f("Index (%d) out of range (0-%d)", ix, size));
 
   arr_push(this, e);
   void **p = this->end - 1;
@@ -131,11 +125,8 @@ void arr_insert (Arr *this, int ix, void *e) {
 
 void arr_remove (Arr *this, int ix) {
   int size = arr_size(this);
-  if (ix >= size || ix < 0) {
-    char err[250];
-    sprintf(err, "Index (%d) out of range (0-%d]", ix, size);
-    FAIL(err);
-  }
+  if (ix >= size || ix < 0)
+    FAIL(str_f("Index (%d) out of range (0-%d]", ix, size));
 
   void **p = this->es + ix;
   void **p1 = p + 1;
@@ -166,11 +157,8 @@ void arr_cat (Arr *this, Arr *other) {
 
 void arr_insert_arr (Arr *this, int ix, Arr *other) {
   int this_len = this->end - this->es;
-  if (ix > this_len || ix < 0) {
-    char err[250];
-    sprintf(err, "Index (%d) out of range (0-%d)", ix, this_len);
-    FAIL(err);
-  }
+  if (ix > this_len || ix < 0)
+    FAIL(str_f("Index (%d) out of range (0-%d)", ix, this_len));
 
   int other_len = other->end - other->es;
   if (other_len) {
@@ -220,16 +208,10 @@ void arr_insert_arr (Arr *this, int ix, Arr *other) {
 
 void arr_remove_range (Arr *this, int begin, int end) {
   int sz = arr_size(this);
-  if (end > sz || end < 0) {
-    char err[250];
-    sprintf(err, "'end' (%d) out of range (0-%d)", end, sz);
-    FAIL(err);
-  }
-  if (begin > end || begin < 0) {
-    char err[250];
-    sprintf(err, "'begin' (%d) out of range (0-%d)", begin, end);
-    FAIL(err);
-  }
+  if (end > sz || end < 0)
+    FAIL(str_f("'end' (%d) out of range (0-%d)", end, sz));
+  if (begin > end || begin < 0)
+    FAIL(str_f("'begin' (%d) out of range (0-%d)", begin, end));
 
   int df = end - begin;
   if (df == 0) {

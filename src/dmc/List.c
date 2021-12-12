@@ -2,7 +2,9 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/List.h"
-#include "dmc/std.h"
+#include "dmc/err.h"
+#include "dmc/js.h"
+#include "dmc/char/Achar.h"
 
 List *list_new(void) {
   List *this = MALLOC(List);

@@ -2,7 +2,10 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/AInt.h"
-#include "dmc/std.h"
+#include <string.h>
+#include "dmc/js.h"
+#include "dmc/err.h"
+#include "dmc/str.h"
 
 AInt *aInt_new(void) {
   return aInt_bf_new(15);

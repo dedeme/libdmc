@@ -4,7 +4,8 @@
 #include "dmc/err.h"
 #include <string.h>
 #include <execinfo.h>
-#include "dmc/std.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 static void(*err_func)(char *, char **, int) = NULL;
 

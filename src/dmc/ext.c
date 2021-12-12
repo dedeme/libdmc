@@ -2,7 +2,11 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/ext.h"
-#include "dmc/std.h"
+#include "dmc/str.h"
+#include "dmc/sys.h"
+#include "dmc/file.h"
+#include "dmc/err.h"
+#include "dmc/path.h"
 
 char *ext_wget(char *url, int is_mozilla) {
   char *moz = is_mozilla

@@ -2,9 +2,8 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Kv.h"
-#include "dmc/DEFS.h"
 #include "dmc/err.h"
-#include "dmc/Js.h"
+#include "dmc/js.h"
 
 Kv *kv_new (char *k, void *v) {
   Kv *this = MALLOC(Kv);

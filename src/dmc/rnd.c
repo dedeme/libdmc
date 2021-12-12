@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "dmc/DEFS.h"
 #include "dmc/sys.h"
 #include "dmc/str.h"
 #include "dmc/err.h"

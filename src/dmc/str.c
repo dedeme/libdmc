@@ -4,7 +4,6 @@
 #include "dmc/str.h"
 #include <wctype.h>
 #include <stdio.h>
-#include "dmc/DEFS.h"
 #include "dmc/Buf.h"
 #include "dmc/err.h"
 

@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "dmc/err.h"
-#include "dmc/DEFS.h"
 #include "gc.h"
 
 static char encoding_table[] =

@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <arpa/inet.h>
-#include "dmc/DEFS.h"
 #include "dmc/err.h"
 #include "dmc/str.h"
 #include "dmc/Buf.h"

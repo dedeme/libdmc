@@ -3,7 +3,9 @@
 
 #include "dmc/Hash.h"
 #include "dmc/List.h"
-#include "dmc/std.h"
+#include "dmc/err.h"
+#include "dmc/str.h"
+#include "dmc/Map.h"
 
 Hash *hash_new(void) {
   LKv *this = MALLOC(LKv);

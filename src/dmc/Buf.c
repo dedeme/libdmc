@@ -2,10 +2,8 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Buf.h"
-#include "dmc/std.h"
-#include "string.h"
-
-
+#include <string.h>
+#include "dmc/DEFS.h"
 
 Buf *buf_new(void) {
   return buf_bf_new(151);

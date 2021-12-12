@@ -2,7 +2,6 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/ODouble.h"
-#include "dmc/DEFS.h"
 #include "dmc/err.h"
 
 struct oDouble_ODouble {

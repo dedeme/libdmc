@@ -4,7 +4,6 @@
 #include "dmc/regex.h"
 #include <regex.h>
 #include "dmc/str.h"
-#include "dmc/DEFS.h"
 #include "dmc/err.h"
 #include "dmc/Buf.h"
 

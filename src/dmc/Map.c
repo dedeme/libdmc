@@ -2,7 +2,10 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Map.h"
-#include "dmc/std.h"
+#include "dmc/DEFS.h"
+#include "dmc/str.h"
+#include "dmc/js.h"
+#include "dmc/char/Kchar.h"
 
 Map *map_new(void) {
   AKv *this = MALLOC(AKv);

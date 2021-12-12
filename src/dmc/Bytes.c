@@ -3,7 +3,8 @@
 
 #include "dmc/Bytes.h"
 #include <string.h>
-#include "dmc/std.h"
+#include "dmc/DEFS.h"
+#include "dmc/b64.h"
 
 inline
 Bytes *bytes_new() {

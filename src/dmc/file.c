@@ -2,13 +2,18 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/file.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include "dmc/std.h"
 #include "dmc/cryp.h"
+#include "dmc/err.h"
+#include "dmc/str.h"
+#include "dmc/path.h"
+#include "dmc/Buf.h"
 
 struct file_FileLck {
   struct flock *lock;

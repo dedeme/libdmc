@@ -2,9 +2,8 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/Rs.h"
-#include "dmc/DEFS.h"
 #include "dmc/err.h"
-#include "dmc/Js.h"
+#include "dmc/js.h"
 
 struct rs_Rs {
   char *err;

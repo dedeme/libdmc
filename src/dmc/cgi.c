@@ -2,10 +2,14 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/cgi.h"
+#include "dmc/DEFS.h"
 #include "dmc/rnd.h"
 #include "dmc/cryp.h"
 #include "dmc/date.h"
-#include "dmc/async.h"
+#include "dmc/js.h"
+#include "dmc/file.h"
+#include "dmc/path.h"
+#include "dmc/str.h"
 
 // Constants -------------------------------------------------------------------
 
