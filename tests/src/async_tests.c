@@ -19,12 +19,10 @@ static void barbery (void) {
   int TIME_MAX_CLIENT_CREATE = 2000; // millis
   int TIME_MIN_CLIENT_CREATE = 200; // millis
   int TIME_HAIR_CUT = 1800; // millis
-  int TIME_OPEN = 120; // seconds
+  int TIME_OPEN = 30; // seconds
 
   int is_closed = 1;
   int is_occupy = 0;
-
-  AsyncActor *actor = asyncActor_new(50);
 
   int corder = 1;
   int SIT_C = 5;
@@ -107,12 +105,11 @@ static void barbery (void) {
     bmsg("Watching for clients");
     OInt *client = get_client();
     if (oInt_none(client)) {
+      is_occupy = 0;
       if (is_time_out()) {
         is_closed = 1;
-        asyncActor_end(actor);
-        bmsg("No clientes and time out: Barbery closed");
+        bmsg("No clientes and barbery closed: Time to relax");
       } else {
-        is_occupy = 0;
         bmsg("No clients: sleeping");
       }
       return;
@@ -129,7 +126,7 @@ static void barbery (void) {
     bmsg(str_f("Start cutting hair to %d", *client));
     sys_sleep(TIME_HAIR_CUT);
     bmsg(str_f("End cutting hair to %d", *client));
-    asyncActor_run(actor, (void(*)(void *))watch_sites, hair_cut);
+    async_run2((void(*)(void *))watch_sites, hair_cut);
   }
 
   void barber_end (void) {
@@ -180,9 +177,9 @@ static void barbery (void) {
 
   int delay = 0;
 
-  void create_clients (void *null_value) {
+  void create_client (void) {
     if (delay == 0) {
-      asyncActor_run(actor, (void(*)(void *))client_run, mk_client());
+      async_run2((void(*)(void *))client_run, mk_client());
       delay = (
           TIME_MIN_CLIENT_CREATE +
           rnd_i(TIME_MAX_CLIENT_CREATE - TIME_MIN_CLIENT_CREATE)
@@ -192,26 +189,23 @@ static void barbery (void) {
     --delay;
   }
 
-  AsyncTimer *timer_clients = asyncTimer_new(create_clients, NULL, 50);
+  for (;;) {
+    create_client();
+    sys_sleep(50);
 
-  AsyncTimer *timer_clock = NULL;
+    if (is_closed && !is_occupy) break;
 
-  void timer_clock_end (void *null_value) {
+    if (is_closed) {
+      continue;
+    }
+
     if (is_time_out()) {
-      puts("Time out");
-      asyncTimer_end(timer_clients);
+      puts("----- Barbery closed -----");
       barber_end();
-      asyncTimer_end(timer_clock);
+      continue;
     }
   }
 
-  void clock_control (void *null_value) {
-    asyncActor_run(actor, timer_clock_end, NULL);
-  }
-
-  timer_clock = asyncTimer_new(clock_control, NULL, 50);
-
-  asyncActor_join(actor);
 }
 
 static void counter (char *c) {
@@ -236,29 +230,7 @@ void async_tests(void) {
     async_thread_detached((void(*)(void *))counter, "10");
     sys_sleep(1000);
   }
-/*
-  AsyncActor *ac = asyncActor_new(50);
-  void task (void *null) {
-    puts("--------");
-    for (int i = 0; i < 10; ++i) {
-      printf("%d\n", i);
-      sys_sleep(10);
-    }
-  }
-  void end (void *null) {
-    asyncActor_end(ac);
-  }
-  asyncActor_run(ac, task, NULL);
-  puts("Main thread 1");
 
-  void fn2 () { task(NULL); }
-  asyncActor_wait(ac, fn2);
-  puts("Main thread 2");
-
-  asyncActor_run(ac, end, NULL);
-
-  asyncActor_join(ac);
-*/
 /*
   void fn2(void *null) { sys_sleep(10000);}
   for (int i = 0; i < 1000000; ++i) async_thread_detached(fn2, NULL);

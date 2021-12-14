@@ -20,10 +20,19 @@
 ///       /**/  ... Process 'requestOk' and create 'response' ...
 ///       /**/  iserverRq_write(rqOk, response);
 ///       /**/}
-///       async_thread2(fn, rq);
+///       async_thread_detached(fn, rq);
 ///     }
 ///     sys_sleep(200);
 ///   }
+/// NOTE:
+/// Call 'fn' as bellow is shown, is a mistake because 'rq' and 'request'
+/// change after 'async_thread_detached'.
+/// This is a mistake:
+///   /**/void fn (void *value) {
+///   /**/  ... Process 'request' and create 'response' ...
+///   /**/  iserverRq_write(rq, response);
+///   /**/}
+///   async_thread_detached(fn, NULL);
 
 #ifndef DMC_ISERVER_H
   #define DMC_ISERVER_H

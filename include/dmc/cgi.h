@@ -60,11 +60,11 @@ char *cgi_change_pass (char *user, char *old, char *new);
 ///   level: User level.
 int cgi_add_user (char *user, char *pass, char *level);
 
-/// Remove user if exists.
+/// Removes user if exists.
 ///   user : User id.
 void cgi_remove_user (char *user);
 
-/// Remove sessin if exists.
+/// Removes session if exists.
 ///   sessionId: Session identifier.
 void cgi_remove_session (char *sessionId);
 
@@ -83,7 +83,7 @@ char *cgi_rp_error (char *msg);
 /// codified with the key 'noSessionKey' ("nosession")
 char *cgi_rp_expired (void);
 
-/// Read a JSON Boolean from a JSON object. It raises a fail if it is not
+/// Reads a JSON Boolean from a JSON object. It raises a fail if it is not
 /// possible to read the field.
 int cgi_rq_bool (Mchar *rq, char *key);
 
@@ -91,7 +91,7 @@ int cgi_rq_bool (Mchar *rq, char *key);
 /// possible to read the field.
 int cgi_rq_int (Mchar *rq, char *key);
 
-/// Read a JSON Long from a JSON object. It raises a fail if it is not
+/// Reads a JSON Long from a JSON object. It raises a fail if it is not
 /// possible to read the field.
 long cgi_rq_long (Mchar *rq, char *key);
 
@@ -99,15 +99,15 @@ long cgi_rq_long (Mchar *rq, char *key);
 /// possible to read the field.
 double cgi_rq_double (Mchar *rq, char *key);
 
-/// Read a JSON String from a JSON object. It raises a fail if it is not
+/// Reads a JSON String from a JSON object. It raises a fail if it is not
 /// possible to read the field.
 char *cgi_rq_string (Mchar *rq, char *key);
 
-/// Read a JSON Array[JSON] from a JSON object. It raises a fail if it is not
+/// Reads a JSON Array[JSON] from a JSON object. It raises a fail if it is not
 /// possible to read the field.
 Achar *cgi_rq_array (Mchar *rq, char *key);
 
-/// Read a JSON Object[JSON] from a JSON object. It raises a fail if it is not
+/// Reads a JSON Object[JSON] from a JSON object. It raises a fail if it is not
 /// possible to read the field.
 Mchar *cgi_rq_object (Mchar *rq, char *key);
 
