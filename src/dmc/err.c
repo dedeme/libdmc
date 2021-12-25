@@ -2,10 +2,10 @@
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/err.h"
-#include <string.h>
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "dmc/str.h"
 
 static void(*err_func)(char *, char **, int) = NULL;
 
@@ -33,8 +33,7 @@ void *err_fail (char *message, char *file, char *func, int line) {
   while (name > file && *name != '/') --name;
   if (*name == '/') ++name;
 
-  char msg[2500];
-  sprintf(msg, "%s:%d:[%s]:\n%s", name, line, func, message);
+  char *msg = str_f("%s:%d:[%s]:\n%s", name, line, func, message);
 
   if (err_func == NULL) err_func_default(msg, strings, size);
   else err_func(msg, strings, size);
