@@ -1,10 +1,11 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/char/Rchar.h"
 #include "dmc/DEFS.h"
 #include "dmc/err.h"
 #include "dmc/Rs.h"
+#include "dmc/js.h"
 
 struct rchar_Rchar {
   char *err;
@@ -27,12 +28,12 @@ void *rchar_ok(Rchar *this) {
   return rs_ok((Rs *)this);
 }
 
-char *rchar_to_js (Rchar *this, char *(*to)(char *e)) {
-  return rs_to_js((Rs *)this, (char *(*)(void *))to);
+char *rchar_to_js (Rchar *this) {
+  return rs_to_js((Rs *)this, (char *(*)(void *))js_ws);
 }
 
-Rchar *rchar_from_js (char *js, char *(*from)(char *jse)) {
-  return (Rchar *)rs_from_js(js, (void *(*)(char *))from);
+Rchar *rchar_from_js (char *js) {
+  return (Rchar *)rs_from_js(js, (void *(*)(char *))js_rs);
 }
 
 //--// Not remove

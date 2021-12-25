@@ -1,9 +1,10 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/char/Achar.h"
 #include <string.h>
 #include <stdarg.h>
+#include "dmc/js.h"
 
 Achar *achar_new (void) {
   return (Achar *)arr_new();
@@ -179,12 +180,12 @@ Achar *achar_duplicates (
   return (Achar *)arr_duplicates((Arr *)this, (int(*)(void *, void *))feq);
 }
 
-char *achar_to_js (Achar *this, char *(*to)(char *e)) {
-  return arr_to_js((Arr *)this, (char *(*)(void *))to);
+char *achar_to_js (Achar *this) {
+  return arr_to_js((Arr *)this, (char *(*)(void *))js_ws);
 }
 
-Achar *achar_from_js (char *js, char *(*from)(char *ejs)) {
-  return (Achar *)arr_from_js(js, (void *(*)(char *))from);
+Achar *achar_from_js (char *js) {
+  return (Achar *)arr_from_js(js, (void *(*)(char *))js_rs);
 }
 
 

@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/char/Ochar.h"
@@ -6,6 +6,7 @@
 #include "dmc/DEFS.h"
 #include "dmc/err.h"
 #include "dmc/Opt.h"
+#include "dmc/js.h"
 
 struct ochar_Ochar {
   char *value;
@@ -43,12 +44,12 @@ char *ochar_nsome (Ochar *opt) {
   return opt->value;
 }
 
-char *ochar_to_js (Ochar *opt, char *(*to)(char *e)) {
-  return opt->value ? to(opt->value) : "null";
+char *ochar_to_js (Ochar *opt) {
+  return opt_to_js((Opt *)opt, (char *(*)(void *))js_ws);
 }
 
-Ochar *ochar_from_js (char *js, char *(*from)(char *jse)) {
-  return strcmp(js, "null") ? ochar_mk_some(from(js)) : ochar_mk_none();
+Ochar *ochar_from_js (char *js) {
+  return (Ochar *)opt_from_js(js, (void *(*)(char *))js_rs);
 }
 
 //--// Not remove

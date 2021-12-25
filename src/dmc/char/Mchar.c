@@ -1,8 +1,9 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/char/Mchar.h"
 #include "dmc/Map.h"
+#include "dmc/js.h"
 
 Mchar *mchar_new (void) {
   return (Mchar *)map_new();
@@ -52,12 +53,11 @@ void mchar_sort_locale(Mchar *this) {
   return map_sort_locale((Map *)this);
 }
 
-char *mchar_to_js(Mchar *this, char *(*to)(char *e)) {
-  return map_to_js((Map *)this, (char *(*)(void *)) to);
+char *mchar_to_js(Mchar *this) {
+  return map_to_js((Map *)this, (char *(*)(void *))js_ws);
 }
-
-Mchar *mchar_from_js(char *js, char *(*from)(char *jse)) {
-  return (Mchar *)map_from_js(js, (void *(*)(char *))from);
+Mchar *mchar_from_js(char *js) {
+  return (Mchar *)map_from_js(js, (void *(*)(char *))js_rs);
 }
 
 

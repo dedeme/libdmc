@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// List[char *].
@@ -38,16 +38,16 @@ char *lchar_head (Lchar *this);
 Ochar *lchar_get (Lchar *this, int ix);
 
 /// Returns '1' if 'this' is empty.
-int lchar_empty(Lchar *this);
+int lchar_empty (Lchar *this);
 
 /// Adds 'o' at head. 'o' must be not NULL.
-Lchar *lchar_cons(Lchar *this, char *o);
+Lchar *lchar_cons (Lchar *this, char *o);
 
 /// Returns 'this + l'.
-Lchar *lchar_cat(Lchar *this, Lchar *l);
+Lchar *lchar_cat (Lchar *this, Lchar *l);
 
 /// lchar_reverse returns this in reverse order.
-Lchar *lchar_reverse(Lchar *this);
+Lchar *lchar_reverse (Lchar *this);
 
 /// Sorts 'this' ascendantly using the function 'greater' that returns '1'
 /// if 'e1' > 'e2'.
@@ -113,12 +113,11 @@ Achar *lchar_to_arr (Lchar *this);
 /// Returns a list with 'a' elements.
 Lchar *lchar_from_arr (Achar *a);
 
-/// lchar_to_json returns a serialization of 'this' using 'to' to.
-/// convert elements.
-char *lchar_to_js(Lchar *this, char *(*to)(char *));
+/// lchar_to_json returns a serialization of 'this'.
+char *lchar_to_js(Lchar *this);
 
-/// lchar_from_json restores a serialized List using 'from' to convert elements.
-Lchar *lchar_from_js(char *js, char *(*from)(char *));
+/// lchar_from_json restores a serialized List.
+Lchar *lchar_from_js(char *js);
 
 
 //--// Not remove

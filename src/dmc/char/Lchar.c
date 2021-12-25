@@ -1,7 +1,8 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/char/Lchar.h"
+#include "dmc/js.h"
 
 Lchar *lchar_new(void) {
   return (Lchar *)list_new();
@@ -23,19 +24,19 @@ Ochar *lchar_get (Lchar *this, int ix) {
   return (Ochar *)list_get((List *)this, ix);
 }
 
-int lchar_empty(Lchar *this) {
+int lchar_empty (Lchar *this) {
   return list_empty((List *)this);
 }
 
-Lchar *lchar_cons(Lchar *this, char *o) {
+Lchar *lchar_cons (Lchar *this, char *o) {
   return (Lchar *)list_cons((List *)this, o);
 }
 
-Lchar *lchar_cat(Lchar *this, Lchar *l) {
+Lchar *lchar_cat (Lchar *this, Lchar *l) {
   return (Lchar *)list_cat((List *)this, (List *)l);
 }
 
-Lchar *lchar_reverse(Lchar *this) {
+Lchar *lchar_reverse (Lchar *this) {
   return (Lchar *)list_reverse((List *)this);
 }
 
@@ -118,12 +119,12 @@ Lchar *lchar_from_arr (Achar *a) {
   return (Lchar *)list_from_arr((Arr *) a);
 }
 
-char *lchar_to_js(Lchar *this, char *(*to)(char *)) {
-  return list_to_js((List *) this, (char *(*)(void *))to);
+char *lchar_to_js(Lchar *this) {
+  return list_to_js((List *) this, (char *(*)(void *))js_ws);
 }
 
-Lchar *lchar_from_js(char *js, char *(*from)(char *)) {
-  return (Lchar *)list_from_js(js, (void *(*)(char *))from);
+Lchar *lchar_from_js(char *js) {
+  return (Lchar *)list_from_js(js, (void *(*)(char *))js_rs);
 }
 
 //--// Not remove

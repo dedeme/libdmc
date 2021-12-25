@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Rs[char *].
@@ -24,13 +24,11 @@ void *rchar_ok(Rchar *this);
 
 /// Returns this JSONized.
 ///   this: Container.
-///   to  : Converter of container element to JSON.
-char *rchar_to_js (Rchar *this, char *(*to)(char *e));
+char *rchar_to_js (Rchar *this);
 
 /// Returns the container from its JSON representation.
 ///   js  : Container JSONized.
-///   from: Converter from JSON to container element.
-Rchar *rchar_from_js (char *js, char *(*from)(char *ejs));
+Rchar *rchar_from_js (char *js);
 
 
 //--// Not remove

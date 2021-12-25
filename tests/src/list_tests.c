@@ -28,7 +28,7 @@ void list_tests() {
   assert(lchar_empty(s));
   assert(lchar_size(s) == 0);
   assert(ochar_none(lchar_get(s, 0)));
-  s = lchar_from_js(lchar_to_js(s, js_ws), js_rs);
+  s = lchar_from_js(lchar_to_js(s));
   assert(lchar_empty(s));
   s = lchar_cons(s, "a");
   assert(!lchar_empty(s));
@@ -49,12 +49,12 @@ void list_tests() {
   assert(str_eq("ba", paste(s)));
   assert(str_eq("ba", paste(s)));
 
-  s = lchar_from_js(lchar_to_js(s, js_ws), js_rs);
+  s = lchar_from_js(lchar_to_js(s));
 
   assert(str_eq("ba", paste(s)));
   assert(str_eq("ba", paste(s)));
 
-  Lchar *s2 = lchar_from_js(lchar_to_js(s, js_ws), js_rs);
+  Lchar *s2 = lchar_from_js(lchar_to_js(s));
   assert(str_eq("ba", paste(s2)));
   assert(str_eq("ba", paste(s2)));
 

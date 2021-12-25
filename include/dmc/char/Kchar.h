@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Kv[char *] is a tuple of char*, char*
@@ -20,13 +20,11 @@ Kchar *kchar_new (char *k, char *v);
 
 /// Returns this JSONized.
 ///   this: Container.
-///   to  : Converter of container element to JSON.
-char *kchar_to_js (Kchar *this, char *(*to)(char *e));
+char *kchar_to_js (Kchar *this);
 
 /// Returns the container from its JSON representation.
 ///   js  : Container JSONized.
-///   from: Converter from JSON to container element.
-Kchar *kchar_from_js (char *js, char *(*from)(char *ejs));
+Kchar *kchar_from_js (char *js);
 
 
 //--// Not remove

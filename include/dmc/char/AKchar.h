@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Arr[Kchar *].
@@ -83,7 +83,7 @@ void aKchar_reverse (AKchar *this);
 
 /// Sorts 'this' ascendantly using the function 'greater' that returns '1'
 /// if 'e1' > 'e2'.
-void aKchar_sortf (AKchar *this, int (*greater)(Kchar *e1, Kchar *e2));
+void aKchar_sort (AKchar *this, int (*greater)(Kchar *e1, Kchar *e2));
 
 /// aKchar_shuflle remix 'this' elements. It should be used after calling
 /// rnd_init() or sys_init().
@@ -152,13 +152,11 @@ AKchar *aKchar_duplicates (AKchar *this, int (feq)(Kchar *e1, Kchar *e2));
 
 /// Returns this JSONized.
 ///   this: Container.
-///   to  : Converter of container element to JSON.
-char *aKchar_to_js (AKchar *this, char *(*to)(Kchar *e));
+char *aKchar_to_js (AKchar *this);
 
 /// Returns the container from its JSON representation.
 ///   js  : Container JSONized.
-///   from: Converter from JSON to container element.
-AKchar *aKchar_from_js (char *js, Kchar *(*from)(char *ejs));
+AKchar *aKchar_from_js (char *js);
 
 
 //--// Not remove

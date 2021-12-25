@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Map[char *].
@@ -51,12 +51,10 @@ void mchar_sort(Mchar *this);
 void mchar_sort_locale(Mchar *this);
 
 /// Returns a JSON from a value of 'this'. Duplicates are removed.
-///   to: Value converter.
-char *mchar_to_js(Mchar *this, char *(*to)(char *e));
+char *mchar_to_js(Mchar *this);
 
 /// Parses a JSON to a value of 'this'.
-///   from: Value converter.
-Mchar *mchar_from_js(char *js, char *(*from)(char *jse));
+Mchar *mchar_from_js(char *js);
 
 
 //--// Not remove

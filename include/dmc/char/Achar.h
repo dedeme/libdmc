@@ -1,4 +1,4 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 /// Arr[char *].
@@ -150,13 +150,12 @@ Achar *achar_duplicates (Achar *this, int (feq)(char *e1, char *e2));
 
 /// Returns this JSONized.
 ///   this: Container.
-///   to  : Converter of container element to JSON.
-char *achar_to_js (Achar *this, char *(*to)(char *e));
+char *achar_to_js (Achar *this);
 
 /// Returns the container from its JSON representation.
 ///   js  : Container JSONized.
-///   from: Converter from JSON to container element.
-Achar *achar_from_js (char *js, char *(*from)(char *ejs));
+Achar *achar_from_js (char *js);
+
 
 //--// Not remove
 

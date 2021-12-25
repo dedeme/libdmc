@@ -1,9 +1,10 @@
-// Copyright 08-Dec-2021 ºDeme
+// Copyright 25-Dec-2021 ºDeme
 // GNU General Public License - V3 <http://www.gnu.org/licenses/>
 
 #include "dmc/char/AKchar.h"
 #include <string.h>
 #include <stdarg.h>
+#include "dmc/js.h"
 
 AKchar *aKchar_new (void) {
   return (AKchar *)arr_new();
@@ -91,7 +92,7 @@ void aKchar_reverse (AKchar *this) {
   arr_reverse((Arr *)this);
 }
 
-void aKchar_sortf (AKchar *this, int (*greater)(Kchar *e1, Kchar *e2)) {
+void aKchar_sort (AKchar *this, int (*greater)(Kchar *e1, Kchar *e2)) {
   arr_sort((Arr *)this, (int(*)(void *, void *))greater);
 }
 
@@ -179,12 +180,12 @@ AKchar *aKchar_duplicates (
   return (AKchar *)arr_duplicates((Arr *)this, (int(*)(void *, void *))feq);
 }
 
-char *aKchar_to_js (AKchar *this, char *(*to)(Kchar *e)) {
-  return arr_to_js((Arr *)this, (char *(*)(void *))to);
+char *aKchar_to_js (AKchar *this) {
+  return arr_to_js((Arr *)this, (char *(*)(void *))kchar_to_js);
 }
 
-AKchar *aKchar_from_js (char *js, Kchar *(*from)(char *ejs)) {
-  return (AKchar *)arr_from_js(js, (void *(*)(char *))from);
+AKchar *aKchar_from_js (char *js) {
+  return (AKchar *)arr_from_js(js, (void *(*)(char *))kchar_from_js);
 }
 
 
