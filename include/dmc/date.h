@@ -50,14 +50,17 @@ int date_df (time_t this, time_t another);
 ///
 time_t date_add (time_t this, int days);
 
-///
+/// Returns month day.
 int date_day (time_t this);
 
-///
+/// Returns month (1-12)
 int date_month (time_t this);
 
-///
+/// Returns year.
 int date_year (time_t this);
+
+/// Returns week day (0 - 6 => Sunday - Saturday)
+int date_week_day (time_t this);
 
 /// Formats a time_t. Format can be:
 ///   %a     The abbreviated name of the day of the week according to the

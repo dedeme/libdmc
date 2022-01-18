@@ -6,6 +6,7 @@
 #ifndef DMC_ADOUBLE_H
   #define DMC_ADOUBLE_H
 
+/// Array of doubles.
 struct aDouble_ADouble {
   double *es;
   double *end;

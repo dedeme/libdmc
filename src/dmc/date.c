@@ -109,6 +109,10 @@ int date_year(time_t this) {
   return localtime(&this)->tm_year + 1900;
 }
 
+int date_week_day (time_t this) {
+  return localtime(&this)->tm_wday;
+}
+
 char *date_f(time_t this, char *template) {
   char *s, *rs;
   struct tm *t = localtime(&this);

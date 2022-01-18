@@ -51,6 +51,7 @@ void date_tests(void) {
   assert(date_day(d1) == 1 && date_day(d2) == 6 &&date_day(d3) == 30);
   assert(date_month(d1) == 3 && date_month(d2) == 3 &&date_month(d3) == 4);
   assert(date_year(d1) == 2013);
+  assert(date_week_day(d1) == 5);
 
   assert(!date_from_iso_sep("", '/'));
   assert(!date_from_iso_sep("123/34/34", '/'));
